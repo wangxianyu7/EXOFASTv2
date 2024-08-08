@@ -1025,7 +1025,8 @@ for j=0, ss.ntel-1 do begin
             modelrv += exofast_rv(rvbjd,ss.planet[i].tp.value,ss.planet[i].period.value,$
                                   0d0,ss.planet[i].K.value*q,$
                                   ss.planet[i].e.value,ss.planet[i].omega.value+!dpi,$
-                                  slope=0d0)
+                                  slope=0d0,exptime=ss.telescope[j].exptime, $
+                                  ninterp=ss.telescope[j].ninterp)
          endif else begin
             ;; time in target barycentric frame (expensive)
             rvbjd = bjd2target(rv.bjd, inclination=ss.planet[i].i.value, $
@@ -1036,12 +1037,14 @@ for j=0, ss.ntel-1 do begin
 
             ;; calculate the RV model
             if ss.planet[i].rossiter then begin
-               u1 = linld(ss.star[ss.planet[i].starndx].logg.value,$
+               coeffs = quadld(ss.star[ss.planet[i].starndx].logg.value,$
                           ss.star[ss.planet[i].starndx].teff.value,$
                           ss.star[ss.planet[i].starndx].feh.value,'V')
-            endif else u1 = 0d0
+               u1claret = coeffs[0]
+               u2claret = coeffs[1]
+            endif else u1claret = 0d0
 
-            if ~finite(u1) then begin
+            if ~finite(u1claret) then begin
                if ss.verbose then begin
                   printandlog, 'V linear limb darkening coefficient (for RM effect) not defined for this star: ' +$
                                'Teff (' + strtrim(ss.star[ss.planet[i].starndx].teff.value,2) + ', ' + $
@@ -1050,15 +1053,26 @@ for j=0, ss.ntel-1 do begin
                endif
                return, !values.d_infinity
             endif
-            
+            band = ss.band[ss.telescope[j].bandndx]
+            u1 = band.u1.value
+            u2 = band.u2.value
             modelrv += exofast_rv(rvbjd,ss.planet[i].tp.value,ss.planet[i].period.value,$
                                   0d0,ss.planet[i].K.value,$
                                   ss.planet[i].e.value,ss.planet[i].omega.value,$
                                   slope=0d0, $
                                   rossiter=ss.planet[i].rossiter, i=ss.planet[i].i.value,a=ss.planet[i].ar.value,$
                                   p=abs(ss.planet[i].p.value),vsini=ss.star[ss.planet[i].starndx].vsini.value,$
-                                  lambda=ss.planet[i].lambda.value,$
-                                  u1=u1,deltarv=deltarv)
+                                  lambda=ss.planet[i].lambda.value,vbeta=ss.star[ss.planet[i].starndx].vline.value,$
+                                  vgamma=ss.star[ss.planet[i].starndx].vline.value, vzeta=ss.star[ss.planet[i].starndx].vline.value,$
+                                  u1=u1,u2=u2,deltarv=deltarv, exptime=ss.telescope[j].exptime, $
+                                  ninterp=ss.telescope[j].ninterp)
+
+            u1err = 0.05d0
+            u2err = 0.05d0
+            if ss.planet[i].rossiter then begin
+               chi2 += ((band.u1.value-u1claret)/u1err)^2
+               chi2 += ((band.u2.value-u2claret)/u2err)^2
+            endif
          endelse
 
       endif
@@ -1152,6 +1166,29 @@ if (*ss.dilutebandndx)[0] ne -1 then begin
                       ss.star[starndx].distance.value, $
                       ss.star[starndx].lstar.value, ss.band[bandndx].name)
 endif
+
+;; transit timing model
+for i=0, ss.nplanets-1 do begin
+   ttdata = *(ss.planet[i].transittimingptrs)
+   if ttdata ne !null then begin
+      ttchi2 = 0d0
+      transittimes = ttdata[0,*]
+      transittimeserrs = ttdata[1,*]
+      for j=0, n_elements(transittimes)-1 do begin
+         nearest_epoch = round((transittimes[j]-ss.planet[i].tc.value)/ss.planet[i].period.value)
+         tc_pred = ss.planet[i].tc.value + nearest_epoch*ss.planet[i].period.value
+         ttchi2 += ((transittimes[j] - tc_pred)/transittimeserrs[j])^2
+         ;print, FORMAT='(A, F16.8,A, F16.8,A, F16.8)', 'transittime: ',transittimes[j],' tc_pred: ',tc_pred,' err: ',transittimeserrs[j]
+      endfor
+
+
+      chi2 += ttchi2
+      if ss.verbose then printandlog, 'Transit Timing penalty = ' + strtrim(ttchi2,2),ss.logname
+   endif
+endfor
+
+
+
 
 ;; Transit model
 for j=0L, ss.ntran-1 do begin

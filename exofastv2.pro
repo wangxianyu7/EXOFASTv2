@@ -1149,7 +1149,7 @@
 pro exofastv2, priorfile=priorfile, $
                prefix=prefix,$
                ;; data file inputs
-               rvpath=rvpath, tranpath=tranpath, $
+               rvpath=rvpath, tranpath=tranpath, ttvpath=ttvpath, $
                astrompath=astrompath, dtpath=dtpath, $
                ;; SED model inputs
                fluxfile=fluxfile,mistsedfile=mistsedfile,$
@@ -1172,7 +1172,7 @@ pro exofastv2, priorfile=priorfile, $
                ;; planet inputs
                nplanets=nplanets, $
                fittran=fittran, fitrv=fitrv, $
-               rossiter=rossiter, fitdt=fitdt, $
+               rossiter=rossiter, fitdt=fitdt, rmbands=rmbands, rmtrends=rmtrends, exposuretimerm=exposuretimerm, numinterprm=numinterprm, rmmodel=rmmodel, $
                circular=circular, tides=tides, $ 
                alloworbitcrossing=alloworbitcrossing, $
                chen=chen, i180=i180, $
@@ -1209,7 +1209,8 @@ pro exofastv2, priorfile=priorfile, $
                mksummarypg=mksummarypg,$
                nocovar=nocovar, $
                plotonly=plotonly, bestonly=bestonly, $
-               badstart=badstart
+               badstart=badstart, $
+               restorebest=restorebest
                
 ;; this is the stellar system structure
 COMMON chi2_block, ss
@@ -1228,7 +1229,7 @@ if lmgr(/vm) or lmgr(/runtime) then begin
    if not file_test(argfile) then message, argfile + ', containing desired arguments to EXOFASTv2, does not exist'
    readargs, argfile, priorfile=priorfile, $
              prefix=prefix,$
-             rvpath=rvpath, tranpath=tranpath, $
+             rvpath=rvpath, tranpath=tranpath, ttvpath=ttvpath, $
              astrompath=astrompath, dtpath=dtpath, $
              fluxfile=fluxfile,mistsedfile=mistsedfile,$
              sedfile=sedfile,specphotpath=specphotpath,$
@@ -1245,7 +1246,7 @@ if lmgr(/vm) or lmgr(/runtime) then begin
              seddeblend=seddeblend,fitdilute=fitdilute, $
              nplanets=nplanets, $
              fittran=fittran, fitrv=fitrv, $
-             rossiter=rossiter, fitdt=fitdt, $
+             rossiter=rossiter, fitdt=fitdt, rmbands=rmbands, rmtrends=rmtrends, exposuretimerm=exposuretimerm, numinterprm=numinterprm, rmmodel=rmmodel, $
              circular=circular, tides=tides, $ 
              alloworbitcrossing=alloworbitcrossing, $
              chen=chen, i180=i180, $
@@ -1349,7 +1350,7 @@ if stderr[0] eq '' then printandlog, "Using EXOFASTv2 commit " + output[0], logn
 ss = mkss(priorfile=priorfile, $
           prefix=prefix,$
           ;; data file inputs
-          rvpath=rvpath, tranpath=tranpath, $
+          rvpath=rvpath, tranpath=tranpath, ttvpath=ttvpath, $
           astrompath=astrompath, dtpath=dtpath, $
           ;; SED model inputs
           fluxfile=fluxfile, mistsedfile=mistsedfile, $
@@ -1372,7 +1373,7 @@ ss = mkss(priorfile=priorfile, $
           ;; planet inputs
           nplanets=nplanets, $
           fittran=fittran,fitrv=fitrv,$
-          rossiter=rossiter, fitdt=fitdt,$ 
+          rossiter=rossiter, fitdt=fitdt, rmbands=rmbands, rmtrends=rmtrends, exposuretimerm=exposuretimerm, numinterprm=numinterprm, rmmodel=rmmodel, $
           circular=circular, tides=tides, $
           alloworbitcrossing=alloworbitcrossing,$
           chen=chen, i180=i180,$
@@ -1503,8 +1504,19 @@ printandlog, 'Beginning AMOEBA fit; this may take up to ' + string(modeltime*nma
 
 ;; do the AMOEBA fit
 ss.amoeba = 1B
-ss.delay =0
-best = exofast_amoeba(1d-5,function_name=chi2func,p0=pars,scale=scale,nmax=nmax)
+ss.delay = 0
+if n_elements(restorebest) eq 0 or not FILE_TEST(prefix + 'amoeba.idl') then begin
+   print,n_elements(restorebest), FILE_TEST(prefix + 'amoeba.idl')
+   ;best = exofast_amoeba(1d-5,function_name=chi2func,p0=pars,scale=scale,nmax=nmax)
+   ;best = exofast_amoeba(1d-5,function_name=chi2func,p0=pars,scale=scale,nmax=nmax)
+   best = exofast_de(ss.nchains,pars,scale,10000,chi2func,1)
+   ;best = exofast_de_nthread(ss.nchains,pars,scale,10000,'exofast_chi2v2',1e-2,ss)
+endif else begin
+   restore, prefix + 'amoeba.idl'
+   print,'restoring best fit from ' + prefix + 'amoeba.idl'
+   ; print,best
+   stop
+endelse
 
 ss.delay = delay
 if best[0] eq -1 then begin
@@ -1601,7 +1613,7 @@ if nthreads gt 1 then begin
       ;; create the stellar stucture within each thread
       thread_array[i].obridge->execute,$
          'ss = mkss(priorfile=priorfile, prefix=prefix,'+$
-         'rvpath=rvpath, tranpath=tranpath,'+$
+         'rvpath=rvpath, tranpath=tranpath, ttvpath=ttvpath,'+$
          'astrompath=astrompath, dtpath=dtpath,'+$
          'fluxfile=fluxfile, mistsedfile=mistsedfile,'+$
          'sedfile=sedfile,specphotpath=specphotpath,'+$
@@ -1619,7 +1631,7 @@ if nthreads gt 1 then begin
          'seddeblend=seddeblend, fitdilute=fitdilute,'+$
          'nplanets=nplanets,'+$
          'fittran=fittran, fitrv=fitrv,'+$
-         'rossiter=rossiter,fitdt=fitdt,'+$
+         'rossiter=rossiter,fitdt=fitdt,rmbands=rmbands,rmtrends=rmtrends,exposuretimerm=exposuretimerm,numinterprm=numinterprm,rmmodel=rmmodel,'+$
          'circular=circular,tides=tides,'+$
          'alloworbitcrossing=alloworbitcrossing,'+$
          'chen=chen, i180=i180,'+$
@@ -1712,7 +1724,7 @@ ss.verbose = keyword_set(verbose)
 mcmcss = mkss(priorfile=priorfile, $
               prefix=prefix,$
               ;; data file inputs
-              rvpath=rvpath, tranpath=tranpath, $
+              rvpath=rvpath, tranpath=tranpath, ttvpath=ttvpath, $
               astrompath=astrompath, dtpath=dtpath, $
               ;; SED model inputs
               fluxfile=fluxfile, mistsedfile=mistsedfile, $
@@ -1735,7 +1747,7 @@ mcmcss = mkss(priorfile=priorfile, $
               ;; planet inputs
               nplanets=nplanets, $
               fittran=fittran,fitrv=fitrv,$
-              rossiter=rossiter, fitdt=fitdt,$ 
+              rossiter=rossiter, fitdt=fitdt, rmbands=rmbands, rmtrends=rmtrends, exposuretimerm=exposuretimerm, numinterprm=numinterprm, rmmodel=rmmodel, $
               circular=circular, tides=tides, $
               alloworbitcrossing=alloworbitcrossing,$
               chen=chen, i180=i180,$

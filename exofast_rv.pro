@@ -1,6 +1,8 @@
 function exofast_rv, bjd, TPeriastron, period, V0, K, e0, omega0, $
-                     slope=slope,t0=t0,rossiter=rossiter,i=i,a=a,u1=u1,p=p, $
-                     vsini=vsini, lambda=lambda,deltarv=deltarv
+                     slope=slope,t0=t0,rossiter=rossiter,i=i,a=a,u1=u1,u2=u2,p=p, $
+                     vsini=vsini, lambda=lambda,vbeta=vbeta, vgamma=vgamma, $
+                     vzeta=vzeta, deltarv=deltarv,exptime=exptime,ninterp=ninterp,$
+                     srv=srv,qrv=qrv,rmmodel=rmmodel
 ;+
 ; NAME:
 ;   exofast_rv
@@ -94,8 +96,25 @@ if n_elements(slope) ne 0 then begin
     rv += (bjd - t0)*slope
 endif
 
+
+;; add a slope for rm if desired
+if n_elements(srv) ne 0 then begin
+    mintime = min(bjd,max=maxtime)
+    t0 = (maxtime+mintime)/2.d0
+    rv += (bjd - t0)*srv
+endif
+
+;; add a quadratic term for rm if desired
+if n_elements(qrv) ne 0 then begin
+    mintime = min(bjd,max=maxtime)
+    t0 = (maxtime+mintime)/2.d0
+    rv += (bjd - t0)^2*qrv + (bjd - t0)*srv
+endif
+
+
+
 ;; Calculate the RM effect
-if keyword_set(rossiter) then begin
+if keyword_set(rossiter) and bjd[-1] - bjd[0] <0.5 then begin
     if n_elements(i) eq 0 or n_elements(a) eq 0 or n_elements(u1) eq 0 or $
       n_elements(p) eq 0 or n_elements(vsini) eq 0 or n_elements(lambda) eq 0 $
       then message, 'ERROR: a, i, u1, p, vsini, and lambda must be ' + $
@@ -109,9 +128,13 @@ if keyword_set(rossiter) then begin
     tmp = r*sin(trueanom + omega)
     y =  -tmp*cos(i)
     z =  tmp*sin(i)
-
-    exofast_rossiter, x, y, u1, p, vsini, lambda, deltarv, z=z
+    ; exofast_rossiter, x, y, u1, p, vsini, lambda, deltarv, z=z
+    deltarv = exofast_rossiter(bjd,i,a,TPeriastron,period,e,omega,p,u1,u2,lambda,vsini,vbeta,vgamma,vzeta,exptime=exptime,ninterp=ninterp,rmmodel='hirano2011')
     rv += deltarv
+    ; FUNCTION exofast_rossiter, time, inc_rad, ar, TPeriastron, period, e, omega_rad, p, u1, u2, lambda, vsini, $
+    ; beta, gamma, zeta, $ ; 
+    ; exptime=exptime, ninterp=ninterp,ohta2005=ohta2005,hirano2010=hirano2010,hirano2011=hirano2011
+    
 
 endif
 

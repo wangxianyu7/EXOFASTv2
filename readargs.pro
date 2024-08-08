@@ -19,14 +19,14 @@ pro readargs, argfile, priorfile=priorfile, $
               seddeblend=seddeblend,fitdilute=fitdilute, $
               nplanets=nplanets, $
               fittran=fittran, fitrv=fitrv, $
-              rossiter=rossiter, fitdt=fitdt, $
+              rossiter=rossiter, fitdt=fitdt, rmbands=rmbands, $
               circular=circular, tides=tides, $ 
               alloworbitcrossing=alloworbitcrossing, $
               chen=chen, i180=i180, $
               fitslope=fitslope, fitquad=fitquad, rvepoch=rvepoch, $
               noclaret=noclaret, $
               ttvs=ttvs, tivs=tivs, tdeltavs=tdeltavs, $
-              longcadence=longcadence, exptime=exptime, ninterp=ninterp, $
+              longcadence=longcadence, exptime=exptime, ninterp=ninterp, exposuretimerm=exposuretimerm, numinterprm=numinterprm, $
               rejectflatmodel=rejectflatmodel,$
               noprimary=noprimary, requiresecondary=requiresecondary,$
               fitspline=fitspline, splinespace=splinespace, $
@@ -81,6 +81,8 @@ while not eof(lun) do begin
             rvpath = strtrim(entries[1],2)
          endif else if strupcase(strtrim(entries[0],2)) eq 'TRANPATH' then begin
             tranpath = strtrim(entries[1],2)
+         endif else if strupcase(strtrim(entries[0],2)) eq 'TTVPATH' then begin
+            ttvpath = strtrim(entries[1],2)
          endif else if strupcase(strtrim(entries[0],2)) eq 'ASTROMPATH' then begin
             astrompath = strtrim(entries[1],2)
          endif else if strupcase(strtrim(entries[0],2)) eq 'DTPATH' then begin
@@ -173,6 +175,12 @@ while not eof(lun) do begin
             exptime = double(json_parse(entries[1],/toarray))
          endif else if strupcase(strtrim(entries[0],2)) eq 'NINTERP' then begin
             ninterp = long(json_parse(entries[1],/toarray))
+         endif else if strupcase(strtrim(entries[0],2)) eq 'EXPOSURETIMERM' then begin
+            exposuretimerm = double(json_parse(entries[1],/toarray))
+         endif else if strupcase(strtrim(entries[0],2)) eq 'NUMINTERPRM' then begin
+            numinterprm = long(json_parse(entries[1],/toarray))
+         endif else if strupcase(strtrim(entries[0],2)) eq 'RMBANDS' then begin
+            rmbands = long(json_parse(entries[1],/toarray))
          endif else if strupcase(strtrim(entries[0],2)) eq 'REJECTFLATMODEL' then begin
             rejectflatmodel = boolean(json_parse(entries[1],/toarray))
          endif else if strupcase(strtrim(entries[0],2)) eq 'NOPRIMARY' then begin

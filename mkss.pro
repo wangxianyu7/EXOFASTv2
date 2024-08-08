@@ -37,7 +37,7 @@
 function mkss, priorfile=priorfile, $
                prefix=prefix,$
                ;; data file inputs
-               rvpath=rvpath, tranpath=tranpath, $
+               rvpath=rvpath, tranpath=tranpath, ttvpath=ttvpath,$
                astrompath=astrompath, dtpath=dtpath, $
                ;; SED model inputs
                fluxfile=fluxfile, mistsedfile=mistsedfile, $
@@ -60,7 +60,7 @@ function mkss, priorfile=priorfile, $
                ;; planet inputs
                nplanets=nplanets, $
                fittran=fittran,fitrv=fitrv,$
-               rossiter=rossiter, fitdt=fitdt,$ 
+               rossiter=rossiter, fitdt=fitdt, rmbands=rmbands, rmtrends=rmtrends, exposuretimerm=exposuretimerm, numinterprm=numinterprm, rmmodel=rmmodel,  $
                circular=circular, tides=tides, $
                alloworbitcrossing=alloworbitcrossing,$
                chen=chen, i180=i180,$
@@ -294,6 +294,7 @@ if n_elements(fitreflect) eq 0 then fitreflect = ['']
 if n_elements(fitphase) eq 0 then fitphase = ['']
 if n_elements(fitellip) eq 0 then fitellip = ['']
 if n_elements(tranpath) eq 0 then tranpath = ''
+if n_elements(ttvpath) eq 0 then ttvpath = ''
 if n_elements(rvpath) eq 0 then rvpath = ''
 if n_elements(astrompath) eq 0 then astrompath = ''
 if n_elements(dtpath) eq 0 then dtpath = ''
@@ -311,6 +312,17 @@ if tranpath ne '' then begin
 endif else begin
    ntran = 0
    tranpath = ''
+endelse
+
+if ttvpath ne '' then begin
+   ttfiles=file_search(ttvpath,count=ntt)
+   if ntt eq 0 then begin
+      printandlog, "No TTV files files found matching " + strtrim(ttvpath,2) + "; please check TTPATH", logname
+      return, -1
+   endif
+endif else begin
+   ntt = 0
+   ttvpath = ''
 endelse
 
 if n_elements(noclaret) eq 1 then begin
@@ -388,8 +400,20 @@ if tranpath ne '' or astrompath ne '' then begin
          return, -1
       endif
    endfor
+
+   if keyword_set(rossiter)  then begin
+      indices_to_keep = WHERE(rmbands NE 'notrm')
+      new_rmbands = rmbands[indices_to_keep]
+      bands = [bands, new_rmbands]
+   endif else begin
+      rmbands = 'xxx' ; Do not use '', because when '' matches with the default thermal bands (''), it will lead to the creation of a thermal band.
+   endelse
    bands = bands[uniq(bands, sort(bands))]
+   ; remove bands that are not in the SED file
+   indices_to_keep = WHERE(bands NE 'xxx')
+   bands = bands[indices_to_keep]
    nband = n_elements(bands)
+
    if ~keyword_set(silent) then begin
       printandlog, 'The index for each fitted band is', logname
       for i=0L, nband-1 do printandlog, string(i,bands[i],format='(i2,x,a)'),logname
@@ -1038,6 +1062,26 @@ if keyword_set(fitquad) and rvpath ne '' then quad.fit=1 $
 else quad.derive=0
 quad.scale = 1d0
 
+srv = parameter
+srv.unit = 'm/s/day'
+srv.description = 'RM slope'
+srv.latex = '\dot{\gamma}'
+srv.label = 'slopev'
+srv.cgs = 100d0/86400d0
+srv.fit = 0
+srv.derive=0
+srv.scale=1d0
+
+qrv = parameter
+qrv.unit = 'm/s/day^2'
+qrv.description = 'RM quadratic term'
+qrv.latex = '\ddot{\gamma}'
+qrv.label = 'qrv'
+qrv.cgs = 100d0/86400d0^2
+qrv.fit=0
+qrv.derive=0
+qrv.scale = 1d0
+
 rstar = parameter
 rstar.value = 1d0
 rstar.unit = '\rsun'
@@ -1627,6 +1671,36 @@ vline.derive = 0
 vline.value = 4d3
 vline.scale = 2d3
 
+vbeta = parameter
+vbeta.unit = 'm/s'
+vbeta.description = 'Guassian dispersion'
+vbeta.latex = 'V_{\rm beta}'
+vbeta.label = 'vbeta'
+vbeta.cgs = 1000d0
+vbeta.derive = 0
+vbeta.value = 4d3
+vbeta.scale = 2d3
+
+vgamma = parameter
+vgamma.unit = 'm/s'
+vgamma.description = 'Lorentzian dispersion'
+vgamma.latex = 'V_{\rm gamma}'
+vgamma.label = 'vgamma'
+vgamma.cgs = 1000d0
+vgamma.derive = 0
+vgamma.value = 4d3
+vgamma.scale = 2d3
+
+vzeta = parameter
+vzeta.unit = 'm/s'
+vzeta.description = 'Macroturbulence dispersion'
+vzeta.latex = 'V_{\rm zeta}'
+vzeta.label = 'vzeta'
+vzeta.cgs = 1000d0
+vzeta.derive = 0
+vzeta.value = 4d3
+vzeta.scale = 2d3
+
 dtscale = parameter
 dtscale.description = 'Doppler Tomography Error scaling'
 dtscale.latex = '\sigma_{DT}'
@@ -2081,7 +2155,10 @@ star = create_struct(mstar.label,mstar,$
                      absks.label,absks,$
                      appks.label,appks,$
                      vsini.label,vsini,$
-                     vline.label,vline,$                    
+                     vline.label,vline,$
+                     vbeta.label,vbeta,$
+                     vgamma.label,vgamma,$
+                     vzeta.label,vzeta,$                
                      Av.label,Av,$
                      alpha.label,alpha,$
 ;                     Ma.label,Ma,$
@@ -2215,6 +2292,7 @@ planet = create_struct($
          ps.label,ps,$                 
          psg.label,psg,$     
          beam.label,beam,$     ;; other
+         'transittimingptrs',ptr_new(),$ ;; Data
          'starndx',0L,$
          'fittran',fittran[0],$        ;; booleans
          'fitrv',fitrv[0],$
@@ -2250,11 +2328,16 @@ band = create_struct(u1.label,u1,$ ;; linear limb darkening
                      'label','')
 
 ;; for each telescope
-telescope = create_struct(gamma.label,gamma,$
+telescope = create_struct(srv.label,srv,$
+                           qrv.label,qrv,$
+                           gamma.label,gamma,$
                           jitter.label,jitter,$
                           jittervar.label,jittervar,$
                           'rvptrs', ptr_new(),$
                           'detrend',ptr_new(/allocate_heap),$ ;; array of detrending parameters
+                          'bandndx',0L,$
+                          'exptime',0d0,$
+                          'ninterp',1d0,$
                           'name','',$
                           'chi2',0L,$
                           'rootlabel','Telescope Parameters:',$
@@ -2387,6 +2470,7 @@ ss = create_struct('star',replicate(star,nstars>1),$
                    'longcadence',longcadence,$
                    'tranpath',tranpath,$
                    'rvpath',rvpath,$
+                   'ttvpath',ttvpath,$
                    'astrompath',astrompath,$
                    'fitslope',keyword_set(fitslope),$
                    'fitquad',keyword_set(fitquad),$
@@ -2562,10 +2646,28 @@ endif
 plabels = ['b','c','d','e','f','g','h','i','j','k','l','m','n',$
            'o','p','q','r','s','t','u','v','w','x','y','z'] 
 
+
+ttvfiles=file_search(ttvpath,count=nttv)
+print,'The index for each transit timing file is:'
+for j=0, nttv-1 do begin
+   print,j,ttvfiles[j]
+   ttv_letter = (strsplit(file_basename(ttvfiles[j]),'.',/extract))(1)
+endfor
+
+ss.planet[*].transittimingptrs = ptrarr(nplanets,/allocate_heap)
 for i=0, nplanets-1 do begin
    ss.planet[i].label = plabels[i]
    ss.planet[i].starndx = starndx[i]
 
+   ; IF ss.planet[i].transittimingptrs EQ 0 THEN $
+   ;    ss.planet[i].transittimingptrs = PTR_NEW()
+   
+   for j=0, nttv-1 do begin
+      ttv_letter = (strsplit(file_basename(ttvfiles[j]),'.',/extract))(1)
+      if ttv_letter eq plabels[i] then begin
+         *(ss.planet[i].transittimingptrs) = read_multi_col(ttvfiles[j])
+      endif
+   endfor
    ;; circular orbit, don't fit e or omega
    if circular[i] then begin
       ss.planet[i].qesinw.fit = 0
@@ -2604,6 +2706,9 @@ for i=0, nplanets-1 do begin
       endif
       if rossiter[i] then ss.planet[i].rossiter = 1B
    endif
+
+   ss.planet[i].rossiter = 0B
+   if rossiter[i] then ss.planet[i].rossiter = 1B
 
    ss.planet[i].fittran = fittran[i]
    ss.planet[i].fitrv = fitrv[i]
@@ -2733,7 +2838,6 @@ for i=0, nband-1 do begin
    else ss.band[i].u1.value = 0d0
    if finite(ldcoeffs[1]) then ss.band[i].u2.value = ldcoeffs[1] $
    else ss.band[i].u2.value = 0d0
-
    match = where(fitthermal eq ss.band[i].name)
    if match[0] ne -1 then begin
       ss.band[i].thermal.fit = 1B
@@ -2783,6 +2887,9 @@ endif
 minallbjd = !values.d_infinity
 maxallbjd = -!values.d_infinity
 dilutebandndx = [-1]
+
+; if ntt gt 0 then begin
+;    ss.ttdata.ttptrs = ptrarr(ntt,/allocate_heap)
 
 ;; read in the transit files
 if ntran gt 0 then begin
@@ -2904,7 +3011,9 @@ if ntel gt 0 then begin
       if ~keyword_set(silent) then printandlog, string(i,rvfiles[i],format='(i2,x,a)'),logname
       *(ss.telescope[i].rvptrs) = readrv_detrend(rvfiles[i], detrendpar=detrend)
       ss.telescope[i].label = (*(ss.telescope[i].rvptrs)).label
-
+      if rmbands ne 'xxx' then begin
+         ss.telescope[i].bandndx = where(ss.band[*].name eq rmbands[i]) ; if not rm, will return -1
+      endif
       minbjd = min((*(ss.telescope[i].rvptrs)).bjd,max=maxbjd)
       if minbjd lt minallbjd then minallbjd = minbjd
       if maxbjd gt maxallbjd then maxallbjd = maxbjd
@@ -2924,6 +3033,28 @@ endelse
 for i=0, ss.ntel-1 do begin
    rv = *(ss.telescope[i].rvptrs)
    ss.telescope[i].gamma.value = mean(rv.rv)
+
+   if keyword_set(rossiter) then begin
+
+      if N_ELEMENTS(exposuretimerm) eq 0 then begin
+         exposuretimerm = dblarr(ss.ntel) + 1
+         numinterprm = dblarr(ss.ntel) + 1
+      endif
+
+      if N_ELEMENTS(exposuretimerm) eq ss.ntel then begin
+         ss.telescope[i].exptime = exposuretimerm[i]
+         ss.telescope[i].ninterp = numinterprm[i]
+      endif
+
+      if N_ELEMENTS(rmtrends) eq ss.ntel then begin
+         if rmtrends[i] eq 'slope' then begin
+            ss.telescope[i].srv.fit = 1B
+         endif else if rmtrends[i] eq 'quad' then begin
+            ss.telescope[i].qrv.fit = 1B
+            ss.telescope[i].srv.fit = 1B
+         endif
+      endif
+   endif
 
    if (*ss.telescope[i].rvptrs).planet eq -1 then begin
       if n_elements(alltime) eq 0 then begin
