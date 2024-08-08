@@ -515,6 +515,9 @@ for i=0L, n_elements(*ss.priors)-1 do begin
       label = ss.(prior.map[0])[prior.map[1]].label
    endif
 
+   ; skip vsini penalty, we will apply it later
+   if label eq 'vsini' then continue
+
    ;; get the prior value
    if prior.value[1] ne -1 then begin
       ;; this is a link to another variable
@@ -1042,6 +1045,29 @@ for j=0, ss.ntel-1 do begin
                           ss.star[ss.planet[i].starndx].feh.value,'V')
                u1claret = coeffs[0]
                u2claret = coeffs[1]
+               ;; calculate the Vmac (Vzeta)
+                   ; Constants
+               t0 = 5777.0
+               g0 = 4.44
+
+               ; Initialize vmac
+               vmac = 0.0
+               teff = ss.star[ss.planet[i].starndx].teff.value
+               logg = ss.star[ss.planet[i].starndx].logg.value
+
+               ; Calculate vmac based on the given conditions
+               IF logg GE 3.5 THEN BEGIN
+                  IF teff GE 5000 THEN BEGIN
+                        ; main sequence and subgiants (RGB)
+                        vmac = 3.21 + 2.33e-3 * (teff - t0) + 2e-6 * (teff - t0)^2 - 2 * (logg - g0)
+                  ENDIF ELSE BEGIN
+                        ; main sequence
+                        vmac = 3.21 + 2.33e-3 * (teff - t0) + 2e-6 * (teff - t0)^2 - 2 * (logg - g0)
+                  ENDELSE
+               ENDIF ELSE BEGIN
+                  ; Out of the calibrated limits
+                  vmac = 0.0
+               ENDELSE
             endif else u1claret = 0d0
 
             if ~finite(u1claret) then begin
@@ -1056,14 +1082,21 @@ for j=0, ss.ntel-1 do begin
             band = ss.band[ss.telescope[j].bandndx]
             u1 = band.u1.value
             u2 = band.u2.value
+            if ss.planet[i].svsinicoslambda.value eq 0d0 then begin
+               this_lambda = 0d0
+            endif else begin
+               this_lambda = atan(ss.planet[i].svsinisinlambda.value, ss.planet[i].svsinicoslambda.value)
+            endelse
+
+            this_vsini = sqrt(ss.planet[i].svsinicoslambda.value^2 + ss.planet[i].svsinicoslambda.value^2)
             modelrv += exofast_rv(rvbjd,ss.planet[i].tp.value,ss.planet[i].period.value,$
                                   0d0,ss.planet[i].K.value,$
                                   ss.planet[i].e.value,ss.planet[i].omega.value,$
                                   slope=0d0, $
                                   rossiter=ss.planet[i].rossiter, i=ss.planet[i].i.value,a=ss.planet[i].ar.value,$
-                                  p=abs(ss.planet[i].p.value),vsini=ss.star[ss.planet[i].starndx].vsini.value,$
-                                  lambda=ss.planet[i].lambda.value,vbeta=ss.star[ss.planet[i].starndx].vline.value,$
-                                  vgamma=ss.star[ss.planet[i].starndx].vline.value, vzeta=ss.star[ss.planet[i].starndx].vline.value,$
+                                  p=abs(ss.planet[i].p.value),vsini=this_vsini,$
+                                  lambda=this_lambda,vbeta=ss.star[ss.planet[i].starndx].vbeta.value,$
+                                  vgamma=ss.star[ss.planet[i].starndx].vgamma.value, vzeta=ss.star[ss.planet[i].starndx].vzeta.value,$
                                   u1=u1,u2=u2,deltarv=deltarv, exptime=ss.telescope[j].exptime, $
                                   ninterp=ss.telescope[j].ninterp)
 
@@ -1072,6 +1105,23 @@ for j=0, ss.ntel-1 do begin
             if ss.planet[i].rossiter then begin
                chi2 += ((band.u1.value-u1claret)/u1err)^2
                chi2 += ((band.u2.value-u2claret)/u2err)^2
+               chi2 += ((ss.star[ss.planet[i].starndx].vzeta.value-vmac*1000)/1)^2
+               for k=0, n_elements(rv.rv)-1 do begin
+                  for i=0L, n_elements(*ss.priors)-1 do begin
+                     prior = (*ss.priors)[i]
+                     ;; get the model value
+                     if prior.map[4] ne -1 then begin
+                        label = (*ss.(prior.map[0])[prior.map[1]].(prior.map[2])[prior.map[3]]).(prior.map[4])[prior.map[5]].label
+                     endif else if prior.map[2] ne -1 then begin
+                        label = ss.(prior.map[0])[prior.map[1]].(prior.map[2])[prior.map[3]].label
+                     endif else if prior.map[0] ne -1 then begin
+                        label = ss.(prior.map[0])[prior.map[1]].label
+                     endif
+                     ;; apply the bounds
+                     if label eq 'vsini' then break
+                  endfor
+               endfor
+               chi2 += ((this_vsini - prior.value[0])/prior.gaussian_width)^2
             endif
          endelse
 

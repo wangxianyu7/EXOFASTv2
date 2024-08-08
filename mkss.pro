@@ -1701,6 +1701,27 @@ vzeta.derive = 0
 vzeta.value = 4d3
 vzeta.scale = 2d3
 
+
+svsinisinlambda = parameter
+svsinisinlambda.unit = ''
+svsinisinlambda.description = ''
+svsinisinlambda.latex = '\sqrt{vsini}\sin{\lambda}'
+svsinisinlambda.label = 'svsinisinlambda'
+svsinisinlambda.cgs = !values.d_nan
+svsinisinlambda.scale = 10d0
+svsinisinlambda.derive = 0
+
+svsinicoslambda = parameter
+svsinicoslambda.unit = ''
+svsinicoslambda.description = ''
+svsinicoslambda.latex = '\sqrt{vsini}\cos{\lambda}'
+svsinicoslambda.label = 'svsinicoslambda'
+svsinicoslambda.cgs = !values.d_nan
+svsinicoslambda.scale = 10d0
+svsinicoslambda.derive = 0
+
+
+
 dtscale = parameter
 dtscale.description = 'Doppler Tomography Error scaling'
 dtscale.latex = '\sigma_{DT}'
@@ -2260,8 +2281,11 @@ planet = create_struct($
          loggp.label,loggp,$
          lambda.label,lambda,$
          lambdadeg.label,lambdadeg,$
+         vsini.label,vsini,$
          lsinlambda.label,lsinlambda,$
          lcoslambda.label,lcoslambda,$
+         svsinicoslambda.label,svsinicoslambda,$
+         svsinisinlambda.label,svsinisinlambda,$
          safronov.label,safronov,$
          fave.label,fave,$
          tso.label,tso,$
@@ -2646,14 +2670,15 @@ endif
 plabels = ['b','c','d','e','f','g','h','i','j','k','l','m','n',$
            'o','p','q','r','s','t','u','v','w','x','y','z'] 
 
-
-ttvfiles=file_search(ttvpath,count=nttv)
 print,'The index for each transit timing file is:'
-for j=0, nttv-1 do begin
-   print,j,ttvfiles[j]
-   ttv_letter = (strsplit(file_basename(ttvfiles[j]),'.',/extract))(1)
-endfor
-
+if ttvpath ne '' then begin
+   ttvfiles=file_search(ttvpath,count=nttv)
+   
+   for j=0, nttv-1 do begin
+      print,j,ttvfiles[j]
+      ttv_letter = (strsplit(file_basename(ttvfiles[j]),'.',/extract))(1)
+   endfor
+endif 
 ss.planet[*].transittimingptrs = ptrarr(nplanets,/allocate_heap)
 for i=0, nplanets-1 do begin
    ss.planet[i].label = plabels[i]
@@ -2662,12 +2687,14 @@ for i=0, nplanets-1 do begin
    ; IF ss.planet[i].transittimingptrs EQ 0 THEN $
    ;    ss.planet[i].transittimingptrs = PTR_NEW()
    
-   for j=0, nttv-1 do begin
-      ttv_letter = (strsplit(file_basename(ttvfiles[j]),'.',/extract))(1)
-      if ttv_letter eq plabels[i] then begin
-         *(ss.planet[i].transittimingptrs) = read_multi_col(ttvfiles[j])
-      endif
-   endfor
+   if ttvpath ne '' then begin
+      for j=0, nttv-1 do begin
+         ttv_letter = (strsplit(file_basename(ttvfiles[j]),'.',/extract))(1)
+         if ttv_letter eq plabels[i] then begin
+            *(ss.planet[i].transittimingptrs) = read_multi_col(ttvfiles[j])
+         endif
+      endfor
+   endif
    ;; circular orbit, don't fit e or omega
    if circular[i] then begin
       ss.planet[i].qesinw.fit = 0
@@ -2692,11 +2719,22 @@ for i=0, nplanets-1 do begin
    ;; if rossiter is done, fit lambda (for each planet) and vsini (for the star)
    ;; if DT is done, fit lambda (for each planet) and vsini and vline (for the star)
    if rossiter[i] or fitdt[i] then begin
-      ss.star[ss.planet[i].starndx].vsini.fit = 1
-      ss.star[ss.planet[i].starndx].vsini.derive = 1
-      ss.planet[i].lsinlambda.fit = 1
-      ss.planet[i].lcoslambda.fit = 1
+      ; ss.star[ss.planet[i].starndx].vsini.fit = 1
+      ; ss.star[ss.planet[i].starndx].vsini.derive = 1
+      
+      ss.star[ss.planet[i].starndx].vbeta.fit = 1
+      ss.star[ss.planet[i].starndx].vbeta.derive = 1
+      ss.star[ss.planet[i].starndx].vgamma.fit = 1
+      ss.star[ss.planet[i].starndx].vgamma.derive = 1
+      ss.star[ss.planet[i].starndx].vzeta.fit = 1
+      ss.star[ss.planet[i].starndx].vzeta.derive = 1
+      ; ss.planet[i].lsinlambda.fit = 1
+      ; ss.planet[i].lcoslambda.fit = 1
+      ss.planet[i].vsini.fit = 0
+      ss.planet[i].vsini.derive = 1
       ss.planet[i].lambdadeg.derive = 1
+      ss.planet[i].svsinicoslambda.fit = 1
+      ss.planet[i].svsinisinlambda.fit = 1
       if fitdt[i] then begin
          ss.planet[i].fitdt = 1B
          ss.star[ss.planet[i].starndx].vline.fit = 1
@@ -3011,7 +3049,7 @@ if ntel gt 0 then begin
       if ~keyword_set(silent) then printandlog, string(i,rvfiles[i],format='(i2,x,a)'),logname
       *(ss.telescope[i].rvptrs) = readrv_detrend(rvfiles[i], detrendpar=detrend)
       ss.telescope[i].label = (*(ss.telescope[i].rvptrs)).label
-      if rmbands ne 'xxx' then begin
+      if max(rmbands ne 'xxx') then begin
          ss.telescope[i].bandndx = where(ss.band[*].name eq rmbands[i]) ; if not rm, will return -1
       endif
       minbjd = min((*(ss.telescope[i].rvptrs)).bjd,max=maxbjd)

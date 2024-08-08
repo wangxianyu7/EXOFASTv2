@@ -1508,14 +1508,13 @@ ss.delay = 0
 if n_elements(restorebest) eq 0 or not FILE_TEST(prefix + 'amoeba.idl') then begin
    print,n_elements(restorebest), FILE_TEST(prefix + 'amoeba.idl')
    ;best = exofast_amoeba(1d-5,function_name=chi2func,p0=pars,scale=scale,nmax=nmax)
-   ;best = exofast_amoeba(1d-5,function_name=chi2func,p0=pars,scale=scale,nmax=nmax)
    best = exofast_de(ss.nchains,pars,scale,10000,chi2func,1)
    ;best = exofast_de_nthread(ss.nchains,pars,scale,10000,'exofast_chi2v2',1e-2,ss)
 endif else begin
    restore, prefix + 'amoeba.idl'
    print,'restoring best fit from ' + prefix + 'amoeba.idl'
    ; print,best
-   stop
+   ; stop
 endelse
 
 ss.delay = delay

@@ -76,9 +76,9 @@ FUNCTION exofast_rossiter, time, inc_rad, ar, TPeriastron, period, e, omega_rad,
     ;       lambda: sky-projected angle between the stellar spin and the planetary orbit
     ;       vsini: projected stellar rotational velocity
     
-    ;       vbeta: the Guassian dispersion of spectral lines in km/s, typically 2.5-4.5km/s (see Hirano+11)
-    ;       vgamma: the Lorentzian dispersion of spectral lines in km/s, typically 0.5-1.5 km/s (see Hirano+11)
-    ;       zeta: the macroturbulence dispersion in km/s, typically 2.0 - 6.5 km/s (see Hirano+11)
+    ;       vbeta: the Guassian dispersion of spectral lines in m/s, typically 2500 - 4500 m/s (see Hirano+11)
+    ;       vgamma: the Lorentzian dispersion of spectral lines in m/s, typically 500-1500 m/s (see Hirano+11)
+    ;       zeta: the macroturbulence dispersion in m/s, typically 2000 - 6500 km/s (see Hirano+11)
 
     ;       exptime: exposure time in minutes
     ;       ninterp: number of points to interpolate
