@@ -70,6 +70,7 @@ end
 
 
 function exofast_de, npop, p0, scale, ngen, fitness_function, min_ptp
+    ; reference: https://github.com/zhaozhiyong1989/Differential-Evolution/blob/master/DE.py
     if n_elements(fitness_function) eq 0 then begin
         print, 'A fitness function must be provided'
         return, -1
@@ -98,6 +99,11 @@ function exofast_de, npop, p0, scale, ngen, fitness_function, min_ptp
         endfor
     endfor
 
+    ; insert the initial guess
+    for j = 0, dim - 1 do begin
+        XTemp[j,0] = p0[j]
+    endfor
+
    ; Calculate initial fitness
     fitnessVal = dblarr(npop,1)
     for i = 0, npop - 1 do begin
@@ -112,7 +118,7 @@ function exofast_de, npop, p0, scale, ngen, fitness_function, min_ptp
         XCorssOverTmp = crossover(XTemp, XMutationTmp, CR, xMin, xMax)
         selection, XTemp, XCorssOverTmp, fitnessVal, fitness_function
         saveBest, fitnessVal
-		print, 'DE: Generation ', gen, ', delta fitnessVal:',abs(max(fitnessVal) - min(fitnessVal))
+		print, 'DE: ngen', gen, ', delta chi2:',abs(max(fitnessVal) - min(fitnessVal)),'<',min_ptp, ', max chi2:', max(fitnessVal), ', min chi2:', min(fitnessVal)
         if abs(max(fitnessVal) - min(fitnessVal)) lt min_ptp then break
     endfor
 	min_value = MIN(fitnessVal, index)

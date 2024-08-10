@@ -1056,6 +1056,7 @@ for j=0, ss.ntel-1 do begin
                logg = ss.star[ss.planet[i].starndx].logg.value
 
                ; Calculate vmac based on the given conditions
+               ; Doyle et al. (2014), borrowed from iSpec
                IF logg GE 3.5 THEN BEGIN
                   IF teff GE 5000 THEN BEGIN
                         ; main sequence and subgiants (RGB)
@@ -1069,6 +1070,7 @@ for j=0, ss.ntel-1 do begin
                   vmac = 0.0
                ENDELSE
             endif else u1claret = 0d0
+
 
             if ~finite(u1claret) then begin
                if ss.verbose then begin

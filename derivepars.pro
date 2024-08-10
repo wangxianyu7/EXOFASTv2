@@ -185,10 +185,9 @@ endelse
    if zero[0] ne -1 then ss.planet[i].omega.value[zero] = !dpi/2d0 
 
    ; ss.planet[i].lambda.value = atan(ss.planet[i].lsinlambda.value,ss.planet[i].lcoslambda.value)
-   ss.planet[i].lambda.value = atan(ss.planet[i].svsinicoslambda.value,ss.planet[i].svcosicoslambda.value)
+   ss.planet[i].lambda.value = atan(ss.planet[i].svsinicoslambda.value,ss.planet[i].svsinicoslambda.value)
    ss.planet[i].lambdadeg.value = ss.planet[i].lambda.value*180d0/!dpi
-   ss.planet[i].vsini.value = (ss.planet[i].svsinicoslambda.value^2 + ss.planet[i].svcosicoslambda.value^2)^0.5
-   ss.planet[i].omega.value = atan(ss.planet[i].lsinomega.value,ss.planet[i].lcosomega.value)
+   ss.planet[i].vsini.value = (ss.planet[i].svsinicoslambda.value^2 + ss.planet[i].svsinicoslambda.value^2)^0.5
    ss.planet[i].omegadeg.value = ss.planet[i].omega.value*180d0/!dpi
    ss.planet[i].bigomega.value = atan(ss.planet[i].lsinbigomega.value,ss.planet[i].lcosbigomega.value)
    ss.planet[i].bigomegadeg.value = ss.planet[i].bigomega.value*180d0/!dpi

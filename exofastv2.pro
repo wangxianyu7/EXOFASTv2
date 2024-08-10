@@ -1210,7 +1210,7 @@ pro exofastv2, priorfile=priorfile, $
                nocovar=nocovar, $
                plotonly=plotonly, bestonly=bestonly, $
                badstart=badstart, $
-               restorebest=restorebest
+               restorebest=restorebest,optmethod=optmethod
                
 ;; this is the stellar system structure
 COMMON chi2_block, ss
@@ -1505,16 +1505,19 @@ printandlog, 'Beginning AMOEBA fit; this may take up to ' + string(modeltime*nma
 ;; do the AMOEBA fit
 ss.amoeba = 1B
 ss.delay = 0
+
+if n_elements(optmethod) eq 0 then optmethod = 'amoeba'
+
 if n_elements(restorebest) eq 0 or not FILE_TEST(prefix + 'amoeba.idl') then begin
-   print,n_elements(restorebest), FILE_TEST(prefix + 'amoeba.idl')
-   ;best = exofast_amoeba(1d-5,function_name=chi2func,p0=pars,scale=scale,nmax=nmax)
-   best = exofast_de(ss.nchains,pars,scale,10000,chi2func,1)
-   ;best = exofast_de_nthread(ss.nchains,pars,scale,10000,'exofast_chi2v2',1e-2,ss)
+   if optmethod eq 'amoeba' then begin
+      best = exofast_amoeba(1d-5,function_name=chi2func,p0=pars,scale=scale,nmax=nmax)
+   endif else begin
+      best = exofast_de(ss.nchains,pars,scale,10000,chi2func,1)
+      best = exofast_amoeba(1d-5,function_name=chi2func,p0=best,scale=scale,nmax=nmax)
+   endelse
 endif else begin
    restore, prefix + 'amoeba.idl'
    print,'restoring best fit from ' + prefix + 'amoeba.idl'
-   ; print,best
-   ; stop
 endelse
 
 ss.delay = delay
@@ -1531,11 +1534,12 @@ save, best, filename=prefix + 'amoeba.idl'
 ;; try again?
 ;printandlog, 'restarting AMOEBA with chen enabled', logname
 ;printandlog, call_function(chi2func,best,modelrv=modelrv,modelflux=modelflux, psname=prefix + 'model'), logname
-;best = exofast_amoeba(1d-8,function_name=chi2func,p0=best,scale=scale,nmax=nmax)
+; best = exofast_amoeba(1d-5,function_name=chi2func,p0=best,scale=scale,nmax=nmax)
 ;printandlog, call_function(chi2func,best,modelrv=modelrv,modelflux=modelflux, psname=prefix + 'model'), logname
 
 ;; output the best-fit model fluxes/rvs
 bestchi2 = call_function(chi2func,best,modelrv=modelrv,modelflux=modelflux, psname=prefix + 'amoeba')
+
 printandlog, 'The best loglike found by AMOEBA was ' + strtrim(-bestchi2/2d0,2), logname
 printandlog, 'It should only be compared against the loglike of the same model with different starting points', logname
 
@@ -1704,6 +1708,8 @@ if not keyword_set(bestonly) then begin
       printandlog, 'Look at the chain plot before you trust this fit.', logname
    endif
 endif else begin
+   print, 'Best fit only requested; skipping MCMC'
+   stop
    pars = reform(best[tofit],n_elements(tofit),1)
    bestndx = 0
 endelse
