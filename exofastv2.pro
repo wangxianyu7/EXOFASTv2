@@ -1275,7 +1275,7 @@ if lmgr(/vm) or lmgr(/runtime) then begin
              mksummarypg=mksummarypg,$
              nocovar=nocovar,$
              plotonly=plotonly, bestonly=bestonly,$
-             logname=logname
+             logname=logname,restorebest=restorebest,optmethod=optmethod
 
 endif
 

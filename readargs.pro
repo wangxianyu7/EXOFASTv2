@@ -2,7 +2,7 @@
 ;; Required for virtual machine (free) use
 pro readargs, argfile, priorfile=priorfile, $
               prefix=prefix,$
-              rvpath=rvpath, tranpath=tranpath, $
+              rvpath=rvpath, tranpath=tranpath, ttvpath=ttvpath, $
               astrompath=astrompath, dtpath=dtpath, $
               fluxfile=fluxfile,mistsedfile=mistsedfile,$
               sedfile=sedfile,specphotpath=specphotpath,$
@@ -19,14 +19,14 @@ pro readargs, argfile, priorfile=priorfile, $
               seddeblend=seddeblend,fitdilute=fitdilute, $
               nplanets=nplanets, $
               fittran=fittran, fitrv=fitrv, $
-              rossiter=rossiter, fitdt=fitdt, rmbands=rmbands, $
+              rossiter=rossiter, fitdt=fitdt, rmbands=rmbands, rmtrends=rmtrends, exposuretimerm=exposuretimerm, numinterprm=numinterprm, rmmodel=rmmodel, $
               circular=circular, tides=tides, $ 
               alloworbitcrossing=alloworbitcrossing, $
               chen=chen, i180=i180, $
               fitslope=fitslope, fitquad=fitquad, rvepoch=rvepoch, $
               noclaret=noclaret, $
               ttvs=ttvs, tivs=tivs, tdeltavs=tdeltavs, $
-              longcadence=longcadence, exptime=exptime, ninterp=ninterp, exposuretimerm=exposuretimerm, numinterprm=numinterprm, $
+              longcadence=longcadence, exptime=exptime, ninterp=ninterp, $
               rejectflatmodel=rejectflatmodel,$
               noprimary=noprimary, requiresecondary=requiresecondary,$
               fitspline=fitspline, splinespace=splinespace, $
@@ -48,7 +48,7 @@ pro readargs, argfile, priorfile=priorfile, $
               mksummarypg=mksummarypg,$
               nocovar=nocovar,$
               plotonly=plotonly, bestonly=bestonly,$
-              logname=logname
+              logname=logname,restorebest=restorebest,optmethod=optmethod
 
 ;; first get the log name so we can log any errors
 line = ''
@@ -180,7 +180,17 @@ while not eof(lun) do begin
          endif else if strupcase(strtrim(entries[0],2)) eq 'NUMINTERPRM' then begin
             numinterprm = long(json_parse(entries[1],/toarray))
          endif else if strupcase(strtrim(entries[0],2)) eq 'RMBANDS' then begin
-            rmbands = long(json_parse(entries[1],/toarray))
+            print, 'ssssssss',entries[1],'www'
+            rmbands = json_parse(entries[1],/toarray)
+            print, 'ssssssss',rmbands,'www'
+         endif else if strupcase(strtrim(entries[0],2)) eq 'RMTRENDS' then begin
+            rmtrends = long(json_parse(entries[1],/toarray))
+         endif else if strupcase(strtrim(entries[0],2)) eq 'RMMODEL' then begin
+            rmmodel = strtrim(entries[1],2)
+         endif else if strupcase(strtrim(entries[0],2)) eq 'OPTMETHOD' then begin
+            optmethod = strtrim(entries[1],2)
+         endif else if strupcase(strtrim(entries[0],2)) eq 'restorebest' then begin
+            restorebest = long(entries[1])
          endif else if strupcase(strtrim(entries[0],2)) eq 'REJECTFLATMODEL' then begin
             rejectflatmodel = boolean(json_parse(entries[1],/toarray))
          endif else if strupcase(strtrim(entries[0],2)) eq 'NOPRIMARY' then begin

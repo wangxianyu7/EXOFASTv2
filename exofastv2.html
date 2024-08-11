@@ -14,7 +14,7 @@ this routine, refer to the IDL Online Help Navigator
 or type: <P>
 <PRE>     ? mk_html_help</PRE><P>
 at the IDL command line prompt.<P>
-<STRONG>Last modified: </STRONG>Wed Jun 26 15:52:28 2024.<P>
+<STRONG>Last modified: </STRONG>Sun Aug 11 00:00:43 2024.<P>
  
 <HR>
  
@@ -24,12 +24,8 @@ at the IDL command line prompt.<P>
 <LI><A HREF="#"></A>
 <LI><A HREF="#ANGSEP">ANGSEP</A>
 <LI><A HREF="#BJD2TARGET">BJD2TARGET</A>
-<LI><A HREF="#CALCB[1]">CALCB[1]</A>
-<LI><A HREF="#CALCB[2]">CALCB[2]</A>
+<LI><A HREF="#CALCB">CALCB</A>
 <LI><A HREF="#COMPARESTARS">COMPARESTARS</A>
-<LI><A HREF="#COMPARESTARS_CORNER[1]">COMPARESTARS_CORNER[1]</A>
-<LI><A HREF="#COMPARESTARS_CORNER[2]">COMPARESTARS_CORNER[2]</A>
-<LI><A HREF="#CONVERT_TRANSIT_TIMES">CONVERT_TRANSIT_TIMES</A>
 <LI><A HREF="#CROSSREF">CROSSREF</A>
 <LI><A HREF="#ELLKE">ELLKE</A>
 <LI><A HREF="#ELLPIC_BULIRSCH">ELLPIC_BULIRSCH</A>
@@ -45,9 +41,7 @@ at the IDL command line prompt.<P>
 <LI><A HREF="#EXOFAST_GETB2">EXOFAST_GETB2</A>
 <LI><A HREF="#EXOFAST_GETMCMCSCALE">EXOFAST_GETMCMCSCALE</A>
 <LI><A HREF="#EXOFAST_GETPHASE">EXOFAST_GETPHASE</A>
-<LI><A HREF="#EXOFAST_GETTC">EXOFAST_GETTC</A>
-<LI><A HREF="#EXOFAST_GETTT[1]">EXOFAST_GETTT[1]</A>
-<LI><A HREF="#EXOFAST_GETTT[2]">EXOFAST_GETTT[2]</A>
+<LI><A HREF="#EXOFAST_GETTT">EXOFAST_GETTT</A>
 <LI><A HREF="#EXOFAST_KEPLEREQ">EXOFAST_KEPLEREQ</A>
 <LI><A HREF="#EXOFAST_LATEXTAB">EXOFAST_LATEXTAB</A>
 <LI><A HREF="#EXOFAST_LATEXTAB2">EXOFAST_LATEXTAB2</A>
@@ -61,7 +55,6 @@ at the IDL command line prompt.<P>
 <LI><A HREF="#EXOFAST_QUERYVIZIER">EXOFAST_QUERYVIZIER</A>
 <LI><A HREF="#EXOFAST_RANDOM">EXOFAST_RANDOM</A>
 <LI><A HREF="#EXOFAST_RECENTER">EXOFAST_RECENTER</A>
-<LI><A HREF="#EXOFAST_ROSSITER">EXOFAST_ROSSITER</A>
 <LI><A HREF="#EXOFAST_RV">EXOFAST_RV</A>
 <LI><A HREF="#EXOFAST_TEXTOIDL[1]">EXOFAST_TEXTOIDL[1]</A>
 <LI><A HREF="#EXOFAST_TEXTOIDL[2]">EXOFAST_TEXTOIDL[2]</A>
@@ -75,8 +68,7 @@ at the IDL command line prompt.<P>
 <LI><A HREF="#LEGEND">LEGEND</A>
 <LI><A HREF="#LINLD">LINLD</A>
 <LI><A HREF="#MASSRADIUS_MANN">MASSRADIUS_MANN</A>
-<LI><A HREF="#MASSRADIUS_MIST[1]">MASSRADIUS_MIST[1]</A>
-<LI><A HREF="#MASSRADIUS_MIST[2]">MASSRADIUS_MIST[2]</A>
+<LI><A HREF="#MASSRADIUS_MIST">MASSRADIUS_MIST</A>
 <LI><A HREF="#MASSRADIUS_PARSEC">MASSRADIUS_PARSEC</A>
 <LI><A HREF="#MASSRADIUS_TORRES">MASSRADIUS_TORRES</A>
 <LI><A HREF="#MKCONSTANTS">MKCONSTANTS</A>
@@ -213,7 +205,7 @@ at the IDL command line prompt.<P>
  07-AUG-2009 Paolo C. Grigis updated documentation
  12-NOV-2009 PG added /double keyword 
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/pg_ran.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/pg_ran.pro)</STRONG><P>
 <HR>
  
 <A NAME="ANGSEP">
@@ -260,13 +252,13 @@ at the IDL command line prompt.<P>
   Written by Marc W. buie, Lowell Observatory, 1997/09/08
   2009/02/26, MWB, added protection against round off error generating NaN
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/angsep.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/angsep.pro)</STRONG><P>
 <HR>
  
 <A NAME="BJD2TARGET">
 <H2>BJD2TARGET</H2></A>
 <A HREF="#ANGSEP">[Previous Routine]</A>
-<A HREF="#CALCB[1]">[Next Routine]</A>
+<A HREF="#CALCB">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
@@ -325,49 +317,12 @@ at the IDL command line prompt.<P>
  REVISION HISTORY:
  2011/06: Written by Jason Eastman (OSU)
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/bjd2target.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/bjd2target.pro)</STRONG><P>
 <HR>
  
-<A NAME="CALCB[1]">
-<H2>CALCB[1]</H2></A>
+<A NAME="CALCB">
+<H2>CALCB</H2></A>
 <A HREF="#BJD2TARGET">[Previous Routine]</A>
-<A HREF="#CALCB[2]">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
- NAME:
-   CALCB
-
- PURPOSE: 
-   Calculates the impact parameter of a given time. The function to minimize
-
-   Implementation translated from here:
-   https://en.wikipedia.org/wiki/Golden-section_search
-
- CALLING SEQUENCE:
-    min = goldenratio('func', min, max)
-
- INPUTS:
-
-    FUNC - A string specifying the name of the function to be
-           minimized
-    A    - The minimum bound on the function to be minimized
-    B    - The maximum bound on the function to be minimized
-
- RESULT:
-
-    The minimum value
-
- MODIFICATION HISTORY
- 
-  2018/11/13 -- Written by Jason Eastman, CfA
-
-</PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/exofast.gettt.bak.pro)</STRONG><P>
-<HR>
- 
-<A NAME="CALCB[2]">
-<H2>CALCB[2]</H2></A>
-<A HREF="#CALCB[1]">[Previous Routine]</A>
 <A HREF="#COMPARESTARS">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -399,13 +354,13 @@ at the IDL command line prompt.<P>
   2018/11/13 -- Written by Jason Eastman, CfA
 
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/exofast_gettt.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/exofast_gettt.pro)</STRONG><P>
 <HR>
  
 <A NAME="COMPARESTARS">
 <H2>COMPARESTARS</H2></A>
-<A HREF="#CALCB[2]">[Previous Routine]</A>
-<A HREF="#COMPARESTARS_CORNER[1]">[Next Routine]</A>
+<A HREF="#CALCB">[Previous Routine]</A>
+<A HREF="#CROSSREF">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
@@ -427,135 +382,12 @@ at the IDL command line prompt.<P>
    PSNAME  - A string specifying the name of the postscript file to
              output. If not specified, the plots are made to the screen.
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/comparestars.pro)</STRONG><P>
-<HR>
- 
-<A NAME="COMPARESTARS_CORNER[1]">
-<H2>COMPARESTARS_CORNER[1]</H2></A>
-<A HREF="#COMPARESTARS">[Previous Routine]</A>
-<A HREF="#COMPARESTARS_CORNER[2]">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
- NAME:
-   COMPARESTARS_CORNER
-
- PURPOSE: 
-   Creates a corner plot of several different fits overlaid on top
-   of each other using the IDL save files as output by exofastv2.pro.
-
- CALLING SEQUENCE:
-   comparestars, 'savpath' [,TAGS=,LATEXNAMES=,LEGENDTXT=,PSNAME=]
-
- INPUTS:
-  SAVPATH    - A string resolved by file_search or an array of
-               filenames specifying the names of all the idl save
-               files to compare.  
-               See NSAMPLE if files are large
-  TAGS       - A string array specifying the tagnames (parameters) to
-               compare. Default is
-               ['mstar','rstar','rhostar','logg','teff','feh','initfeh','age','lstar','eep']
-  LATEXNAMES - A string array specifying the textoidl axis labels
-               that corresponds to each of the tags above. If not the
-               same length as TAGS, it will use the structure's latex
-               property, but that doesn't always look pretty in
-               textoidl. Empty strings will use the the structure's
-               latex property.
-  PSNAME     - A string specifying the name of the postscript file to
-               output. If not specified, the plots are made to the
-               screen.
-  LEGENDTXT  - A string array corresponding to each save file that
-               specifies the legend txt. Default is the filenames.
-  NSAMPLE    - A scalar that specifies how many (random) samples to
-               take from each parameter. Default uses all. Useful for
-               memory management if plotting data from many large files
-  POSITION   - A 2-element array specifying the normalized X and Y
-               coordinates of the top left corner of the legend
-
-</PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/comparestars_corner.pro)</STRONG><P>
-<HR>
- 
-<A NAME="COMPARESTARS_CORNER[2]">
-<H2>COMPARESTARS_CORNER[2]</H2></A>
-<A HREF="#COMPARESTARS_CORNER[1]">[Previous Routine]</A>
-<A HREF="#CONVERT_TRANSIT_TIMES">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
- NAME:
-   COMPARESTARS_CORNER
-
- PURPOSE: 
-   Creates a corner plot of several different fits overlaid on top
-   of each other using the IDL save files as output by exofastv2.pro.
-
- CALLING SEQUENCE:
-   comparestars, 'savpath' [,TAGS=,LATEXNAMES=,LEGENDTXT=,PSNAME=]
-
- INPUTS:
-  SAVPATH    - A string resolved by file_search or an array of
-               filenames specifying the names of all the idl save
-               files to compare.  
-               NOTE: All of these will be loaded into memory at once,
-               and multiple large save files may crash
-  TAGS       - A string array specifying the tagnames (parameters) to
-               compare. Default is
-               ['mstar','rstar','rhostar','logg','teff','feh','initfeh','age','lstar','eep']
-  LATEXNAMES - A string array specifying the textoidl axis labels
-               that corresponds to each of the tags above. If not the
-               same length as TAGS, it will use the structure's latex
-               property, but that doesn't always look pretty in
-               textoidl. Empty strings will use the the structure's
-               latex property.
-  PSNAME     - A string specifying the name of the postscript file to
-               output. If not specified, the plots are made to the
-               screen.
-  LEGENDTXT  - A string array corresponding to each save file that
-               specifies the legend txt. Default is the filenames.
-  NSAMPLE    - A scalar that specifies how many (random) samples to
-               take from each parameter. Default is all. Useful for
-               memory management if the input has many large files
-
-</PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/comparestars_corner2.pro)</STRONG><P>
-<HR>
- 
-<A NAME="CONVERT_TRANSIT_TIMES">
-<H2>CONVERT_TRANSIT_TIMES</H2></A>
-<A HREF="#COMPARESTARS_CORNER[2]">[Previous Routine]</A>
-<A HREF="#CROSSREF">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
- KEYWORDS:
-    By default, the code will convert from time of inferior
-    conjunction to time of minimum projected separation. The
-    following keywords can change the inputs and outputs.
-
-    TS_IN - Time of superior conjunction is the input time, time of
-            minimum projected separation at secondary eclipse is the
-            output
-    TE_IN - Time of minimum projected separation at secondary eclipse
-            is the input, time of superior conjunction is the output.
-    TT_IN - Time of minimum rojected separation at primary eclipse
-            is the input, time of inferior conjunction is the output.
-
-    Given one time, eccentricity, inclination, omega, and period, we
-    will return all other times:
-       TC - Time of inferior conjunction, commonly reported as the
-            transit time
-       TT - Time of minimum projected separation. This is the
-            intuitive definition of the transit time.
-       TS - Time of superior conjunction, commonly reported as the
-            secondary ecclipse time
-       TE - The time of minimum projected separation during secondary
-            eclipse.
-       TP - Time of periastron
-</PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/convert_transit_times.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/comparestars.pro)</STRONG><P>
 <HR>
  
 <A NAME="CROSSREF">
 <H2>CROSSREF</H2></A>
-<A HREF="#CONVERT_TRANSIT_TIMES">[Previous Routine]</A>
+<A HREF="#COMPARESTARS">[Previous Routine]</A>
 <A HREF="#ELLKE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -569,7 +401,7 @@ at the IDL command line prompt.<P>
                 Renamed, documented, and cleaned up for distribution with EXOFASTv2
 
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/mksed.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/mksed.pro)</STRONG><P>
 <HR>
  
 <A NAME="ELLKE">
@@ -603,7 +435,7 @@ at the IDL command line prompt.<P>
  
   2009/04/06 -- Written by Jason Eastman (Ohio State University)
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/ellke.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/ellke.pro)</STRONG><P>
 <HR>
  
 <A NAME="ELLPIC_BULIRSCH">
@@ -637,7 +469,7 @@ at the IDL command line prompt.<P>
  
   2009/03 -- Written by Eric Agol
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/ellpic_bulirsch.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/ellpic_bulirsch.pro)</STRONG><P>
 <HR>
  
 <A NAME="EXOFASTV2">
@@ -1793,7 +1625,7 @@ at the IDL command line prompt.<P>
              history). Documentation cleanup.
   2024/01 -- Add FITRAMP (primarily for JWST transits)
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/exofastv2.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/exofastv2.pro)</STRONG><P>
 <HR>
  
 <A NAME="EXOFAST_AMOEBA">
@@ -1923,7 +1755,7 @@ Function value:       1.33000
 	DMS, May, 1996.	Written.
        May 2010 - Bug fix for double precision steps. Jason Eastman, OSU
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/exofast_amoeba.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/exofast_amoeba.pro)</STRONG><P>
 <HR>
  
 <A NAME="EXOFAST_ASTROM">
@@ -1956,7 +1788,7 @@ Function value:       1.33000
   GAIA     - If set, will calculate the position of Gaia for the
              observatory position (not yet supported)
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/exofast_astrom.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/exofast_astrom.pro)</STRONG><P>
 <HR>
  
 <A NAME="EXOFAST_BLACKBODY">
@@ -2001,7 +1833,7 @@ Function value:       1.33000
   May 2009: Written by Chris Beaumont
   Aug 2018: JDE: Renamed to not conflict with IDLUTILS version.
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/exofast_blackbody.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/exofast_blackbody.pro)</STRONG><P>
 <HR>
  
 <A NAME="EXOFAST_CHI2">
@@ -2056,7 +1888,7 @@ Function value:       1.33000
  
   2018/03 -- Create documentation -- Jason Eastman (CfA)
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/exofast_chi2v2.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/exofast_chi2v2.pro)</STRONG><P>
 <HR>
  
 <A NAME="EXOFAST_DEMC">
@@ -2214,7 +2046,7 @@ Function value:       1.33000
              end. This is sketchy, but better than nothing.
              This was a relatively common failure mode.
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/exofast_demcpt_multi.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/exofast_demcpt_multi.pro)</STRONG><P>
 <HR>
  
 <A NAME="EXOFAST_ERRELL">
@@ -2306,7 +2138,7 @@ Function value:       1.33000
                 array to check (takes a little longer, but actually
                 works with large arrays!)
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/exofast_errell.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/exofast_errell.pro)</STRONG><P>
 <HR>
  
 <A NAME="EXOFAST_GELMANRUBIN">
@@ -2365,7 +2197,7 @@ Function value:       1.33000
    2010/03/01 - Written: Jason Eastman - The Ohio State University
    2013/03/18 - Added MAXGR, MINTZ optional inputs.
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/exofast_gelmanrubin.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/exofast_gelmanrubin.pro)</STRONG><P>
 <HR>
  
 <A NAME="EXOFAST_GETB">
@@ -2425,7 +2257,7 @@ Function value:       1.33000
   2009/05/01 -- Jason Eastman (Ohio State University)
   2017/04/12 -- Add optional mass ratio keyword
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/exofast_getb.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/exofast_getb.pro)</STRONG><P>
 <HR>
  
 <A NAME="EXOFAST_GETB2">
@@ -2495,7 +2327,7 @@ Function value:       1.33000
   2018/11/13 -- Now properly handles a scalar time
   2019/02/05 -- Fix sign conventions
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/exofast_getb2.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/exofast_getb2.pro)</STRONG><P>
 <HR>
  
 <A NAME="EXOFAST_GETMCMCSCALE">
@@ -2560,13 +2392,13 @@ Function value:       1.33000
                 will do the rest.
    2017/07/19 - Use printandlog for print statements
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/exofast_getmcmcscale.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/exofast_getmcmcscale.pro)</STRONG><P>
 <HR>
  
 <A NAME="EXOFAST_GETPHASE">
 <H2>EXOFAST_GETPHASE</H2></A>
 <A HREF="#EXOFAST_GETMCMCSCALE">[Previous Routine]</A>
-<A HREF="#EXOFAST_GETTC">[Next Routine]</A>
+<A HREF="#EXOFAST_GETTT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
@@ -2607,65 +2439,12 @@ Function value:       1.33000
  Modification History:
   2010/06 - Rewritten by Jason Eastman (OSU)
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/exofast_getphase.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/exofast_getphase.pro)</STRONG><P>
 <HR>
  
-<A NAME="EXOFAST_GETTC">
-<H2>EXOFAST_GETTC</H2></A>
+<A NAME="EXOFAST_GETTT">
+<H2>EXOFAST_GETTT</H2></A>
 <A HREF="#EXOFAST_GETPHASE">[Previous Routine]</A>
-<A HREF="#EXOFAST_GETTT[1]">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
-
- MCMCSS - The MCMC Stellar structure output by exofastv2.pro 
-
- EPOCHS - An NPLANETS pointer array (must match mcmcss.nplanets),
-          pointing to an array specifying the epochs of the desired
-          transit times. A null pointer signifies no output desired
-          for that planet.
-
- NSAMPLES - This calculation is expensive and may take a decent
-            fraction of the total MCMC runtime. We randomly sample
-            NSAMPLES from the MCMCSS values to compute the
-            uncertainty in each transit time. Default is 1000. Use -1
-            or a value larger than mcmcss.nvalues to compute the Tcs
-            at each epoch for all values.
-
- RESULT - An NPLANETS pointer array, pointing to an NEPOCHS x NSAMPLES
-          array of Transit times, including stellar reflex motion and
-          fitted TTVs.
- 
-</PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/exofast_gettc.pro)</STRONG><P>
-<HR>
- 
-<A NAME="EXOFAST_GETTT[1]">
-<H2>EXOFAST_GETTT[1]</H2></A>
-<A HREF="#EXOFAST_GETTC">[Previous Routine]</A>
-<A HREF="#EXOFAST_GETTT[2]">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
- NAME:
-   EXOFAST_GETTT
- PURPOSE:
-   Calculates the time of minimum projected separation between the
-   star and planet (i.e., the time of transit).
-
- INPUTS:
-   MCMCSS - The MCMC stellar structure saved in the idl (*.mcmc.idl)
-            file output by exofastv2.pro  
-
- RESULT - An NPLANETS pointer array, pointing to an NEPOCHS x NSTEPS
-          array of Transit times, including stellar reflex motion and
-          fitted TTVs.
- 
-</PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/exofast.gettt.bak.pro)</STRONG><P>
-<HR>
- 
-<A NAME="EXOFAST_GETTT[2]">
-<H2>EXOFAST_GETTT[2]</H2></A>
-<A HREF="#EXOFAST_GETTT[1]">[Previous Routine]</A>
 <A HREF="#EXOFAST_KEPLEREQ">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -2684,12 +2463,12 @@ Function value:       1.33000
           fitted TTVs.
  
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/exofast_gettt.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/exofast_gettt.pro)</STRONG><P>
 <HR>
  
 <A NAME="EXOFAST_KEPLEREQ">
 <H2>EXOFAST_KEPLEREQ</H2></A>
-<A HREF="#EXOFAST_GETTT[2]">[Previous Routine]</A>
+<A HREF="#EXOFAST_GETTT">[Previous Routine]</A>
 <A HREF="#EXOFAST_LATEXTAB">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -2754,7 +2533,7 @@ Function value:       1.33000
   Revision 1.1  2002/09/09 14:54:11  wilms
   initial release into aitlib
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/exofast_keplereq.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/exofast_keplereq.pro)</STRONG><P>
 <HR>
  
 <A NAME="EXOFAST_LATEXTAB">
@@ -2811,7 +2590,7 @@ Function value:       1.33000
  Modification History:
   2011/03/10 - Written by Jason Eastman (OSU)
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/exofast_latextab.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/exofast_latextab.pro)</STRONG><P>
 <HR>
  
 <A NAME="EXOFAST_LATEXTAB2">
@@ -2868,7 +2647,7 @@ Function value:       1.33000
  Modification History:
   2011/03/10 - Written by Jason Eastman (OSU)
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/exofast_latextab2.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/exofast_latextab2.pro)</STRONG><P>
 <HR>
  
 <A NAME="EXOFAST_LIKE">
@@ -2919,7 +2698,7 @@ Function value:       1.33000
  REVISION HISTORY:
        2013/11 - Written, Jason Eastman, LCOGT
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/exofast_like.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/exofast_like.pro)</STRONG><P>
 <HR>
  
 <A NAME="EXOFAST_LOMBSCARGLE">
@@ -2979,7 +2758,7 @@ Function value:       1.33000
  MODIFICATION HISTORY 
   2023/09 -- Jason Eastman (Cfa)
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/exofast_lombscargle.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/exofast_lombscargle.pro)</STRONG><P>
 <HR>
  
 <A NAME="EXOFAST_MOD">
@@ -3025,7 +2804,7 @@ Function value:       1.33000
  
   2023/02/09 -- JDE, Written
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/exofast_mod.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/exofast_mod.pro)</STRONG><P>
 <HR>
  
 <A NAME="EXOFAST_MULTIPLOT">
@@ -3182,7 +2961,7 @@ Function value:       1.33000
         Handle  [X/Y].OMargin   A. Negri, Bologna
 
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/exofast_multiplot.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/exofast_multiplot.pro)</STRONG><P>
 <HR>
  
 <A NAME="EXOFAST_OCCULTQUAD">
@@ -3258,7 +3037,7 @@ Function value:       1.33000
  2018/12/12 -- Catch rare bug that hangs the code when planet and
                stellar limb are within 10^-13 of one another.
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/exofast_occultquad.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/exofast_occultquad.pro)</STRONG><P>
 <HR>
  
 <A NAME="EXOFAST_OCCULTQUAD_CEL">
@@ -3332,7 +3111,7 @@ Function value:       1.33000
     allow negative values of p (anti-transit) to avoid Lucy-Sweeney like bias
   2018/12/12 -- Now uses more stable integrations, 25% faster
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/exofast_occultquad_cel.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/exofast_occultquad_cel.pro)</STRONG><P>
 <HR>
  
 <A NAME="EXOFAST_PLOTDIST_CORNER">
@@ -3388,7 +3167,7 @@ Function value:       1.33000
                 functionality applied with unit property in
                 summarizepar.
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/exofast_plotdist_corner.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/exofast_plotdist_corner.pro)</STRONG><P>
 <HR>
  
 <A NAME="EXOFAST_QUERYVIZIER">
@@ -3537,7 +3316,7 @@ Function value:       1.33000
          Rename to EXOFAST_queryvizier for distribution with
          EXOFASTv2 (older versions are incompatible); JDE Aug 2018
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/exofast_queryvizier.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/exofast_queryvizier.pro)</STRONG><P>
 <HR>
  
 <A NAME="EXOFAST_RANDOM">
@@ -3604,13 +3383,13 @@ Function value:       1.33000
         Written by: Jason Eastman, OSU 3/2/2009 
           Based on Numerical Recipes Third Edition page 342
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/exofast_random.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/exofast_random.pro)</STRONG><P>
 <HR>
  
 <A NAME="EXOFAST_RECENTER">
 <H2>EXOFAST_RECENTER</H2></A>
 <A HREF="#EXOFAST_RANDOM">[Previous Routine]</A>
-<A HREF="#EXOFAST_ROSSITER">[Next Routine]</A>
+<A HREF="#EXOFAST_RV">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
@@ -3632,58 +3411,12 @@ Function value:       1.33000
  MODIFICATION HISTORY
   2012/06 -- Jason Eastman (LCOGT)
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/exofast_recenter.pro)</STRONG><P>
-<HR>
- 
-<A NAME="EXOFAST_ROSSITER">
-<H2>EXOFAST_ROSSITER</H2></A>
-<A HREF="#EXOFAST_RECENTER">[Previous Routine]</A>
-<A HREF="#EXOFAST_RV">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
- NAME:
-   EXOFAST_ROSSITER
-
- PURPOSE: 
-   This routine implements the Ohta et al 2005 approximation for the
-   Rossiter-Mclaughlin effect, which assumes linear limb darkening
-   and is accurate to ~1 m/s for slowly rotating stars (see Hirano 2011).
-
- CALLING SEQUENCE:
-   exofast_rossiter, x, y, u1, p, vsini, lambda, deltarv, z=z
-
- INPUTS:
-    x      - array of star-planet distances in the x direction
-             (stellar radii).
-    y      - array or scalar of star-planet distance(s) in the y
-             direction. ie, the impact parameter (stellar radii)
-    u1     - linear limb-darkening coefficient -- epsilon in paper
-    p      - occulting star size (stellar radii) -- gamma in paper
-    vsini  - projected stellar surface velocity (same as output units)
-    lambda - projected spin-orbit angle (radians)
-    
- OPTIONAL INPUTS:
-    z      - array of star-planet distances in the z direction. 
-               -- Positive => in front of star (RM effect)
-               -- Negative => behind star (no effect)
-               -- assumed positive if not specified
- OUTPUTS:
-    deltarv - Approximate Change in RV at each z due to the Rossiter
-              Mclaughlin effect (units same as vsini) 
-                     *** accurate to ~1 m/s ***
-
- MODIFICATION HISTORY
-  2009/04/30 -- Jason Eastman (Ohio State University)
-     Loose translation from Scott Gaudi's (OSU) fortran code
-  2012/08 -- Jason Easmtan (LCOGT)
-     Make sign convention ahere to standard (now consistent with EXOFAST_GETB).
-</PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/exofast_rossiter.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/exofast_recenter.pro)</STRONG><P>
 <HR>
  
 <A NAME="EXOFAST_RV">
 <H2>EXOFAST_RV</H2></A>
-<A HREF="#EXOFAST_ROSSITER">[Previous Routine]</A>
+<A HREF="#EXOFAST_RECENTER">[Previous Routine]</A>
 <A HREF="#EXOFAST_TEXTOIDL[1]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -3740,7 +3473,7 @@ Function value:       1.33000
   2009/05/01 -- Jason Eastman (Ohio State University)
   2013/10/15 -- Clarified documentation
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/exofast_rv.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/exofast_rv.pro)</STRONG><P>
 <HR>
  
 <A NAME="EXOFAST_TEXTOIDL[1]">
@@ -3757,7 +3490,7 @@ Function value:       1.33000
        utility.  Hence it lives here.  You will see documentation for
        textoidl_trans_sub_super second if you use DOC_LIBRARY.
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/exofast_textoidl.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/exofast_textoidl.pro)</STRONG><P>
 <HR>
  
 <A NAME="EXOFAST_TEXTOIDL[2]">
@@ -3842,7 +3575,7 @@ Function value:       1.33000
   See the file COPYRIGHT for restrictions on distrubting this code.
   This code comes with absolutely NO warranty; see DISCLAIMER for details.
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/exofast_textoidl.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/exofast_textoidl.pro)</STRONG><P>
 <HR>
  
 <A NAME="EXOFAST_TRAN">
@@ -3916,7 +3649,7 @@ Function value:       1.33000
                as called by exofast_chi2v2.pro
     
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/exofast_tran.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/exofast_tran.pro)</STRONG><P>
 <HR>
  
 <A NAME="EXOFAST_TWILIGHT">
@@ -3971,7 +3704,7 @@ Function value:       1.33000
  REVISION HISTORY:
    2011/01/27 - Written: Jason Eastman - The Ohio State University
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/exofast_twilight.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/exofast_twilight.pro)</STRONG><P>
 <HR>
  
 <A NAME="GETAVPRIOR">
@@ -4013,7 +3746,7 @@ Function value:       1.33000
  
   2018/04 -- Written, Jason Eastman (CfA)
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/getavprior.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/getavprior.pro)</STRONG><P>
 <HR>
  
 <A NAME="GETBURNNDX">
@@ -4068,7 +3801,7 @@ Function value:       1.33000
    2018/04 - Modified goodchains to maximize the total number of
              saved links
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/getburnndx.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/getburnndx.pro)</STRONG><P>
 <HR>
  
 <A NAME="GOLDENRATIO">
@@ -4110,7 +3843,7 @@ Function value:       1.33000
   2018/11/13 -- Written by Jason Eastman, CfA
 
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/goldenratio.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/goldenratio.pro)</STRONG><P>
 <HR>
  
 <A NAME="JSON_PARSE">
@@ -4159,7 +3892,7 @@ Function value:       1.33000
  :Author:
    CT, VIS, Jan 2012. Based on the IDLffJSON, written by Dawn Lenz.
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/json_parse.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/json_parse.pro)</STRONG><P>
 <HR>
  
 <A NAME="KTOM2">
@@ -4212,7 +3945,7 @@ Function value:       1.33000
   2011/08 -- Jason Eastman (Ohio State University)
   2017/07 -- Jason Eastman, add optional GMSun input
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/ktom2.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/ktom2.pro)</STRONG><P>
 <HR>
  
 <A NAME="LEGEND">
@@ -4429,7 +4162,7 @@ Function value:       1.33000
        Don't modify position keyword  A. Kimball/ W. Landsman Jul 2007
        Small update to Jul 2007 for /NORMAL coords.  W. Landsman Aug 2007
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/exofast_legend.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/exofast_legend.pro)</STRONG><P>
 <HR>
  
 <A NAME="LINLD">
@@ -4485,13 +4218,13 @@ Function value:       1.33000
              (now works with OSX)
              Thanks Stefan Hippler
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/linld.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/linld.pro)</STRONG><P>
 <HR>
  
 <A NAME="MASSRADIUS_MANN">
 <H2>MASSRADIUS_MANN</H2></A>
 <A HREF="#LINLD">[Previous Routine]</A>
-<A HREF="#MASSRADIUS_MIST[1]">[Next Routine]</A>
+<A HREF="#MASSRADIUS_MIST">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
@@ -4529,82 +4262,12 @@ Function value:       1.33000
  
   2023/08 -- Public release -- Jason Eastman
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/massradius_mann.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/massradius_mann.pro)</STRONG><P>
 <HR>
  
-<A NAME="MASSRADIUS_MIST[1]">
-<H2>MASSRADIUS_MIST[1]</H2></A>
+<A NAME="MASSRADIUS_MIST">
+<H2>MASSRADIUS_MIST</H2></A>
 <A HREF="#MASSRADIUS_MANN">[Previous Routine]</A>
-<A HREF="#MASSRADIUS_MIST[2]">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
- NAME:
-   massradius_mist
-
- PURPOSE: 
-   Interpolate the MIST stellar evolutionary models to derive Teff
-   and Rstar from mass, metallicity, and age. Intended to be a drop in
-   replacement for the Yonsie Yale model interpolation
-   (massradius_yy3.pro).
-
- CALLING SEQUENCE:
-   chi2 = massradius_mist(mstar, feh, age, teff, rstar, $
-                          VVCRIT=vvcrit, ALPHA=alpha, SPAN=span,$
-                          MISTRSTAR=mistrstar, MISTTEFF=mistteff)
- INPUTS:
-
-    MSTAR  - The mass of the star, in m_sun
-    FEH    - The metallicity of the star [Fe/H]
-    AGE    - The age of the star, in Gyr
-    RSTAR  - The radius you expect; used to calculate a chi^2
-    TEFF   - The Teff you expect; used to calculate a chi^2
-    
- OPTIONAL INPUTS:
-   VVCRIT    - The rotational velocity normalized by the critical
-               rotation speed. Must be 0.0d0 or 0.4d0 (default 0.0d0).
-   ALPHA     - The alpha abundance. Must be 0.0 (default 0.0). A
-               placeholder for future improvements to MIST models.
-   SPAN      - The interpolation is done at the closest value +/-
-               SPAN grid points in the evolutionary tracks in mass,
-               age, metallicity. The larger this number, the longer it
-               takes. Default=1. Change with care.
-   EPSNAME   - A string specifying the name of postscript file to plot
-               the evolutionary track. If not specified, no plot is
-               generated.
-
- OPTIONAL KEYWORDS:
-   DEBUG     - If set, will plot the teff and rstar over the MIST
-               Isochrone.
-
- OPTIONAL OUTPUTS:
-   MISTRSTAR - The rstar interpolated from the MIST models.
-   MISTTEFF  - The Teff interpolated from the MIST models.
-
- RESULT:
-   The chi^2 penalty due to the departure from the MIST models,
-   assuming 3% errors in the MIST model values.
-
- COMMON BLOCKS:
-   MIST_BLOCK:
-     Loading EEPs (model tracks) is very slow. This common block
-     allows us to store the tracks in memory between calls. The first
-     call will take ~3 seconds. Subsequent calls that use the same
-     EEP files take 1 ms.
-
- EXAMPLE: 
-   ;; penalize a model for straying from the MIST models 
-   chi2 += massradius_mist(mstar, feh, age, rstar=rstar, teff=teff)
-
- MODIFICATION HISTORY
- 
-  2018/01 -- Written, JDE
-</PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/massradius_mist.pro)</STRONG><P>
-<HR>
- 
-<A NAME="MASSRADIUS_MIST[2]">
-<H2>MASSRADIUS_MIST[2]</H2></A>
-<A HREF="#MASSRADIUS_MIST[1]">[Previous Routine]</A>
 <A HREF="#MASSRADIUS_PARSEC">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -4669,12 +4332,12 @@ Function value:       1.33000
  
   2018/01 -- Written, JDE
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/massradius_parsec_rosen.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/massradius_mist.pro)</STRONG><P>
 <HR>
  
 <A NAME="MASSRADIUS_PARSEC">
 <H2>MASSRADIUS_PARSEC</H2></A>
-<A HREF="#MASSRADIUS_MIST[2]">[Previous Routine]</A>
+<A HREF="#MASSRADIUS_MIST">[Previous Routine]</A>
 <A HREF="#MASSRADIUS_TORRES">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -4739,7 +4402,7 @@ Function value:       1.33000
  
   2018/01 -- Written, JDE
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/massradius_parsec.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/massradius_parsec.pro)</STRONG><P>
 <HR>
  
 <A NAME="MASSRADIUS_TORRES">
@@ -4774,7 +4437,7 @@ Function value:       1.33000
  
   2012/06 -- Public release -- Jason Eastman (LCOGT)
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/massradius_torres.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/massradius_torres.pro)</STRONG><P>
 <HR>
  
 <A NAME="MKCONSTANTS">
@@ -4796,7 +4459,7 @@ Function value:       1.33000
    https://arxiv.org/abs/1510.07674, 
    https://arxiv.org/abs/1507.07956, Table 1
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/mkconstants.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/mkconstants.pro)</STRONG><P>
 <HR>
  
 <A NAME="MKPRIOR">
@@ -4837,7 +4500,7 @@ Function value:       1.33000
    2018/03 - Public Release - Jason Eastman (CfA)
 
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/mkprior.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/mkprior.pro)</STRONG><P>
 <HR>
  
 <A NAME="MKPRIOR2">
@@ -4878,7 +4541,7 @@ Function value:       1.33000
    2018/03 - Public Release - Jason Eastman (CfA)
 
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/mkprior2.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/mkprior2.pro)</STRONG><P>
 <HR>
  
 <A NAME="MKSED">
@@ -4909,7 +4572,7 @@ Function value:       1.33000
     2019-01-18: Now can be run without a license (use mksed.sav)
 
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/mksed.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/mksed.pro)</STRONG><P>
 <HR>
  
 <A NAME="MKSS">
@@ -4953,7 +4616,7 @@ Function value:       1.33000
  
   2023/12 -- Documentation cleanup.
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/mkss.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/mkss.pro)</STRONG><P>
 <HR>
  
 <A NAME="MKTICSED">
@@ -5007,7 +4670,7 @@ Function value:       1.33000
  
   2023/02 -- Documented.
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/mkticsed.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/mkticsed.pro)</STRONG><P>
 <HR>
  
 <A NAME="OMC">
@@ -5067,7 +4730,7 @@ Function value:       1.33000
   2011/07 -- Written, Jason Eastman (OSU)
 
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/omc.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/omc.pro)</STRONG><P>
 <HR>
  
 <A NAME="PARS2STR">
@@ -5086,7 +4749,7 @@ Function value:       1.33000
  CALLING SEQUENCE:
     pars2str(pars,str)
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/pars2str.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/pars2str.pro)</STRONG><P>
 <HR>
  
 <A NAME="PLOTIMAGE">
@@ -5408,7 +5071,7 @@ Function value:       1.33000
    $Id: plotimage.pro,v 1.15 2010/11/13 09:53:39 cmarkwar Exp $
 
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/multifast_dt_plotimage.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/multifast_dt_plotimage.pro)</STRONG><P>
 <HR>
  
 <A NAME="QUADLD">
@@ -5464,7 +5127,7 @@ Function value:       1.33000
              (now works with OSX) -- thanks Stefan Hippler.
   2019/08 -- Now rejects steps outside of bounds
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/quadld.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/quadld.pro)</STRONG><P>
 <HR>
  
 <A NAME="READIPAC">
@@ -5527,7 +5190,7 @@ Function value:       1.33000
             2012/06/15 Updated for change to exoplanets.org.
             2013/01/14 Updated for change to URL.
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/readipac.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/readipac.pro)</STRONG><P>
 <HR>
  
 <A NAME="REMAKE_CORNER">
@@ -5575,7 +5238,7 @@ Function value:       1.33000
                replacing 'idl' with 'txt'.
 
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/remake_corner.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/remake_corner.pro)</STRONG><P>
 <HR>
  
 <A NAME="SETDEFAULTVALUE">
@@ -5641,7 +5304,7 @@ Function value:       1.33000
  :Copyright:
      Copyright (c) 2008-2014, Fanning Software Consulting, Inc.
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/setdefaultvalue.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/setdefaultvalue.pro)</STRONG><P>
 <HR>
  
 <A NAME="SPLITPDF">
@@ -5668,7 +5331,7 @@ Function value:       1.33000
  
   2019/10/11 -- added
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/splitpdf.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/splitpdf.pro)</STRONG><P>
 <HR>
  
 <A NAME="STROM_CONV[1]">
@@ -5687,7 +5350,7 @@ Function value:       1.33000
                 Renamed, documented, and cleaned up for distribution with EXOFASTv2
 
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/mksed.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/mksed.pro)</STRONG><P>
 <HR>
  
 <A NAME="STROM_CONV[2]">
@@ -5706,7 +5369,7 @@ Function value:       1.33000
                 Renamed, documented, and cleaned up for distribution with EXOFASTv2
 
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/mkticsed.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/mkticsed.pro)</STRONG><P>
 <HR>
  
 <A NAME="TEXTOIDL_MATCHDELIM">
@@ -5784,7 +5447,7 @@ Function value:       1.33000
   See the file COPYRIGHT for restrictions on distrubting this code.
   This code comes with absolutely NO warranty; see DISCLAIMER for details.
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/exofast_textoidl.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/exofast_textoidl.pro)</STRONG><P>
 <HR>
  
 <A NAME="TEXTOIDL_NEXTTOK">
@@ -5855,7 +5518,7 @@ Function value:       1.33000
   See the file COPYRIGHT for restrictions on distrubting this code.
   This code comes with absolutely NO warranty; see DISCLAIMER for details.
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/exofast_textoidl.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/exofast_textoidl.pro)</STRONG><P>
 <HR>
  
 <A NAME="TEXTOIDL_STRCNT">
@@ -5926,7 +5589,7 @@ Function value:       1.33000
   See the file COPYRIGHT for restrictions on distrubting this code.
   This code comes with absolutely NO warranty; see DISCLAIMER for details.
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/exofast_textoidl.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/exofast_textoidl.pro)</STRONG><P>
 <HR>
  
 <A NAME="TEXTOIDL_STRTOK">
@@ -6006,7 +5669,7 @@ Function value:       1.33000
   See the file COPYRIGHT for restrictions on distrubting this code.
   This code comes with absolutely NO warranty; see DISCLAIMER for details.
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/exofast_textoidl.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/exofast_textoidl.pro)</STRONG><P>
 <HR>
  
 <A NAME="TEXTOIDL_STRTRANS">
@@ -6090,7 +5753,7 @@ Function value:       1.33000
   See the file COPYRIGHT for restrictions on distrubting this code.
   This code comes with absolutely NO warranty; see DISCLAIMER for details.
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/exofast_textoidl.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/exofast_textoidl.pro)</STRONG><P>
 <HR>
  
 <A NAME="TEXTOIDL_SUB_SUP">
@@ -6161,7 +5824,7 @@ Function value:       1.33000
   See the file COPYRIGHT for restrictions on distrubting this code.
   This code comes with absolutely NO warranty; see DISCLAIMER for details.
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/exofast_textoidl.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/exofast_textoidl.pro)</STRONG><P>
 <HR>
  
 <A NAME="TEXTOIDL_TABLE">
@@ -6251,7 +5914,7 @@ Function value:       1.33000
   See the file COPYRIGHT for restrictions on distrubting this code.
   This code comes with absolutely NO warranty; see DISCLAIMER for details.
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/exofast_textoidl.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/exofast_textoidl.pro)</STRONG><P>
 <HR>
  
 <A NAME="TEXTOIDL_TRANS_SUB_SUPER">
@@ -6334,7 +5997,7 @@ Function value:       1.33000
   See the file COPYRIGHT for restrictions on distrubting this code.
   This code comes with absolutely NO warranty; see DISCLAIMER for details.
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/exofast_textoidl.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/exofast_textoidl.pro)</STRONG><P>
 <HR>
  
 <A NAME="TRANSITGIF">
@@ -6445,7 +6108,7 @@ Function value:       1.33000
  MODIFICATION HISTORY
    2012/06 -- Public Release, Jason Eastman (LCOGT)
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/transitgif.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/transitgif.pro)</STRONG><P>
 <HR>
  
 <A NAME="UPDATETIME">
@@ -6518,7 +6181,7 @@ Function value:       1.33000
  REVISION HISTORY:
    2021/04/13 - Updated and documented, Jason Eastman (CfA)
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/updatetime.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/updatetime.pro)</STRONG><P>
 <HR>
  
 <A NAME="WAVELETLIKE">
@@ -6556,7 +6219,7 @@ Function value:       1.33000
        Written,    J. Carter               September, 2009
        Removed inner for loop (~7x speed gain). JDE, Dec 2012
 </PRE><P>
-<STRONG>(See /home/jeastman/old_home/scratch/EXOFASTv2/exofast_wavelike.pro)</STRONG><P>
+<STRONG>(See /N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/exofast_wavelike.pro)</STRONG><P>
 <HR>
  
 </body>

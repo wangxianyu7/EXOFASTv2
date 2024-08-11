@@ -719,7 +719,7 @@ for i=resumendx,maxsteps-1L do begin
          endelse
       endif
    ; save every 10 minutes
-   if (tnow-tmpt0) gt 600 then begin
+   if (tnow-tmpt0) gt 1800 then begin
       laststep = i
       save, pars,chi2,newpars,newchi2,det,nswapattempt,laststep,npass,nextrecalc, FILENAME = ss.prefix+'mcmctmp.idl'
       tmp0 = tnow
