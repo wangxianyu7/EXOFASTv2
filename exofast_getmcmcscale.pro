@@ -64,7 +64,6 @@ if n_elements(tofit) eq 0 then tofit = indgen(npars)
 nfit = n_elements(tofit)
 if n_elements(seedscale) ne nfit then seedscale = dblarr(nfit) + 1d-3
 maxiter = 1d4
-
 if n_elements(bestchi2) eq 0 then $
   bestchi2 = call_function(chi2func, bestpars)
 

@@ -259,9 +259,15 @@ endif
 nang = n_elements(angular)
 if nang gt 0 then gelmanangular=intarr(nang)
 for i=0, nang-1 do gelmanangular[i] = (where(tofit eq angular[i]))(0)
-
-junk = call_function(chi2func, bestpars, determinant=det, derived=dpar)
-nderived = n_elements(dpar)
+if n_elements(resumendx) eq 0 then begin
+   junk = call_function(chi2func, bestpars, determinant=det, derived=dpar)
+   nderived = n_elements(dpar)
+endif else begin
+   det = 1d0
+   dpar = 0
+   nfit = (size(pars))[1]
+   nchains = (size(pars))[3]
+endelse
 
 oldpars = dblarr(nfit,nchains,ntemps) ;; parameters in the previous step
 oldchi2 = dblarr(nchains,ntemps)       ;; chi2 of the previous step
@@ -281,13 +287,14 @@ if n_elements(resumendx) ne 0 then begin
    maxsteps = sz[2]
    nchains = sz[3]
    newpars = pars[*,resumendx,0]
-   oldpars[*,*,0] = pars[*,resumendx-1,0]
+   oldpars[*,*,0] = reform(pars[*,resumendx-1,*],nfit,nchains) ; coolest chain
+   nderived = 0
    if nderived gt 0 and n_elements(derived) ne 0 then begin
       printandlog, "ERROR: there are derived parameters; you must supply a DERIVED array to resume from previous run", logname
       stop
    endif
-   
-   if ntemps gt 0 then oldpars[*,*,1:n_elements(oldpars[0,0,*])-1] = hotpars
+   ; print,size(oldpars[*,*,1:n_elements(oldpars[0,0,*])-1]), size(hotpars)
+   if ntemps gt 0 then oldpars[*,*,1:n_elements(oldpars[0,0,*])-1] = reform(hotpars[*,-1,*,*],nfit,nchains,ntemps-1)
    
    for j=0, nchains-1 do begin
       for m=0, ntemps-1 do begin
@@ -295,6 +302,17 @@ if n_elements(resumendx) ne 0 then begin
          olddet[j,m] = det
       endfor
    endfor
+
+
+   ;; get the MCMC step scale for each parameter
+   if n_elements(scale) eq 0 then $
+      scale = exofast_getmcmcscale(bestpars,chi2func,tofit=tofit,angular=angular,/skipiter,logname=logname)
+   if scale[0] eq -1 then begin
+      printandlog, 'No scale found',logname
+      pars = -1
+      return
+   endif
+
 
 endif else begin
    ;; this is the expected/tested switch here
@@ -372,9 +390,17 @@ defsysv, '!GDL', exists=runninggdl
 t00 = systime(/seconds)
 nthreads=n_elements(thread_array)
 
+laststep = 0
+; restore all from the last run
+oldrunfile = file_search(ss.prefix + 'mcmctmp.idl', count=nsavefiles)
+if nsavefiles gt 0 then restore, ss.prefix + 'mcmctmp.idl'
+if nsavefiles gt 0 then print, 'Restored from ' + ss.prefix + 'mcmctmp.idl'
 ;; start MCMC chain
-for i=resumendx,maxsteps-1L do begin
+tmpt0 = t00
 
+; stop
+for i=resumendx,maxsteps-1L do begin
+   if i lt laststep then continue
 ;   if i ne resumendx then printandlog, 'the ' + strtrim(i,2) + 'th step took ' + strtrim(systime(/seconds)-t00,2) + ' seconds', logname
 ;   t00 = systime(/seconds)
 
@@ -519,7 +545,7 @@ for i=resumendx,maxsteps-1L do begin
          ;; update the link in the chain with the temp=1 value
          pars[*,i,j] = oldpars[*,j,0]
          chi2[i,j] = oldchi2[j,0]
-         if n_elements(dpar) ne 0 then derived[*,i,j] = oldderived[*,j,0]
+         ; if n_elements(dpar) ne 0 then derived[*,i,j] = oldderived[*,j,0]
          
          if n_elements(hotpars) gt 0 then begin
             hotpars[*,i,j,*] = oldpars[*,j,1:ntemps-1]
@@ -572,7 +598,6 @@ for i=resumendx,maxsteps-1L do begin
    if i eq nextrecalc then begin
       ;; discard the burn-in
       burnndx = getburnndx(chi2[0:i,*],goodchains=goodchains,/silent)
-
       ;; calculate the Gelman-Rubin statistic (remove burn-in)
       converged = exofast_gelmanrubin(pars[0:nfit-1,burnndx:i,goodchains],$
                                       gelmanrubin,tz,angular=gelmanangular,$
@@ -663,38 +688,45 @@ for i=resumendx,maxsteps-1L do begin
       endif
    endif
 
-   ;; Windows formatting is messy, only output every 1%
-if 1 then begin
-;   if !version.os_family ne 'Windows' or (i eq resumendx) then begin
-;   if !version.os_family ne 'Windows' or $
-;      ((i+1) mod round(maxsteps/1000d0) eq 0) or (i eq resumendx) then begin
+      ;; Windows formatting is messy, only output every 1%
+   if 1 then begin
+   ;   if !version.os_family ne 'Windows' or (i eq resumendx) then begin
+   ;   if !version.os_family ne 'Windows' or $
+   ;      ((i+1) mod round(maxsteps/1000d0) eq 0) or (i eq resumendx) then begin
 
-      if ntemps gt 1 then begin
-         format='("EXOFAST_DEMC: ",f0.2,"% done; acceptance rate = ",a,"%; swap rate = ",a,"%; ' + $ 
-                'tz = ",f0.2," (>", a,"); GelmanRubin = ",f0.4," (<",f0.2,"); time left: ",f0.2,a,$,%"\r")'
-         print, 100.d0*(i+1)/maxsteps,acceptancerate,swaprate,lasttz,strtrim(fix(mintz),2),lastgr,maxgr,timeleft,units, format=format
-         
-         ;; print this message to the log every 5% of the way
-         if i eq resumendx or (i+1) mod round(maxsteps/20) eq 0 then begin
+         if ntemps gt 1 then begin
             format='("EXOFAST_DEMC: ",f0.2,"% done; acceptance rate = ",a,"%; swap rate = ",a,"%; ' + $ 
-                   'tz = ",f0.2," (>", a,"); GelmanRubin = ",f0.4," (<",f0.2,"); time left: ",f0.2,a)'         
-            printandlog, string(100.d0*(i+1)/maxsteps,acceptancerate,swaprate,lasttz,strtrim(fix(mintz),2),lastgr,maxgr,timeleft,units,format=format), logname
-         endif
-      endif else begin
-         format='("EXOFAST_DEMC: ",f0.2,"% done; acceptance rate = ",a,"%; ' + $ 
-                'tz = ",f0.2," (>", a,"); GelmanRubin = ",f0.4," (<",f0.2,"); time left: ",f0.2,a,$,%"\r")'
-         print, 100.d0*(i+1)/maxsteps,acceptancerate,lasttz,strtrim(fix(mintz),2),lastgr,maxgr,timeleft,units, format=format
-         
-         ;; print this message to the log every 5% of the way
-         if i eq resumendx or (i+1) mod round(maxsteps/20) eq 0 then begin
+                  'tz = ",f0.2," (>", a,"); GelmanRubin = ",f0.4," (<",f0.2,"); time left: ",f0.2,a,$,%"\r")'
+            print, 100.d0*(i+1)/maxsteps,acceptancerate,swaprate,lasttz,strtrim(fix(mintz),2),lastgr,maxgr,timeleft,units, format=format
+            
+            ;; print this message to the log every 5% of the way
+            if i eq resumendx or (i+1) mod round(maxsteps/20) eq 0 then begin
+               format='("EXOFAST_DEMC: ",f0.2,"% done; acceptance rate = ",a,"%; swap rate = ",a,"%; ' + $ 
+                     'tz = ",f0.2," (>", a,"); GelmanRubin = ",f0.4," (<",f0.2,"); time left: ",f0.2,a)'         
+               printandlog, string(100.d0*(i+1)/maxsteps,acceptancerate,swaprate,lasttz,strtrim(fix(mintz),2),lastgr,maxgr,timeleft,units,format=format), logname
+            endif
+         endif else begin
             format='("EXOFAST_DEMC: ",f0.2,"% done; acceptance rate = ",a,"%; ' + $ 
-                   'tz = ",f0.2," (>", a,"); GelmanRubin = ",f0.4," (<",f0.2,"); time left: ",f0.2,a)'         
-            printandlog, string(100.d0*(i+1)/maxsteps,acceptancerate,lasttz,strtrim(fix(mintz),2),lastgr,maxgr,timeleft,units,format=format), logname
-         endif
-      endelse
+                  'tz = ",f0.2," (>", a,"); GelmanRubin = ",f0.4," (<",f0.2,"); time left: ",f0.2,a,$,%"\r")'
+            print, 100.d0*(i+1)/maxsteps,acceptancerate,lasttz,strtrim(fix(mintz),2),lastgr,maxgr,timeleft,units, format=format
+            
+            ;; print this message to the log every 5% of the way
+            if i eq resumendx or (i+1) mod round(maxsteps/20) eq 0 then begin
+               format='("EXOFAST_DEMC: ",f0.2,"% done; acceptance rate = ",a,"%; ' + $ 
+                     'tz = ",f0.2," (>", a,"); GelmanRubin = ",f0.4," (<",f0.2,"); time left: ",f0.2,a)'         
+               printandlog, string(100.d0*(i+1)/maxsteps,acceptancerate,lasttz,strtrim(fix(mintz),2),lastgr,maxgr,timeleft,units,format=format), logname
+            endif
+         endelse
+      endif
+   ; save every 10 minutes
+   if (tnow-tmpt0) gt 600 then begin
+      laststep = i
+      save, pars,chi2,newpars,newchi2,det,nswapattempt,laststep,npass,nextrecalc, FILENAME = ss.prefix+'mcmctmp.idl'
+      tmp0 = tnow
+      ; stop
    endif
-   
 endfor
+save, pars,chi2,newpars,newchi2,det,nswapattempt,laststep,npass,nextrecalc, FILENAME = ss.prefix+'mcmctmp.idl'
 printandlog, '', logname ;; don't overwrite the final line
 printandlog, '', logname ;; now just add a space
 
