@@ -394,7 +394,12 @@ laststep = 0
 ; restore all from the last run
 oldrunfile = file_search(ss.prefix + 'mcmctmp.idl', count=nsavefiles)
 if nsavefiles gt 0 then restore, ss.prefix + 'mcmctmp.idl'
-if nsavefiles gt 0 then print, 'Restored from ' + ss.prefix + 'mcmctmp.idl'
+if nsavefiles gt 0 then begin
+   print, 'Restored from ' + ss.prefix + 'mcmctmp.idl'
+   print, 'Resuming from step ' + strtrim(laststep,2)
+endif else print, 'No previous run to restore from'
+
+
 ;; start MCMC chain
 tmpt0 = t00
 
@@ -695,9 +700,9 @@ for i=resumendx,maxsteps-1L do begin
    ;      ((i+1) mod round(maxsteps/1000d0) eq 0) or (i eq resumendx) then begin
 
          if ntemps gt 1 then begin
-            format='("EXOFAST_DEMC: ",f0.2,"% done; acceptance rate = ",a,"%; swap rate = ",a,"%; ' + $ 
+            format='("EXOFAST_DEMC: ",f0.2," ",f0.2,"% done; acceptance rate = ",a,"%; swap rate = ",a,"%; ' + $ 
                   'tz = ",f0.2," (>", a,"); GelmanRubin = ",f0.4," (<",f0.2,"); time left: ",f0.2,a,$,%"\r")'
-            print, 100.d0*(i+1)/maxsteps,acceptancerate,swaprate,lasttz,strtrim(fix(mintz),2),lastgr,maxgr,timeleft,units, format=format
+            print, i, 100.d0*(i+1)/maxsteps,acceptancerate,swaprate,lasttz,strtrim(fix(mintz),2),lastgr,maxgr,timeleft,units, format=format
             
             ;; print this message to the log every 5% of the way
             if i eq resumendx or (i+1) mod round(maxsteps/20) eq 0 then begin
@@ -706,9 +711,9 @@ for i=resumendx,maxsteps-1L do begin
                printandlog, string(100.d0*(i+1)/maxsteps,acceptancerate,swaprate,lasttz,strtrim(fix(mintz),2),lastgr,maxgr,timeleft,units,format=format), logname
             endif
          endif else begin
-            format='("EXOFAST_DEMC: ",f0.2,"% done; acceptance rate = ",a,"%; ' + $ 
+            format='("EXOFAST_DEMC: ",f0.2," ", f0.2,"% done; acceptance rate = ",a,"%; ' + $ 
                   'tz = ",f0.2," (>", a,"); GelmanRubin = ",f0.4," (<",f0.2,"); time left: ",f0.2,a,$,%"\r")'
-            print, 100.d0*(i+1)/maxsteps,acceptancerate,lasttz,strtrim(fix(mintz),2),lastgr,maxgr,timeleft,units, format=format
+            print, i, 100.d0*(i+1)/maxsteps,acceptancerate,lasttz,strtrim(fix(mintz),2),lastgr,maxgr,timeleft,units, format=format
             
             ;; print this message to the log every 5% of the way
             if i eq resumendx or (i+1) mod round(maxsteps/20) eq 0 then begin
@@ -721,8 +726,9 @@ for i=resumendx,maxsteps-1L do begin
    ; save every 10 minutes
    if (tnow-tmpt0) gt 1800 then begin
       laststep = i
+      print, 'Saving at step ' + strtrim(i,2), ' after ' + strtrim(tnow-t00,2) + ' seconds', tnow
       save, pars,chi2,newpars,newchi2,det,nswapattempt,laststep,npass,nextrecalc, FILENAME = ss.prefix+'mcmctmp.idl'
-      tmp0 = tnow
+      tmpt0 = tnow
       ; stop
    endif
 endfor

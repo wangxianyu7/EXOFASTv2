@@ -1506,7 +1506,7 @@ printandlog, 'Beginning AMOEBA fit; this may take up to ' + string(modeltime*nma
 ss.amoeba = 1B
 ss.delay = 0
 
-if n_elements(optmethod) eq 0 then optmethod = 'amoeba'
+if n_elements(optmethod) eq 0 then optmethod = 'amoeba
 
 if n_elements(restorebest) eq 0 or not FILE_TEST(prefix + 'amoeba.idl') then begin
    if optmethod eq 'amoeba' then begin
@@ -1519,6 +1519,13 @@ endif else begin
    restore, prefix + 'amoeba.idl'
    print,'restoring best fit from ' + prefix + 'amoeba.idl'
 endelse
+
+
+printandlog, 'AMOEBA fit Results', logname
+printandlog, 'Par #      Par Name    Par Value       Amoeba Scale', logname
+for i=0, n_elements(name)-1 do printandlog, string(i, name[i], best[i], scale[i], format='(i3,x,a15,x,f14.6,x,f14.6)'), logname
+printandlog, '', logname
+
 
 ss.delay = delay
 if best[0] eq -1 then begin

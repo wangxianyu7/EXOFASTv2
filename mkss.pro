@@ -1659,7 +1659,7 @@ vsini.latex = 'vsinI_*'
 vsini.label = 'vsini'
 vsini.cgs = 100d0
 vsini.derive = 0
-vsini.scale = 5d3
+vsini.scale = 1d4
 
 vline = parameter
 vline.unit = 'm/s'
@@ -1669,7 +1669,7 @@ vline.label = 'vline'
 vline.cgs = 1000d0
 vline.derive = 0
 vline.value = 4d3
-vline.scale = 2d3
+vline.scale = 1d4
 
 vbeta = parameter
 vbeta.unit = 'm/s'
@@ -1679,7 +1679,7 @@ vbeta.label = 'vbeta'
 vbeta.cgs = 1000d0
 vbeta.derive = 0
 vbeta.value = 4d3
-vbeta.scale = 2d3
+vbeta.scale = 1d4
 
 vgamma = parameter
 vgamma.unit = 'm/s'
@@ -1689,7 +1689,7 @@ vgamma.label = 'vgamma'
 vgamma.cgs = 1000d0
 vgamma.derive = 0
 vgamma.value = 4d3
-vgamma.scale = 2d3
+vgamma.scale = 1d4
 
 vzeta = parameter
 vzeta.unit = 'm/s'
@@ -1699,7 +1699,7 @@ vzeta.label = 'vzeta'
 vzeta.cgs = 1000d0
 vzeta.derive = 0
 vzeta.value = 4d3
-vzeta.scale = 2d3
+vzeta.scale = 1d4
 
 
 svsinisinlambda = parameter
@@ -1708,7 +1708,7 @@ svsinisinlambda.description = ''
 svsinisinlambda.latex = '\sqrt{vsini}\sin{\lambda}'
 svsinisinlambda.label = 'svsinisinlambda'
 svsinisinlambda.cgs = !values.d_nan
-svsinisinlambda.scale = 10d0
+svsinisinlambda.scale = 1d4
 svsinisinlambda.derive = 0
 
 svsinicoslambda = parameter
@@ -1717,7 +1717,7 @@ svsinicoslambda.description = ''
 svsinicoslambda.latex = '\sqrt{vsini}\cos{\lambda}'
 svsinicoslambda.label = 'svsinicoslambda'
 svsinicoslambda.cgs = !values.d_nan
-svsinicoslambda.scale = 10d0
+svsinicoslambda.scale = 1d4
 svsinicoslambda.derive = 0
 
 
