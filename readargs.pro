@@ -182,11 +182,10 @@ while not eof(lun) do begin
          endif else if strupcase(strtrim(entries[0],2)) eq 'RMBANDS' then begin
             rmbands = json_parse(entries[1],/toarray)
          endif else if strupcase(strtrim(entries[0],2)) eq 'RMTRENDS' then begin
-            rmtrends = long(json_parse(entries[1],/toarray))
+            rmtrends = json_parse(entries[1],/toarray)
          endif else if strupcase(strtrim(entries[0],2)) eq 'RMMODEL' then begin
             rmmodel = strtrim(entries[1],2)
          endif else if strupcase(strtrim(entries[0],2)) eq 'OPTMETHOD' then begin
-            print, entries[1]
             optmethod = strtrim(entries[1],2)
          endif else if strupcase(strtrim(entries[0],2)) eq 'RESTOREBEST' then begin
             restorebest = long(entries[1])

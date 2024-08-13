@@ -177,7 +177,7 @@ while ncalls le nmax do begin		;Each iteration
   d = abs(y[ihi]) + abs(y[ilo]) ;Denominator = interval
   if d ne 0.0 then rtol = 2.0 * abs(y[ihi]-y[ilo])/d $
   else rtol = ftol / 2.         ;Terminate if interval is 0
-  if (ncalls mod 100) eq 0 then print, 'AMOEBA: rtol = ', rtol, ', ncalls = ', ncalls, ', y[ilo] (chi2) = ', y[ilo]
+  if (ncalls mod 100) eq 0 then print, 'AMOEBA: rtol = ', rtol, ', ncalls = ', ncalls, ', chi2 = ', y[ilo]
   if rtol lt ftol then begin ;Done?
       t = y[0] & y[0] = y[ilo] & y[ilo] = t ;Sort so fcn min is 0th elem
       t = p[*,ilo] & p[*,ilo] = p[*,0] & p[*,0] = t

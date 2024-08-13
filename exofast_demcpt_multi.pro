@@ -726,7 +726,7 @@ for i=resumendx,maxsteps-1L do begin
    ; save every 10 minutes
    if (tnow-tmpt0) gt 1800 then begin
       laststep = i
-      print, 'Saving at step ' + strtrim(i,2), ' after ' + strtrim(tnow-t00,2) + ' seconds', tnow
+      print, 'Saving at step ' + strtrim(i,2), ' after ' + strtrim(tnow-t00,2) + ' seconds'
       save, pars,chi2,newpars,newchi2,det,nswapattempt,laststep,npass,nextrecalc, FILENAME = ss.prefix+'mcmctmp.idl'
       tmpt0 = tnow
       ; stop

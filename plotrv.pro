@@ -95,7 +95,7 @@ endif
 
 ;; sample the pretty light curve 100 times per (minimum) period 
 ;; for the span of the data
-cadence = min(ss.planet.period.value[ndx])/100d0
+cadence = 1.0/60.0/24.0;min(ss.planet.period.value[ndx])/100d0
 nsteps = (allmaxdate-allmindate)/cadence
 prettytime = allmindate + (allmaxdate-allmindate)*dindgen(nsteps)/(nsteps-1.d0)
 allprettymodel = prettytime*0d0
@@ -117,8 +117,11 @@ for j=0, ss.ntel-1 do begin
 
    ;; subtract gamma, slope, and quadratic terms
 ;;   rv.residuals = rv.rv - (ss.telescope[j].gamma.value[ndx] + ss.star.slope.value[ndx]*(rv.bjd-t0) + ss.star.quad.value[ndx]*(rv.bjd-t0)^2)
-   modelrv = (ss.telescope[j].gamma.value[ndx] + ss.star[0].slope.value[ndx]*(rv.bjd-t0) + ss.star[0].quad.value[ndx]*(rv.bjd-t0)^2)
-
+   ; modelrv = (ss.telescope[j].gamma.value[ndx] + ss.star[0].slope.value[ndx]*(rv.bjd-t0) + ss.star[0].quad.value[ndx]*(rv.bjd-t0)^2)
+   ; 
+   rvtime = ((*(ss.telescope[0].rvptrs)).bjd)
+   t0 = (max(rvtime) + min(rvtime))/2d0
+   modelrv = (ss.telescope[j].gamma.value[ndx] + ss.telescope[j].srv.value[ndx]*(rv.bjd-t0) + ss.telescope[j].qrv.value[ndx]*(rv.bjd-t0)^2)
 ;   exofast_forprint, rv.bjd, modelrv, textout=base+'.rv.trend.txt', format='(f0.10,x,f0.10)'
 ;   stop
 
@@ -161,16 +164,23 @@ for j=0, ss.ntel-1 do begin
             u1 = 0d0 
             u2 = 0d0
          endelse
+         if ss.planet[i].svsinicoslambda.value eq 0d0 then begin
+            this_lambda = 0d0
+         endif else begin
+            this_lambda = atan(ss.planet[i].svsinisinlambda.value, ss.planet[i].svsinicoslambda.value)
+         endelse
+         this_vsini = ss.planet[i].svsinicoslambda.value^2 + ss.planet[i].svsinisinlambda.value^2
 
          modelrv += exofast_rv(rvbjd,ss.planet[i].tp.value[ndx],$
                                ss.planet[i].period.value[ndx],0d0,$
                                ss.planet[i].K.value[ndx],ss.planet[i].e.value[ndx],$
                                ss.planet[i].omega.value[ndx],slope=0,$
                                rossiter=ss.planet[i].rossiter, i=ss.planet[i].i.value[ndx],a=ss.planet[i].ar.value[ndx],$
-                               p=abs(ss.planet[i].p.value[ndx]),vsini=ss.star[ss.planet[i].starndx].vsini.value[ndx],$
-                               lambda=ss.planet[i].lambda.value,vbeta=ss.star[ss.planet[i].starndx].vline.value,$
-                               vgamma=ss.star[ss.planet[i].starndx].vline.value, vzeta=ss.star[ss.planet[i].starndx].vline.value,$
-                               u1=u1,u2=u2,deltarv=deltarv)
+                              p=abs(ss.planet[i].p.value),vsini=this_vsini,$
+                              lambda=this_lambda,vbeta=ss.star[ss.planet[i].starndx].vbeta.value,$
+                              vgamma=ss.star[ss.planet[i].starndx].vgamma.value, vzeta=ss.star[ss.planet[i].starndx].vzeta.value,$
+                              u1=u1,u2=u2,deltarv=deltarv, exptime=ss.telescope[j].exptime, ninterp=ss.telescope[j].ninterp,$
+                              srv=ss.telescope[j].srv.value, qrv=ss.telescope[j].qrv.value)
          
       endelse
       
@@ -189,7 +199,6 @@ for j=0, ss.ntel-1 do begin
    
    ;; re-populate the residual array
    rv.residuals = rv.rv - modelrv
-   
    *(ss.telescope[j].rvptrs) = rv
 
 endfor
@@ -222,7 +231,12 @@ for i=0, ss.nplanets-1 do begin
          u2 = 0d0
       endelse
 
-
+      if ss.planet[i].svsinicoslambda.value eq 0d0 then begin
+         this_lambda = 0d0
+      endif else begin
+         this_lambda = atan(ss.planet[i].svsinisinlambda.value, ss.planet[i].svsinicoslambda.value)
+      endelse
+      this_vsini = ss.planet[i].svsinicoslambda.value^2 + ss.planet[i].svsinisinlambda.value^2
 
       ;; pretty model without quad, slope, or gamma
       prettymodel = exofast_rv(prettytime,ss.planet[i].tp.value[ndx],$
@@ -230,11 +244,14 @@ for i=0, ss.nplanets-1 do begin
                                ss.planet[i].e.value[ndx],ss.planet[i].omega.value[ndx],$
                                slope=0,$
                                rossiter=ss.planet[i].rossiter, i=ss.planet[i].i.value[ndx],a=ss.planet[i].ar.value[ndx],$
-                               p=abs(ss.planet[i].p.value[ndx]),vsini=ss.star[ss.planet[i].starndx].vsini.value[ndx],$
-                               lambda=ss.planet[i].lambda.value,vbeta=ss.star[ss.planet[i].starndx].vline.value,$
+                               p=abs(ss.planet[i].p.value[ndx]),vsini=this_vsini,$
+                               lambda=this_lambda,vbeta=ss.star[ss.planet[i].starndx].vline.value,$
                                vgamma=ss.star[ss.planet[i].starndx].vline.value, vzeta=ss.star[ss.planet[i].starndx].vline.value,$
-                               u1=u1,u2=u2,deltarv=prettydeltarv)
-
+                               u1=u1,u2=u2,deltarv=prettydeltarv,srv=0B, qrv=0B)
+                              ;  p=abs(ss.planet[i].p.value[ndx]),vsini=this_vsini[ndx],$
+                              ;  lambda=this_lambda,vbeta=ss.star[ss.planet[i].starndx].vbeta.value,$
+                              ;  vgamma=ss.star[ss.planet[i].starndx].vgamma.value[ndx], vzeta=ss.star[ss.planet[i].starndx].vzeta.value[ndx],$
+                              ;  u1=u1,u2=u2,deltarv=prettydeltarv, exptime=ss.telescope[j].exptime[ndx], ninterp=ss.telescope[j].ninterp[ndx])
       allprettymodel += prettymodel
 
       if n_elements(psname) eq 1 then begin
@@ -253,18 +270,25 @@ for i=0, ss.nplanets-1 do begin
    for j=0, ss.ntel-1 do begin
       rv = *(ss.telescope[j].rvptrs)
       if rv.planet ne -1 then continue
-      
+
       err = sqrt(rv.err^2 + ss.telescope[j].jittervar.value[ndx])
+
+      if ss.planet[i].svsinicoslambda.value eq 0d0 then begin
+         this_lambda = 0d0
+      endif else begin
+         this_lambda = atan(ss.planet[i].svsinisinlambda.value, ss.planet[i].svsinicoslambda.value)
+      endelse
+      this_vsini = ss.planet[i].svsinicoslambda.value^2 + ss.planet[i].svsinisinlambda.value^2
+
       modelrv = exofast_rv(rv.bjd,ss.planet[i].tp.value[ndx],$
                            ss.planet[i].period.value[ndx],0d0,$
                            ss.planet[i].K.value[ndx],ss.planet[i].e.value[ndx],$
                            ss.planet[i].omega.value[ndx],slope=0,$
                            rossiter=ss.planet[i].rossiter, i=ss.planet[i].i.value[ndx],a=ss.planet[i].ar.value[ndx],$
-                           p=abs(ss.planet[i].p.value[ndx]),vsini=ss.star[ss.planet[i].starndx].vsini.value[ndx],$
-                           lambda=ss.planet[i].lambda.value,vbeta=ss.star[ss.planet[i].starndx].vline.value,$
-                           vgamma=ss.star[ss.planet[i].starndx].vline.value, vzeta=ss.star[ss.planet[i].starndx].vline.value,$
-                           u1=u1,u2=u2,deltarv=deltarv)
-      
+                           p=abs(ss.planet[i].p.value),vsini=this_vsini,$
+                           lambda=this_lambda,vbeta=ss.star[ss.planet[i].starndx].vbeta.value,$
+                           vgamma=ss.star[ss.planet[i].starndx].vgamma.value, vzeta=ss.star[ss.planet[i].starndx].vzeta.value,$
+                           u1=u1,u2=u2,deltarv=deltarv, exptime=ss.telescope[j].exptime, ninterp=ss.telescope[j].ninterp)
       mintime = min(rv.bjd,max=maxtime)
       minrv = min(rv.residuals-err+modelrv)
       maxrv = max(rv.residuals+err+modelrv)
@@ -288,15 +312,23 @@ for i=0, ss.nplanets-1 do begin
       rv = *(ss.telescope[j].rvptrs)
       if rv.planet ne -1 then continue
       err = sqrt(rv.err^2 + ss.telescope[j].jittervar.value[ndx])
+
+      if ss.planet[i].svsinicoslambda.value eq 0d0 then begin
+         this_lambda = 0d0
+      endif else begin
+         this_lambda = atan(ss.planet[i].svsinisinlambda.value, ss.planet[i].svsinicoslambda.value)
+      endelse
+      this_vsini = ss.planet[i].svsinicoslambda.value^2 + ss.planet[i].svsinisinlambda.value^2
+
       modelrv = exofast_rv(rv.bjd,ss.planet[i].tp.value[ndx],$
                            ss.planet[i].period.value[ndx],0d0,$
                            ss.planet[i].K.value[ndx],ss.planet[i].e.value[ndx],$
                            ss.planet[i].omega.value[ndx],slope=0,$
                            rossiter=ss.planet[i].rossiter, i=ss.planet[i].i.value[ndx],a=ss.planet[i].ar.value[ndx],$
-                           p=abs(ss.planet[i].p.value[ndx]),vsini=ss.star[ss.planet[i].starndx].vsini.value[ndx],$
-                           lambda=ss.planet[i].lambda.value,vbeta=ss.star[ss.planet[i].starndx].vline.value,$
-                           vgamma=ss.star[ss.planet[i].starndx].vline.value, vzeta=ss.star[ss.planet[i].starndx].vline.value,$
-                           u1=u1,u2=u2,deltarv=deltarv,t0=0d0)
+                           p=abs(ss.planet[i].p.value),vsini=this_vsini,$
+                           lambda=this_lambda,vbeta=ss.star[ss.planet[i].starndx].vbeta.value,$
+                           vgamma=ss.star[ss.planet[i].starndx].vgamma.value, vzeta=ss.star[ss.planet[i].starndx].vzeta.value,$
+                           u1=u1,u2=u2,deltarv=deltarv, exptime=ss.telescope[j].exptime, ninterp=ss.telescope[j].ninterp,t0=0d0)
       time=(((rv.bjd-ss.planet[i].tc.value[ndx]) mod ss.planet[i].period.value[ndx])/$
             ss.planet[i].period.value[ndx]+1.25d0) mod 1
       plotsym, symbols[j mod nsymbols], symsize, fill=fills[j mod nfills], color=colors[j mod ncolors]
@@ -367,15 +399,21 @@ for i=0, ss.nplanets-1 do begin
          time = exofast_mod(rv.bjd - ss.planet[i].tc.value[ndx],period,/negative)*24d0
          inrange = where(time ge xrange[0] and time le xrange[1])
          if inrange[0] ne -1 then begin
+            if ss.planet[i].svsinicoslambda.value eq 0d0 then begin
+               this_lambda = 0d0
+            endif else begin
+               this_lambda = atan(ss.planet[i].svsinisinlambda.value, ss.planet[i].svsinicoslambda.value)
+            endelse
+            this_vsini = ss.planet[i].svsinicoslambda.value^2 + ss.planet[i].svsinisinlambda.value^2
             modelrv = exofast_rv(rv.bjd[inrange],ss.planet[i].tp.value[ndx],$
                                  ss.planet[i].period.value[ndx],0d0,$
                                  ss.planet[i].K.value[ndx],ss.planet[i].e.value[ndx],$
                                  ss.planet[i].omega.value[ndx],slope=0,$
                                  rossiter=ss.planet[i].rossiter, i=ss.planet[i].i.value[ndx],a=ss.planet[i].ar.value[ndx],$
-                                 p=abs(ss.planet[i].p.value[ndx]),vsini=ss.star[ss.planet[i].starndx].vsini.value[ndx],$
-                                 lambda=ss.planet[i].lambda.value,vbeta=ss.star[ss.planet[i].starndx].vline.value,$
-                                 vgamma=ss.star[ss.planet[i].starndx].vline.value, vzeta=ss.star[ss.planet[i].starndx].vline.value,$
-                                 u1=u1,u2=u2,deltarv=deltarv,t0=0d0)       
+                                 p=abs(ss.planet[i].p.value),vsini=this_vsini,$
+                                 lambda=this_lambda,vbeta=ss.star[ss.planet[i].starndx].vbeta.value,$
+                                 vgamma=ss.star[ss.planet[i].starndx].vgamma.value, vzeta=ss.star[ss.planet[i].starndx].vzeta.value,$
+                                 u1=u1,u2=u2,deltarv=deltarv, exptime=ss.telescope[j].exptime, ninterp=ss.telescope[j].ninterp,t0=0d0)    
 
             err = sqrt(rv.err[inrange]^2 + ss.telescope[j].jittervar.value[ndx])
             ymin = min([deltarv + rv.residuals[inrange] - err,ymin])
@@ -393,15 +431,24 @@ for i=0, ss.nplanets-1 do begin
       if rv.planet eq -1 then begin        
          
          time = exofast_mod(rv.bjd - ss.planet[i].tc.value[ndx], period,/negative)*24d0
+
+
+         if ss.planet[i].svsinicoslambda.value eq 0d0 then begin
+            this_lambda = 0d0
+         endif else begin
+            this_lambda = atan(ss.planet[i].svsinisinlambda.value, ss.planet[i].svsinicoslambda.value)
+         endelse
+         this_vsini = ss.planet[i].svsinicoslambda.value^2 + ss.planet[i].svsinisinlambda.value^2
+
          modelrv = exofast_rv(rv.bjd,ss.planet[i].tp.value[ndx],$
                               ss.planet[i].period.value[ndx],0d0,$
                               ss.planet[i].K.value[ndx],ss.planet[i].e.value[ndx],$
                               ss.planet[i].omega.value[ndx],slope=0,$
                               rossiter=ss.planet[i].rossiter, i=ss.planet[i].i.value[ndx],a=ss.planet[i].ar.value[ndx],$
-                              p=abs(ss.planet[i].p.value[ndx]),vsini=ss.star[ss.planet[i].starndx].vsini.value[ndx],$
-                              lambda=ss.planet[i].lambda.value,vbeta=ss.star[ss.planet[i].starndx].vline.value,$
-                              vgamma=ss.star[ss.planet[i].starndx].vline.value, vzeta=ss.star[ss.planet[i].starndx].vline.value,$
-                              u1=u1,u2=u2,deltarv=deltarv,t0=0d0)        
+                              p=abs(ss.planet[i].p.value),vsini=this_vsini,$
+                              lambda=this_lambda,vbeta=ss.star[ss.planet[i].starndx].vbeta.value,$
+                              vgamma=ss.star[ss.planet[i].starndx].vgamma.value, vzeta=ss.star[ss.planet[i].starndx].vzeta.value,$
+                              u1=u1,u2=u2,deltarv=deltarv, exptime=ss.telescope[j].exptime, ninterp=ss.telescope[j].ninterp,t0=0d0)        
 
          plotsym, symbols[j mod nsymbols], symsize, fill=fills[j mod nfills], color=colors[j mod ncolors]
          oploterr, time, (deltarv + rv.residuals), rv.err, 8

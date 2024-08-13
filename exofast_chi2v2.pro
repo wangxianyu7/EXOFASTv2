@@ -1090,7 +1090,7 @@ for j=0, ss.ntel-1 do begin
                this_lambda = atan(ss.planet[i].svsinisinlambda.value, ss.planet[i].svsinicoslambda.value)
             endelse
 
-            this_vsini = sqrt(ss.planet[i].svsinicoslambda.value^2 + ss.planet[i].svsinicoslambda.value^2)
+            this_vsini = ss.planet[i].svsinicoslambda.value^2 + ss.planet[i].svsinisinlambda.value^2
             modelrv += exofast_rv(rvbjd,ss.planet[i].tp.value,ss.planet[i].period.value,$
                                   0d0,ss.planet[i].K.value,$
                                   ss.planet[i].e.value,ss.planet[i].omega.value,$
@@ -1099,8 +1099,8 @@ for j=0, ss.ntel-1 do begin
                                   p=abs(ss.planet[i].p.value),vsini=this_vsini,$
                                   lambda=this_lambda,vbeta=ss.star[ss.planet[i].starndx].vbeta.value,$
                                   vgamma=ss.star[ss.planet[i].starndx].vgamma.value, vzeta=ss.star[ss.planet[i].starndx].vzeta.value,$
-                                  u1=u1,u2=u2,deltarv=deltarv, exptime=ss.telescope[j].exptime, $
-                                  ninterp=ss.telescope[j].ninterp)
+                                  u1=u1,u2=u2,deltarv=deltarv, exptime=ss.telescope[j].exptime, ninterp=ss.telescope[j].ninterp,$
+                                  srv=ss.telescope[j].srv.value, qrv=ss.telescope[j].qrv.value)
 
             u1err = 0.05d0
             u2err = 0.05d0
@@ -1123,7 +1123,7 @@ for j=0, ss.ntel-1 do begin
                      if label eq 'vsini' then break
                   endfor
                endfor
-               chi2 += ((this_vsini - prior.value[0])/prior.gaussian_width)^2
+               chi2 += ((this_vsini*1000 - prior.value[0])/prior.gaussian_width)^2
             endif
          endelse
 

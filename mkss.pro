@@ -1066,7 +1066,7 @@ srv = parameter
 srv.unit = 'm/s/day'
 srv.description = 'RM slope'
 srv.latex = '\dot{\gamma}'
-srv.label = 'slopev'
+srv.label = 'srv'
 srv.cgs = 100d0/86400d0
 srv.fit = 0
 srv.derive=0
@@ -3088,9 +3088,24 @@ for i=0, ss.ntel-1 do begin
       if N_ELEMENTS(rmtrends) eq ss.ntel then begin
          if rmtrends[i] eq 'slope' then begin
             ss.telescope[i].srv.fit = 1B
+            rvtime = ((*(ss.telescope[0].rvptrs)).bjd)
+            rv_value = ((*(ss.telescope[0].rvptrs)).rv)
+            t0 = (max(rvtime) + min(rvtime))/2d0
+            coeffs = poly_fit(rvtime-t0, rv_value, 1, yfit=yfit)
+            ss.telescope[i].srv.value = coeffs[1]
+            print,'slope',i,coeffs[1]
+            ss.telescope[i].srv.userchanged = 1B
+
          endif else if rmtrends[i] eq 'quad' then begin
             ss.telescope[i].qrv.fit = 1B
             ss.telescope[i].srv.fit = 1B
+            rvtime = ((*(ss.telescope[0].rvptrs)).bjd)
+            rv_value = ((*(ss.telescope[0].rvptrs)).rv)
+            coeffs = poly_fit(rvtime-t0, rv_value, 2, yfit=yfit)
+            ss.telescope[i].srv.value = coeffs[1]
+            ss.telescope[i].srv.userchanged = 1B
+            ss.telescope[i].qrv.value = coeffs[2]
+            ss.telescope[i].qrv.userchanged = 1B
          endif
       endif
    endif

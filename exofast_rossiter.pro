@@ -97,17 +97,30 @@ FUNCTION exofast_rossiter, time, inc_rad, ar, TPeriastron, period, e, omega_rad,
     IF rmmodel EQ 'hirano2010' THEN hirano2010 = 1
     IF rmmodel EQ 'hirano2011' THEN hirano2011 = 1
 
-    vsini = vsini / 1000
-    vbeta = vbeta / 1000
-    vgamma = vgamma / 1000
-    zeta = zeta / 1000
+    vsini = vsini / 1000D0
+    vbeta = vbeta / 1000D0
+    vgamma = vgamma / 1000D0
+    zeta = zeta / 1000D0
 
     ; Get the number of points
     npoints = N_ELEMENTS(time)
     IF N_ELEMENTS(ninterp) EQ 0 THEN ninterp = 1
 
+    ; force supersampling to be an integer
+
+    exptime = abs(median(ts_diff(time,1)))*24*60D0
+    IF exptime LT 3 THEN BEGIN
+        ninterp = 0
+    ENDIF ELSE BEGIN
+        ninterp = ROUND(exptime/2D))
+    ENDELSE
+
+
     ; Interpolate if ninterp is greater than 1
     IF ninterp GT 1 THEN BEGIN
+
+
+
         transitbjd = time # (DBLARR(ninterp) + 1D0) + $
                      ((DINDGEN(ninterp) / ninterp - (ninterp - 1D0) / (2D0 * ninterp)) / $
                      1440D0 * exptime) ## (DBLARR(npoints) + 1D0)
