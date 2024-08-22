@@ -1105,8 +1105,8 @@ for j=0, ss.ntel-1 do begin
             u1err = 0.05d0
             u2err = 0.05d0
             if ss.planet[i].rossiter then begin
-               chi2 += ((band.u1.value-u1claret)/u1err)^2
-               chi2 += ((band.u2.value-u2claret)/u2err)^2
+               ; chi2 += ((band.u1.value-u1claret)/u1err)^2
+               ; chi2 += ((band.u2.value-u2claret)/u2err)^2
                chi2 += ((ss.star[ss.planet[i].starndx].vzeta.value-vmac*1000)/1)^2
                for k=0, n_elements(rv.rv)-1 do begin
                   for i=0L, n_elements(*ss.priors)-1 do begin
@@ -1221,6 +1221,7 @@ endif
 
 ;; transit timing model
 for i=0, ss.nplanets-1 do begin
+   if ss.planet[i].fittt eq 0 then continue
    ttdata = *(ss.planet[i].transittimingptrs)
    if ttdata ne !null then begin
       ttchi2 = 0d0
@@ -1235,6 +1236,7 @@ for i=0, ss.nplanets-1 do begin
 
 
       chi2 += ttchi2
+      ; printandlog, 'Transit Timing penalty = ' + strtrim(ttchi2,2),ss.logname
       if ss.verbose then printandlog, 'Transit Timing penalty = ' + strtrim(ttchi2,2),ss.logname
    endif
 endfor
@@ -1395,7 +1397,7 @@ for j=0L, ss.ntran-1 do begin
 ;      ramp_profile -= ss.transit[j].rampamp.value*(transit.bjd[0]-transit.bjd)/(ss.transit[j].rampexp.value)^2*2d0) ;; this term has a near-perfect correlation with time^2
 
       bad = where(~finite(ramp_profile),nbad)
-      if nbad gt 0 then print, ss.transit[j].rampamp.value, ss.transit[j].rampexp.value
+      if nbad gt 0 then print, 'Warning, nbad gt 0', ss.transit[j].rampamp.value, ss.transit[j].rampexp.value
       modelflux *= ramp_profile
    endif
    
@@ -1408,22 +1410,22 @@ for j=0L, ss.ntran-1 do begin
       modelflux *= norm
    endif else norm = 1d0
 
-phase = (transitbjd - ss.planet[0].tc.value) mod ss.planet[0].period.value
-toohigh = where(phase gt ss.planet[0].period.value/2d0)
-if toohigh[0] ne -1 then phase[toohigh] -= ss.planet[0].period.value
-toolow = where(phase lt -ss.planet[0].period.value/2d0)
-if toolow[0] ne -1 then phase[toohigh] += ss.planet[0].period.value
+   phase = (transitbjd - ss.planet[0].tc.value) mod ss.planet[0].period.value
+   toohigh = where(phase gt ss.planet[0].period.value/2d0)
+   if toohigh[0] ne -1 then phase[toohigh] -= ss.planet[0].period.value
+   toolow = where(phase lt -ss.planet[0].period.value/2d0)
+   if toolow[0] ne -1 then phase[toohigh] += ss.planet[0].period.value
 
-;set_plot, 'ps'
-;device, filename='toi2165.ps'
-;loadct, 39, /silent
-;red = 254
-;sorted = sort(phase)
-;plot, phase, transit.flux, psym=1, /ynoz, xtitle='phased time', ytitle='Normalized flux'
-;oplot, phase[sorted], modelflux[sorted],color=red
-;device, /close
-;spawn, 'gv toi2165.ps &'
-;stop
+   ;set_plot, 'ps'
+   ;device, filename='toi2165.ps'
+   ;loadct, 39, /silent
+   ;red = 254
+   ;sorted = sort(phase)
+   ;plot, phase, transit.flux, psym=1, /ynoz, xtitle='phased time', ytitle='Normalized flux'
+   ;oplot, phase[sorted], modelflux[sorted],color=red
+   ;device, /close
+   ;spawn, 'gv toi2165.ps &'
+   ;stop
 
    ;; chi^2
    if ss.transit[j].sigma_r.fit then begin

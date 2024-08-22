@@ -69,9 +69,11 @@ starrvs = [-1]
 companionrvs = [-1]
 
 legendndx = lonarr(ss.nplanets+1, ss.ntel)
+rmtime = 0d0
 for j=0L, ss.ntel-1 do begin
    rv = *(ss.telescope[j].rvptrs)
    mindate = min(rv.bjd,max=maxdate)
+   if maxdate - mindate lt 1 then rmtime = rv.bjd
    if mindate lt allmindate then allmindate = mindate
    if maxdate gt allmaxdate then allmaxdate = maxdate
    
@@ -95,9 +97,13 @@ endif
 
 ;; sample the pretty light curve 100 times per (minimum) period 
 ;; for the span of the data
-cadence = 1.0/60.0/24.0;min(ss.planet.period.value[ndx])/100d0
+cadence = min(ss.planet.period.value[ndx])/100d0
 nsteps = (allmaxdate-allmindate)/cadence
 prettytime = allmindate + (allmaxdate-allmindate)*dindgen(nsteps)/(nsteps-1.d0)
+rmnsteps = (max(rmtime)+0.5-min(rmtime)-0.5)/(1.0/60.0/24.0)
+rmprettytime = min(rmtime)-0.5 + (max(rmtime)-min(rmtime)+1)*dindgen(rmnsteps)/(rmnsteps-1.d0)
+prettytime = [prettytime, rmprettytime]
+prettytime = prettytime[sort(prettytime)]
 allprettymodel = prettytime*0d0
 allprettymodel2 = prettytime*0d0
 
@@ -120,8 +126,9 @@ for j=0, ss.ntel-1 do begin
    ; modelrv = (ss.telescope[j].gamma.value[ndx] + ss.star[0].slope.value[ndx]*(rv.bjd-t0) + ss.star[0].quad.value[ndx]*(rv.bjd-t0)^2)
    ; 
    rvtime = ((*(ss.telescope[0].rvptrs)).bjd)
-   t0 = (max(rvtime) + min(rvtime))/2d0
-   modelrv = (ss.telescope[j].gamma.value[ndx] + ss.telescope[j].srv.value[ndx]*(rv.bjd-t0) + ss.telescope[j].qrv.value[ndx]*(rv.bjd-t0)^2)
+   t0_each_rv = (max(rvtime) + min(rvtime))/2d0
+   modelrv = (ss.telescope[j].gamma.value[ndx] + ss.telescope[j].srv.value[ndx]*(rv.bjd-t0_each_rv) + ss.telescope[j].qrv.value[ndx]*(rv.bjd-t0_each_rv)^2)
+   modelrv = modelrv + ss.star[0].slope.value[ndx]*(rv.bjd-t0) + ss.star[0].quad.value[ndx]*(rv.bjd-t0)^2
 ;   exofast_forprint, rv.bjd, modelrv, textout=base+'.rv.trend.txt', format='(f0.10,x,f0.10)'
 ;   stop
 
@@ -164,6 +171,9 @@ for j=0, ss.ntel-1 do begin
             u1 = 0d0 
             u2 = 0d0
          endelse
+         band = ss.band[ss.telescope[j].bandndx]
+         u1 = band.u1.value
+         u2 = band.u2.value
          if ss.planet[i].svsinicoslambda.value eq 0d0 then begin
             this_lambda = 0d0
          endif else begin
@@ -237,7 +247,7 @@ for i=0, ss.nplanets-1 do begin
          this_lambda = atan(ss.planet[i].svsinisinlambda.value, ss.planet[i].svsinicoslambda.value)
       endelse
       this_vsini = ss.planet[i].svsinicoslambda.value^2 + ss.planet[i].svsinisinlambda.value^2
-
+      
       ;; pretty model without quad, slope, or gamma
       prettymodel = exofast_rv(prettytime,ss.planet[i].tp.value[ndx],$
                                ss.planet[i].period.value[ndx],0d0,ss.planet[i].K.value[ndx],$
@@ -279,7 +289,9 @@ for i=0, ss.nplanets-1 do begin
          this_lambda = atan(ss.planet[i].svsinisinlambda.value, ss.planet[i].svsinicoslambda.value)
       endelse
       this_vsini = ss.planet[i].svsinicoslambda.value^2 + ss.planet[i].svsinisinlambda.value^2
-
+      band = ss.band[ss.telescope[j].bandndx]
+      u1 = band.u1.value
+      u2 = band.u2.value
       modelrv = exofast_rv(rv.bjd,ss.planet[i].tp.value[ndx],$
                            ss.planet[i].period.value[ndx],0d0,$
                            ss.planet[i].K.value[ndx],ss.planet[i].e.value[ndx],$
@@ -319,7 +331,9 @@ for i=0, ss.nplanets-1 do begin
          this_lambda = atan(ss.planet[i].svsinisinlambda.value, ss.planet[i].svsinicoslambda.value)
       endelse
       this_vsini = ss.planet[i].svsinicoslambda.value^2 + ss.planet[i].svsinisinlambda.value^2
-
+      band = ss.band[ss.telescope[j].bandndx]
+      u1 = band.u1.value
+      u2 = band.u2.value
       modelrv = exofast_rv(rv.bjd,ss.planet[i].tp.value[ndx],$
                            ss.planet[i].period.value[ndx],0d0,$
                            ss.planet[i].K.value[ndx],ss.planet[i].e.value[ndx],$
@@ -405,6 +419,9 @@ for i=0, ss.nplanets-1 do begin
                this_lambda = atan(ss.planet[i].svsinisinlambda.value, ss.planet[i].svsinicoslambda.value)
             endelse
             this_vsini = ss.planet[i].svsinicoslambda.value^2 + ss.planet[i].svsinisinlambda.value^2
+            band = ss.band[ss.telescope[j].bandndx]
+            u1 = band.u1.value
+            u2 = band.u2.value
             modelrv = exofast_rv(rv.bjd[inrange],ss.planet[i].tp.value[ndx],$
                                  ss.planet[i].period.value[ndx],0d0,$
                                  ss.planet[i].K.value[ndx],ss.planet[i].e.value[ndx],$
@@ -439,7 +456,9 @@ for i=0, ss.nplanets-1 do begin
             this_lambda = atan(ss.planet[i].svsinisinlambda.value, ss.planet[i].svsinicoslambda.value)
          endelse
          this_vsini = ss.planet[i].svsinicoslambda.value^2 + ss.planet[i].svsinisinlambda.value^2
-
+         band = ss.band[ss.telescope[j].bandndx]
+         u1 = band.u1.value
+         u2 = band.u2.value
          modelrv = exofast_rv(rv.bjd,ss.planet[i].tp.value[ndx],$
                               ss.planet[i].period.value[ndx],0d0,$
                               ss.planet[i].K.value[ndx],ss.planet[i].e.value[ndx],$

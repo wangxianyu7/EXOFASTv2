@@ -366,11 +366,11 @@ if tranpath ne '' or astrompath ne '' then begin
    allowedbands = ['U','B','V','R','I','J','H','K',$
                    'Sloanu','Sloang','Sloanr','Sloani','Sloanz',$
                    'Kepler','TESS','CoRoT','Spit36','Spit45','Spit58','Spit80',$
-                   'u','b','v','y']
+                   'u','b','v','y', 'rm']
    prettybands = ['U','B','V','R','I','J','H','K',$
                   "u'","g'","r'","i'","z'",$
                   'Kepler','TESS','CoRoT','$3.6\mu m$','$4.5\mu m$','$5.8\mu m$','$8.0\mu m$',$
-                  'u','b','v','y']
+                  'u','b','v','y', 'rm']
    bands = strarr(ntran+nastrom)
    for i=0, ntran+nastrom-1 do begin
       if i lt ntran then begin
@@ -2320,6 +2320,7 @@ planet = create_struct($
          'starndx',0L,$
          'fittran',fittran[0],$        ;; booleans
          'fitrv',fitrv[0],$
+         'fittt',0L,$
          'chen',chen[0],$
          'i180',i180[0],$
          'rossiter',rossiter[0],$
@@ -2674,13 +2675,13 @@ plabels = ['b','c','d','e','f','g','h','i','j','k','l','m','n',$
 if ttvpath ne '' then begin
    print,'The index for each transit timing file is:'
    ttvfiles=file_search(ttvpath,count=nttv)
-   
+   ss.planet[*].transittimingptrs = ptrarr(nplanets,/allocate_heap)
    for j=0, nttv-1 do begin
       print,j,ttvfiles[j]
       ttv_letter = (strsplit(file_basename(ttvfiles[j]),'.',/extract))(1)
    endfor
 endif 
-ss.planet[*].transittimingptrs = ptrarr(nplanets,/allocate_heap)
+
 for i=0, nplanets-1 do begin
    ss.planet[i].label = plabels[i]
    ss.planet[i].starndx = starndx[i]
@@ -2689,9 +2690,11 @@ for i=0, nplanets-1 do begin
    ;    ss.planet[i].transittimingptrs = PTR_NEW()
    
    if ttvpath ne '' then begin
+
       for j=0, nttv-1 do begin
          ttv_letter = (strsplit(file_basename(ttvfiles[j]),'.',/extract))(1)
          if ttv_letter eq plabels[i] then begin
+            ss.planet[i].fittt = 1L
             *(ss.planet[i].transittimingptrs) = read_multi_col(ttvfiles[j])
          endif
       endfor
@@ -2877,6 +2880,13 @@ for i=0, nband-1 do begin
    else ss.band[i].u1.value = 0d0
    if finite(ldcoeffs[1]) then ss.band[i].u2.value = ldcoeffs[1] $
    else ss.band[i].u2.value = 0d0
+
+   ; set the limb darkening coefficients for the RM band
+   if bands[i] eq 'rm' then begin
+      ss.band[i].u1.value = 0.6d0
+      ss.band[i].u2.value = 0.0d0
+   endif
+
    match = where(fitthermal eq ss.band[i].name)
    if match[0] ne -1 then begin
       ss.band[i].thermal.fit = 1B
@@ -3093,7 +3103,6 @@ for i=0, ss.ntel-1 do begin
             t0 = (max(rvtime) + min(rvtime))/2d0
             coeffs = poly_fit(rvtime-t0, rv_value, 1, yfit=yfit)
             ss.telescope[i].srv.value = coeffs[1]
-            print,'slope',i,coeffs[1]
             ss.telescope[i].srv.userchanged = 1B
 
          endif else if rmtrends[i] eq 'quad' then begin

@@ -1210,7 +1210,7 @@ pro exofastv2, priorfile=priorfile, $
                nocovar=nocovar, $
                plotonly=plotonly, bestonly=bestonly, $
                badstart=badstart, $
-               restorebest=restorebest,optmethod=optmethod
+               restorebest=restorebest,optmethod=optmethod,optcriteria=optcriteria,stopnow=stopnow
                
 ;; this is the stellar system structure
 COMMON chi2_block, ss
@@ -1275,13 +1275,15 @@ if lmgr(/vm) or lmgr(/runtime) then begin
              mksummarypg=mksummarypg,$
              nocovar=nocovar,$
              plotonly=plotonly, bestonly=bestonly,$
-             logname=logname,restorebest=restorebest,optmethod=optmethod
+             logname=logname,restorebest=restorebest,optmethod=optmethod,optcriteria=optcriteria
 
 endif
 
 ;; default prefix for all output files (filename without extension)
 if n_elements(prefix) eq 0 then prefix = 'fitresults/planet.'
 basename = file_basename(prefix)
+
+if n_elements(stopnow) eq 0 then stopnow = 0
 
 ;; output to log file and the screen
 logname = prefix + 'log'
@@ -1510,9 +1512,11 @@ if n_elements(optmethod) eq 0 then optmethod = 'amoeba
 
 if n_elements(restorebest) eq 0 or not FILE_TEST(prefix + 'amoeba.idl') then begin
    if optmethod eq 'amoeba' then begin
-      best = exofast_amoeba(1d-5,function_name=chi2func,p0=pars,scale=scale,nmax=nmax)
+      if n_elements(optcriteria) eq 0 then optcriteria = 1d-5
+      best = exofast_amoeba(optcriteria,function_name=chi2func,p0=pars,scale=scale,nmax=nmax)
    endif else begin
-      best = exofast_de(ss.nchains,pars,scale,10000,chi2func,1)
+      if n_elements(optcriteria) eq 0 then optcriteria = 1
+      best = exofast_de(ss.nchains,pars,scale,100000,chi2func,optcriteria)
       best = exofast_amoeba(1d-5,function_name=chi2func,p0=best,scale=scale,nmax=nmax)
    endelse
 endif else begin
@@ -1521,10 +1525,13 @@ endif else begin
 endelse
 
 
-printandlog, 'AMOEBA fit Results', logname
-printandlog, 'Par #      Par Name    Par Value       Amoeba Scale', logname
-for i=0, n_elements(name)-1 do printandlog, string(i, name[i], best[i], scale[i], format='(i3,x,a15,x,f14.6,x,f14.6)'), logname
+printandlog, 'AMOEBA/DE fit Results', logname
+printandlog, 'Par #      Par Name    Par Value', logname
+for i=0, n_elements(name)-1 do printandlog, string(i, name[i], best[i], format='(i3,x,a15,x,f14.6)'), logname
 printandlog, '', logname
+
+
+
 
 
 ss.delay = delay
@@ -1615,7 +1622,7 @@ if nthreads gt 1 then begin
       ;; make sure each thread is run from the current working directory
       thread_array[i].obridge->setvar,'cwd',cwd
       thread_array[i].obridge->execute,'cd, cwd'
-      
+      print, 'thread ' + strtrim(i,2) + ' started', ', Number of threads: ' + strtrim(nthreads,2)
       ;; compile all the codes in each thread so compilation messages don't pollute the screen
       if double(!version.release) ge 6.4d0 and ~lmgr(/vm) and ~lmgr(/runtime) and ~runninggdl then $
          thread_array[i].obridge->execute, "resolve_all, resolve_either=[chi2func,'exofast_random','ramp_func'], resolve_procedure=['exofastv2'],skip_routines=['cggreek'],/cont,/quiet"
@@ -1674,7 +1681,7 @@ if not keyword_set(bestonly) then begin
                          burnndx=burnndx, goodchains=goodchains, seed=seed, randomfunc=randomfunc, $
                          gelmanrubin=gelmanrubin, tz=tz, maxgr=maxgr, mintz=mintz, $
                          stretch=stretch, logname=logname, angular=angular, $
-                         keephot=keephot, hotpars=hotpars, hotchi2=hotchi2, thread_array=thread_array
+                         keephot=keephot, hotpars=hotpars, hotchi2=hotchi2, thread_array=thread_array,stopnow=stopnow
    
    if pars[0] eq -1 then begin
       printandlog, 'MCMC Failed to find a stepping scale. This usually means one or more parameters are unconstrained by the data or priors.', logname
@@ -1733,6 +1740,7 @@ ss.verbose = keyword_set(verbose)
 ;; make a new stellar system structure with only fitted and derived
 ;; parameters, populated by the pars array
 ;mcmcss = mcmc2str(pars, ss)
+print, 'Making a new stellar structure with only fitted and derived parameters'
 mcmcss = mkss(priorfile=priorfile, $
               prefix=prefix,$
               ;; data file inputs
@@ -1812,6 +1820,7 @@ if output[0] ne '' then versiontxt = ", created using EXOFASTv2 commit number " 
 else versiontxt = ''
 
 ;; output filenames
+print, 'Creating output files: ' + prefix + 'pdf.ps, ' + prefix + 'covar.ps, ' + prefix + 'chain.ps, ' + prefix + 'median.tex, ' + prefix + 'median.csv'
 label = "tab:" + basename
 caption = "Median values and 68\% confidence interval for " + basename + versiontxt
 parfile = prefix + 'pdf.ps'

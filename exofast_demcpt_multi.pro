@@ -211,7 +211,7 @@ pro exofast_demcpt_multi, bestpars,chi2func,pars,chi2=chi2, tofit=tofit,$
                     burnndx=burnndx, removeburn=removeburn, goodchains=goodchains,$
                     gelmanrubin=gelmanrubin, tz=tz, maxgr=maxgr, mintz=mintz, $
                     derived=derived, resumendx=resumendx,stretch=stretch, logname=logname, acceptancerate=acceptancerate,$
-                    thread_array=thread_array
+                    thread_array=thread_array,stopnow=stopnow
 
 COMMON chi2_block, ss
 
@@ -597,6 +597,8 @@ for i=resumendx,maxsteps-1L do begin
       if !STOPNOW EQ 1 then break
    endif
 
+
+
    ;; Test for convergence as outlined in Ford 2006
    ;; must be converged for 6 consecutive passes
    ;; tz > 1000 and Gelman-Rubin < 1.01 => converged 
@@ -722,17 +724,18 @@ for i=resumendx,maxsteps-1L do begin
                printandlog, string(100.d0*(i+1)/maxsteps,acceptancerate,lasttz,strtrim(fix(mintz),2),lastgr,maxgr,timeleft,units,format=format), logname
             endif
          endelse
+      if  stopnow EQ 1 then break
       endif
    ; save every 10 minutes
    if (tnow-tmpt0) gt 1800 then begin
       laststep = i
       print, 'Saving at step ' + strtrim(i,2), ' after ' + strtrim(tnow-t00,2) + ' seconds'
-      save, pars,chi2,newpars,newchi2,det,nswapattempt,laststep,npass,nextrecalc, FILENAME = ss.prefix+'mcmctmp.idl'
+      save, pars,chi2,newpars,det,nswapattempt,acceptancerate,laststep,npass,nextrecalc, FILENAME = ss.prefix+'mcmctmp.idl'
       tmpt0 = tnow
-      ; stop
+
    endif
 endfor
-save, pars,chi2,newpars,newchi2,det,nswapattempt,laststep,npass,nextrecalc, FILENAME = ss.prefix+'mcmctmp.idl'
+save, pars,chi2,newpars,det,nswapattempt,acceptancerate,laststep,npass,nextrecalc, FILENAME = ss.prefix+'mcmctmp.idl'
 printandlog, '', logname ;; don't overwrite the final line
 printandlog, '', logname ;; now just add a space
 

@@ -112,7 +112,7 @@ FUNCTION exofast_rossiter, time, inc_rad, ar, TPeriastron, period, e, omega_rad,
     IF exptime LT 3 THEN BEGIN
         ninterp = 0
     ENDIF ELSE BEGIN
-        ninterp = ROUND(exptime/2D))
+        ninterp = ROUND(exptime/2D0)
     ENDELSE
 
 
@@ -133,6 +133,7 @@ FUNCTION exofast_rossiter, time, inc_rad, ar, TPeriastron, period, e, omega_rad,
     ; tp = tc - period * exofast_getphase(e, omega_rad, /pri)
     
     ; Get the model flux using exofast_tran function
+
     tmpmodelflux = exofast_tran(time, inc_rad, ar, TPeriastron, period, e, omega_rad, p, u1, u2, 1)
 
     ; Calculate phase and true anomaly

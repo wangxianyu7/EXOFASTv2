@@ -69,7 +69,7 @@ pro saveBest, fitnessVal
 end
 
 
-function exofast_de, npop, p0, scale, ngen, fitness_function, min_ptp
+function exofast_de, npop, p0, scale, ngen, fitness_function, min_ptp,parnames=parnames
     ; reference: https://github.com/zhaozhiyong1989/Differential-Evolution/blob/master/DE.py
     if n_elements(fitness_function) eq 0 then begin
         print, 'A fitness function must be provided'
@@ -82,11 +82,22 @@ function exofast_de, npop, p0, scale, ngen, fitness_function, min_ptp
     ncols = 2
 	bounds = dblarr(2, dim)
 	for i = 0, dim - 1 do begin
+        if n_elements(parnames) gt 0 then be
         bounds[0, i] = p0[i] - scale[i]
 		bounds[1, i] = p0[i] + scale[i]
 	endfor
 
-
+	; for i = 0, dim - 1 do begin
+    ;     if n_elements(parnames) gt 0 then begin
+    ;     if strpos(parnames[i], 'u1') ne -1 then begin
+    ;         bounds[0, i] = 0
+    ;         bounds[1, i] = 2
+    ;     endif
+    ;     if strpos(parnames[i], 'u2') ne -1 then begin
+    ;         bounds[0, i] = -1
+    ;         bounds[1, i] = 1
+    ;     endif
+	; endfor
     xMin = bounds[0, *]
     xMax = bounds[1, *]
 
@@ -118,7 +129,7 @@ function exofast_de, npop, p0, scale, ngen, fitness_function, min_ptp
         XCorssOverTmp = crossover(XTemp, XMutationTmp, CR, xMin, xMax)
         selection, XTemp, XCorssOverTmp, fitnessVal, fitness_function
         saveBest, fitnessVal
-		print, 'DE: ngen', gen, ', delta chi2:',abs(max(fitnessVal) - min(fitnessVal)),'<',min_ptp, ', max chi2:', max(fitnessVal), ', min chi2:', min(fitnessVal)
+		print, 'DE: ngen', gen, ', delta chi2:',abs(max(fitnessVal) - min(fitnessVal)),' <',min_ptp, ', max chi2:', max(fitnessVal), ', min chi2:', min(fitnessVal)
         if abs(max(fitnessVal) - min(fitnessVal)) lt min_ptp then break
     endfor
 	min_value = MIN(fitnessVal, index)

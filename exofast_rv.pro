@@ -122,7 +122,6 @@ if keyword_set(rossiter) and bjd[-1] - bjd[0] <0.5 then begin
 
     ;; calculate the corresponding (x,y) coordinates of planet
     r = a*(1d0-e^2)/(1d0+e*cos(trueanom))
-    
     ;; as seen from observer
     x = -r*cos(trueanom + omega)
     tmp = r*sin(trueanom + omega)

@@ -48,7 +48,7 @@ pro readargs, argfile, priorfile=priorfile, $
               mksummarypg=mksummarypg,$
               nocovar=nocovar,$
               plotonly=plotonly, bestonly=bestonly,$
-              logname=logname,restorebest=restorebest,optmethod=optmethod
+              logname=logname,restorebest=restorebest,optmethod=optmethod,optcriteria=optcriteria
 
 ;; first get the log name so we can log any errors
 line = ''
@@ -199,6 +199,8 @@ while not eof(lun) do begin
             maxgr = double(entries[1])
          endif else if strupcase(strtrim(entries[0],2)) eq 'MINTZ' then begin
             mintz = double(entries[1])
+         endif else if strupcase(strtrim(entries[0],2)) eq 'OPTCRITERIA' then begin
+            optcriteria = double(entries[1])
          endif else if strupcase(strtrim(entries[0],2)) eq 'YY' then begin
             yy = boolean(json_parse(entries[1],/toarray))
          endif else if strupcase(strtrim(entries[0],2)) eq 'TORRES' then begin
