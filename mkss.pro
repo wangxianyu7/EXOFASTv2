@@ -2883,8 +2883,8 @@ for i=0, nband-1 do begin
 
    ; set the limb darkening coefficients for the RM band
    if bands[i] eq 'rm' then begin
-      ss.band[i].u1.value = 0.6d0
-      ss.band[i].u2.value = 0.0d0
+      ss.band[i].u1.value = 0.3d0
+      ss.band[i].u2.value = 0.2d0
    endif
 
    match = where(fitthermal eq ss.band[i].name)

@@ -100,10 +100,17 @@ endif
 cadence = min(ss.planet.period.value[ndx])/100d0
 nsteps = (allmaxdate-allmindate)/cadence
 prettytime = allmindate + (allmaxdate-allmindate)*dindgen(nsteps)/(nsteps-1.d0)
-rmnsteps = (max(rmtime)+0.5-min(rmtime)-0.5)/(1.0/60.0/24.0)
-rmprettytime = min(rmtime)-0.5 + (max(rmtime)-min(rmtime)+1)*dindgen(rmnsteps)/(rmnsteps-1.d0)
-prettytime = [prettytime, rmprettytime]
-prettytime = prettytime[sort(prettytime)]
+
+if n_elements(rmtime) gt 0 then begin
+   rmnsteps = (max(rmtime)+0.5-min(rmtime)-0.5)/(1.0/60.0/24.0)
+   rmprettytime = min(rmtime)-0.5 + (max(rmtime)-min(rmtime)+1)*dindgen(rmnsteps)/(rmnsteps-1.d0)
+   prettytime = [prettytime, rmprettytime]
+   prettytime = prettytime[sort(prettytime)]
+endif
+
+
+
+
 allprettymodel = prettytime*0d0
 allprettymodel2 = prettytime*0d0
 
@@ -348,7 +355,17 @@ for i=0, ss.nplanets-1 do begin
       plotsym, symbols[j mod nsymbols], symsize, fill=fills[j mod nfills], color=colors[j mod ncolors]
       oploterr, time, rv.residuals+modelrv, err, 8
 
+      if keyword_set(psname) then begin
+         base = file_dirname(psname) + path_sep() + 'modelfiles' + path_sep() + file_basename(psname,'.model')
+         exofast_forprint, time, rv.residuals,modelrv, err, format='(f0.8,x,f0.6,x,f0.6,x,f0.6)', textout=base + '.rvphase.residuals.planet_'+ string(i,format='(i02)')+'.telescope_' + string(j,format='(i02)') + '.txt', /nocomment,/silent
+      endif
    endfor
+
+   if keyword_set(psname) then begin
+      base = file_dirname(psname) + path_sep() + 'modelfiles' + path_sep() + file_basename(psname,'.model')
+      exofast_forprint, prettyphase[sorted], prettymodel[sorted], format='(f0.8,x,f0.6)', textout=base + '.rvphase.model.planet_'+ string(i,format='(i02)') + '.txt', /nocomment,/silent
+   endif
+   
    oplot, prettyphase[sorted], prettymodel[sorted], color=red
    use = where(legendndx[ss.nplanets,*],nuse)
    if nuse gt 1 then exofast_legend, ss.telescope[use].label, color=colors[(indgen(ss.ntel) mod ncolors)[use]],/bottom,/right,psym=symbols[(indgen(ss.ntel) mod nsymbols)[use]], /useplotsym, charsize=0.5, fill=fills[(indgen(ss.ntel) mod nfills)[use]]
@@ -471,12 +488,22 @@ for i=0, ss.nplanets-1 do begin
 
          plotsym, symbols[j mod nsymbols], symsize, fill=fills[j mod nfills], color=colors[j mod ncolors]
          oploterr, time, (deltarv + rv.residuals), rv.err, 8
+
+         if keyword_set(psname) then begin
+            base = file_dirname(psname) + path_sep() + 'modelfiles' + path_sep() + file_basename(psname,'.model')
+            exofast_forprint, time, rv.residuals, deltarv, rv.err, format='(f0.8,x,f0.6,x,f0.6,x,f0.6)', textout=base + '.rm.residuals.planet_'+ string(i,format='(i02)')+'.telescope_' + string(j,format='(i02)') + '.txt', /nocomment,/silent
+         endif
       endif
    endfor
    prettyrmtime = exofast_mod(prettytime - ss.planet[i].tc.value[ndx],period,/negative)*24d0
    sorted = sort(prettyrmtime)
    oplot, prettyrmtime[sorted], prettydeltarv[sorted], color=red
 
+   if keyword_set(psname) then begin
+      base = file_dirname(psname) + path_sep() + 'modelfiles' + path_sep() + file_basename(psname,'.model')
+      exofast_forprint, prettyrmtime[sorted], prettydeltarv[sorted], format='(f0.8,x,f0.6)', textout=base + '.rm.model.planet_'+ string(i,format='(i02)') + '.txt', /nocomment,/silent
+   endif
+   
    use = where(legendndx[ss.nplanets,*],nuse)
    if nuse gt 1 then exofast_legend, ss.telescope[use].label, color=colors[(indgen(ss.ntel) mod ncolors)[use]],/bottom,/right,psym=symbols[(indgen(ss.ntel) mod nsymbols)[use]], /useplotsym, charsize=0.5, fill=fills[(indgen(ss.ntel) mod nfills)[use]]
 

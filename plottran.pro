@@ -468,6 +468,12 @@ for jj=0L, 1 do begin
          oplot, prettytime, prettyflux + spacing*factor, thick=2, color=red ;, linestyle=0
          xyouts, 0, 1d0 + 2d0*max(noise) + spacing*factor, trandata.label,charsize=charsize,alignment=0.5
 
+         if keyword_set(psname) then begin
+            base_tmp = file_dirname(psname) + path_sep() + 'modelfiles' + path_sep() + file_basename(psname,'.model')
+            exofast_forprint, time, modelflux, trandata.residuals, format='(f0.8,x,f0.6,x,f0.6)', textout=base_tmp + '.transitphase.residuals.planet_'+ string(i,format='(i02)')+'.telescope_' + string(j,format='(i02)') + '.txt', /nocomment,/silent
+            exofast_forprint, prettytime, prettyflux, format='(f0.8,x,f0.6)', textout=base_tmp + '.transitphase.model.planet_'+ string(i,format='(i02)')+'.telescope_' + string(j,format='(i02)') + '.txt', /nocomment,/silent
+         endif
+
       endfor
       
    endfor
