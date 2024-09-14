@@ -1557,6 +1557,9 @@ bestchi2 = call_function(chi2func,best,modelrv=modelrv,modelflux=modelflux, psna
 printandlog, 'The best loglike found by AMOEBA was ' + strtrim(-bestchi2/2d0,2), logname
 printandlog, 'It should only be compared against the loglike of the same model with different starting points', logname
 
+
+if keyword_set(bestonly) then stop
+
 ;; initialize the threads
 if nthreads gt 1 then begin
    printandlog, 'Initializing ' + strtrim(nthreads,2) + ' threads', logname

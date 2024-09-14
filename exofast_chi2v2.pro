@@ -1040,6 +1040,8 @@ for j=0, ss.ntel-1 do begin
 
             ;; calculate the RV model
             if ss.planet[i].rossiter then begin
+               ; print,ss.band[ss.telescope[j].bandndx].name
+               
                coeffs = quadld(ss.star[ss.planet[i].starndx].logg.value,$
                           ss.star[ss.planet[i].starndx].teff.value,$
                           ss.star[ss.planet[i].starndx].feh.value,'V')
@@ -1091,6 +1093,7 @@ for j=0, ss.ntel-1 do begin
             endelse
 
             this_vsini = ss.planet[i].svsinicoslambda.value^2 + ss.planet[i].svsinisinlambda.value^2
+            this_vsinicp = this_vsini 
             modelrv += exofast_rv(rvbjd,ss.planet[i].tp.value,ss.planet[i].period.value,$
                                   0d0,ss.planet[i].K.value,$
                                   ss.planet[i].e.value,ss.planet[i].omega.value,$
@@ -1101,12 +1104,9 @@ for j=0, ss.ntel-1 do begin
                                   vgamma=ss.star[ss.planet[i].starndx].vgamma.value, vzeta=ss.star[ss.planet[i].starndx].vzeta.value,$
                                   u1=u1,u2=u2,deltarv=deltarv, exptime=ss.telescope[j].exptime, ninterp=ss.telescope[j].ninterp,$
                                   srv=ss.telescope[j].srv.value, qrv=ss.telescope[j].qrv.value)
-
             u1err = 0.05d0
             u2err = 0.05d0
-            if ss.planet[i].rossiter then begin
-               ; chi2 += ((band.u1.value-u1claret)/u1err)^2
-               ; chi2 += ((band.u2.value-u2claret)/u2err)^2
+            if ss.planet[i].rossiter and ss.telescope[j].bandndx ne -1 then begin
                chi2 += ((ss.star[ss.planet[i].starndx].vzeta.value-vmac*1000)/1)^2
                for k=0, n_elements(rv.rv)-1 do begin
                   for i=0L, n_elements(*ss.priors)-1 do begin
@@ -1123,7 +1123,16 @@ for j=0, ss.ntel-1 do begin
                      if label eq 'vsini' then break
                   endfor
                endfor
-               chi2 += ((this_vsini*1000 - prior.value[0])/prior.gaussian_width)^2
+
+               ;; this is a direct prior
+               prior_value = prior.value[0]
+               lowerbound = prior.lowerbound
+               upperbound = prior.upperbound
+
+               if this_vsinicp lt lowerbound or this_vsinicp gt upperbound then begin
+                  return, !values.d_infinity
+               endif
+               chi2 += ((this_vsinicp - prior.value[0])/prior.gaussian_width)^2
             endif
          endelse
 
@@ -1173,12 +1182,37 @@ if (where(ss.planet.fitrv))[0] ne -1 then begin
    endif
 endif
 
+
+
+; get vsini prior, and apply it
+for j=0L, n_elements(*ss.priors)-1 do begin
+   prior = (*ss.priors)[j]
+   ;; get the model value
+   if prior.map[4] ne -1 then begin
+      label = (*ss.(prior.map[0])[prior.map[1]].(prior.map[2])[prior.map[3]]).(prior.map[4])[prior.map[5]].label
+   endif else if prior.map[2] ne -1 then begin
+      label = ss.(prior.map[0])[prior.map[1]].(prior.map[2])[prior.map[3]].label
+   endif else if prior.map[0] ne -1 then begin
+      label = ss.(prior.map[0])[prior.map[1]].label
+   endif
+   ;; apply the bounds
+   if label eq 'vsini' then break
+endfor
+
 ;; Doppler Tomography Model
 for i=0, ss.ndt-1 do begin
    if keyword_set(psname) then epsname = psname + '.dt_' + string(i,format='(i02)') + '.eps'
 
    planetndx = (*(ss.doptom[i].dtptrs)).planetndx
    starndx = ss.planet[planetndx].starndx
+
+   if ss.planet[planetndx].svsinicoslambda.value eq 0d0 then begin
+      this_lambda = 0d0
+   endif else begin
+      this_lambda = atan(ss.planet[planetndx].svsinisinlambda.value, ss.planet[planetndx].svsinicoslambda.value)
+   endelse
+   this_vsini = ss.planet[planetndx].svsinicoslambda.value^2 + ss.planet[planetndx].svsinisinlambda.value^2
+   ; print,this_vsini, 'before'
    dtchi2 = dopptom_chi2(*(ss.doptom[i].dtptrs),$
                          ss.planet[planetndx].tc.value, $
                          ss.planet[planetndx].period.value, $
@@ -1187,16 +1221,27 @@ for i=0, ss.ndt-1 do begin
                          ss.planet[planetndx].cosi.value, $
                          ss.planet[planetndx].p.value,$
                          ss.planet[planetndx].ar.value,$
-                         ss.planet[planetndx].lambda.value, $
+                        ;  ss.planet[planetndx].lambda.value, $
+                         this_lambda, $
                          ss.star[starndx].logg.value, $
                          ss.star[starndx].teff.value, $
                          ss.star[starndx].feh.value,$
-                         ss.star[starndx].vsini.value/1d3,$
+                         this_vsini/1d3,$
                          ss.star[starndx].vline.value/1d3,$
                          ss.doptom[i].dtscale.value, debug=ss.debug,$
                          /like,psname=epsname,c=ss.constants.c/1e5,$
                          verbose=ss.verbose, logname=ss.logname)
+   ;; this is a direct prior
+   prior_value = prior.value[0]
+   lowerbound = prior.lowerbound
+   upperbound = prior.upperbound
 
+   if this_vsini lt lowerbound or this_vsini gt upperbound then begin
+      return, !values.d_infinity
+   endif
+
+   chi2 += ((this_vsini - prior_value)/prior.gaussian_width)^2
+   ; print,this_vsini, 'after',prior_value
    if ~finite(dtchi2) then begin
       if ss.verbose or ss.debug then $
          printandlog, (*ss.doptom[i].dtptrs).label + ': DT chi2 is bad',$

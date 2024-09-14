@@ -44,7 +44,7 @@ rvel = c/doptom.rspec ;; spectrograph resolution in velocity
 fwhm2sigma = 2d0*sqrt(2d0*alog(2d0))
 
 ;relevantVels = where((velsini gt -1.5) and (velsini lt 1.5))  ; we only care about these, to speed things up
-relevantVels = where(abs(velsini) le 2d0)  ; we only care about these, to speed things up
+relevantVels = where(abs(velsini) le 20000d0)  ; we only care about these, to speed things up; change to svsinicoslambda and svsinisinlambda
 
 if relevantVels[0] eq -1 then begin
    if keyword_set(verbose) then begin

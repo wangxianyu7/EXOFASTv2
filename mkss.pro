@@ -1070,7 +1070,7 @@ srv.label = 'srv'
 srv.cgs = 100d0/86400d0
 srv.fit = 0
 srv.derive=0
-srv.scale=1d0
+srv.scale=100d0
 
 qrv = parameter
 qrv.unit = 'm/s/day^2'
@@ -1080,7 +1080,7 @@ qrv.label = 'qrv'
 qrv.cgs = 100d0/86400d0^2
 qrv.fit=0
 qrv.derive=0
-qrv.scale = 1d0
+qrv.scale = 100d0
 
 rstar = parameter
 rstar.value = 1d0
@@ -2677,7 +2677,7 @@ if ttvpath ne '' then begin
    ttvfiles=file_search(ttvpath,count=nttv)
    ss.planet[*].transittimingptrs = ptrarr(nplanets,/allocate_heap)
    for j=0, nttv-1 do begin
-      print,j,ttvfiles[j]
+
       ttv_letter = (strsplit(file_basename(ttvfiles[j]),'.',/extract))(1)
    endfor
 endif 
@@ -3060,8 +3060,10 @@ if ntel gt 0 then begin
       if ~keyword_set(silent) then printandlog, string(i,rvfiles[i],format='(i2,x,a)'),logname
       *(ss.telescope[i].rvptrs) = readrv_detrend(rvfiles[i], detrendpar=detrend)
       ss.telescope[i].label = (*(ss.telescope[i].rvptrs)).label
-      if max(rmbands ne 'xxx') then begin
-         ss.telescope[i].bandndx = where(ss.band[*].name eq rmbands[i]) ; if not rm, will return -1
+      if n_elements(rmbands) ne 0 then begin
+         if max(rmbands ne 'xxx') then begin
+            ss.telescope[i].bandndx = where(ss.band[*].name eq rmbands[i]) ; if not rm, will return -1
+         endif
       endif
       minbjd = min((*(ss.telescope[i].rvptrs)).bjd,max=maxbjd)
       if minbjd lt minallbjd then minallbjd = minbjd
@@ -3099,7 +3101,7 @@ for i=0, ss.ntel-1 do begin
          if rmtrends[i] eq 'slope' then begin
             ss.telescope[i].srv.fit = 1B
             rvtime = ((*(ss.telescope[0].rvptrs)).bjd)
-            rv_value = ((*(ss.telescope[0].rvptrs)).rv)
+            rv_value = ((*(ss.telescope[0].rvptrs)).rv) - ss.telescope[i].gamma.value
             t0 = (max(rvtime) + min(rvtime))/2d0
             coeffs = poly_fit(rvtime-t0, rv_value, 1, yfit=yfit)
             ss.telescope[i].srv.value = coeffs[1]
@@ -3109,7 +3111,7 @@ for i=0, ss.ntel-1 do begin
             ss.telescope[i].qrv.fit = 1B
             ss.telescope[i].srv.fit = 1B
             rvtime = ((*(ss.telescope[0].rvptrs)).bjd)
-            rv_value = ((*(ss.telescope[0].rvptrs)).rv)
+            rv_value = ((*(ss.telescope[0].rvptrs)).rv)- ss.telescope[i].gamma.value
             coeffs = poly_fit(rvtime-t0, rv_value, 2, yfit=yfit)
             ss.telescope[i].srv.value = coeffs[1]
             ss.telescope[i].srv.userchanged = 1B

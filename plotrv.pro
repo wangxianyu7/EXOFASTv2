@@ -73,7 +73,7 @@ rmtime = 0d0
 for j=0L, ss.ntel-1 do begin
    rv = *(ss.telescope[j].rvptrs)
    mindate = min(rv.bjd,max=maxdate)
-   if maxdate - mindate lt 1 then rmtime = rv.bjd
+   if maxdate - mindate lt 0.5 then rmtime = rv.bjd
    if mindate lt allmindate then allmindate = mindate
    if maxdate gt allmaxdate then allmaxdate = maxdate
    
@@ -101,7 +101,7 @@ cadence = min(ss.planet.period.value[ndx])/100d0
 nsteps = (allmaxdate-allmindate)/cadence
 prettytime = allmindate + (allmaxdate-allmindate)*dindgen(nsteps)/(nsteps-1.d0)
 
-if n_elements(rmtime) gt 0 then begin
+if n_elements(rmtime) gt 2 then begin
    rmnsteps = (max(rmtime)+0.5-min(rmtime)-0.5)/(1.0/60.0/24.0)
    rmprettytime = min(rmtime)-0.5 + (max(rmtime)-min(rmtime)+1)*dindgen(rmnsteps)/(rmnsteps-1.d0)
    prettytime = [prettytime, rmprettytime]
@@ -132,7 +132,7 @@ for j=0, ss.ntel-1 do begin
 ;;   rv.residuals = rv.rv - (ss.telescope[j].gamma.value[ndx] + ss.star.slope.value[ndx]*(rv.bjd-t0) + ss.star.quad.value[ndx]*(rv.bjd-t0)^2)
    ; modelrv = (ss.telescope[j].gamma.value[ndx] + ss.star[0].slope.value[ndx]*(rv.bjd-t0) + ss.star[0].quad.value[ndx]*(rv.bjd-t0)^2)
    ; 
-   rvtime = ((*(ss.telescope[0].rvptrs)).bjd)
+   rvtime = ((*(ss.telescope[j].rvptrs)).bjd)
    t0_each_rv = (max(rvtime) + min(rvtime))/2d0
    modelrv = (ss.telescope[j].gamma.value[ndx] + ss.telescope[j].srv.value[ndx]*(rv.bjd-t0_each_rv) + ss.telescope[j].qrv.value[ndx]*(rv.bjd-t0_each_rv)^2)
    modelrv = modelrv + ss.star[0].slope.value[ndx]*(rv.bjd-t0) + ss.star[0].quad.value[ndx]*(rv.bjd-t0)^2
