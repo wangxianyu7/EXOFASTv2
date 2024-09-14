@@ -44,7 +44,7 @@ rvel = c/doptom.rspec ;; spectrograph resolution in velocity
 fwhm2sigma = 2d0*sqrt(2d0*alog(2d0))
 
 ;relevantVels = where((velsini gt -1.5) and (velsini lt 1.5))  ; we only care about these, to speed things up
-relevantVels = where(abs(velsini) le 20000d0)  ; we only care about these, to speed things up; change to svsinicoslambda and svsinisinlambda
+relevantVels = where(abs(velsini) le 2000d0)  ; we only care about these, to speed things up; Xian-Yu increased the limit to 2000 km/s, which can lead to a slow down in the code.
 
 if relevantVels[0] eq -1 then begin
    if keyword_set(verbose) then begin
@@ -202,7 +202,28 @@ oplot, [ vsini, vsini],[-phaseplotmax,phaseplotmax], thick=thick, color=darkblue
 oplot, [-velplotmax, velplotmax],[-egressphase,-egressphase], thick=thick, color=darkblue, linestyle=0
 oplot, [-velplotmax, velplotmax],[ egressphase, egressphase], thick=thick, color=darkblue, linestyle=0
 
-
+;Xian-Yu added the following lines to save data to fits files
+if keyword_set(psname) then begin
+   ; write to fits file
+   header = STRARR(1)  ; Initialize with one empty element
+   header[0] = ''      ; Set the first element as an empty string
+   SXADDPAR, header, 'SIMPLE', 1, 'Standard FITS format'
+   SXADDPAR, header, 'BITPIX', -64, 'Floating point data'
+   SXADDPAR, header, 'NAXIS', 2, 'Number of data axes'
+   SXADDPAR, header, 'NAXIS1', (size(doptom.ccf2d))[1], 'Length of axis 1'
+   SXADDPAR, header, 'NAXIS2', (size(doptom.ccf2d))[2], 'Length of axis 2'
+   SXADDPAR, header, 'velplotmax', velplotmax
+   SXADDPAR, header, 'phaseplotmax', phaseplotmax
+   SXADDPAR, header, 'minvel', minvel
+   SXADDPAR, header, 'maxvel', maxvel
+   SXADDPAR, header, 'minphase', minphase
+   SXADDPAR, header, 'maxphase', maxphase
+   data = -doptom.ccf2d
+   base = file_dirname(psname) + path_sep() + 'modelfiles' + path_sep() + file_basename(psname,'.model')
+   epsname = FILE_BASENAME(psname)
+   filename = REPSTR(base, '.eps', '.ccf2d.fits')
+   writefits, filename, data, header
+endif
 
 ;; model
 lambdachar= '!9' + String("154B) + '!X'
@@ -218,6 +239,29 @@ oplot, [ vsini, vsini],[-phaseplotmax,phaseplotmax], thick=thick, color=darkblue
 oplot, [-velplotmax, velplotmax],[-egressphase,-egressphase], thick=thick, color=darkblue, linestyle=0
 oplot, [-velplotmax, velplotmax],[ egressphase, egressphase], thick=thick, color=darkblue, linestyle=0
 
+;Xian-Yu added the following lines to save model to fits files
+if keyword_set(psname) then begin
+   ; write to fits file
+   header = STRARR(1)  ; Initialize with one empty element
+   header[0] = ''      ; Set the first element as an empty string
+   SXADDPAR, header, 'SIMPLE', 1, 'Standard FITS format'
+   SXADDPAR, header, 'BITPIX', -64, 'Floating point data'
+   SXADDPAR, header, 'NAXIS', 2, 'Number of data axes'
+   SXADDPAR, header, 'NAXIS1', (size(doptom.model))[1], 'Length of axis 1'
+   SXADDPAR, header, 'NAXIS2', (size(doptom.model))[2], 'Length of axis 2'
+   SXADDPAR, header, 'velplotmax', velplotmax
+   SXADDPAR, header, 'phaseplotmax', phaseplotmax
+   SXADDPAR, header, 'minvel', minvel
+   SXADDPAR, header, 'maxvel', maxvel
+   SXADDPAR, header, 'minphase', minphase
+   SXADDPAR, header, 'maxphase', maxphase
+   data = -doptom.model
+   base = file_dirname(psname) + path_sep() + 'modelfiles' + path_sep() + file_basename(psname,'.model')
+   epsname = FILE_BASENAME(psname)
+   filename = REPSTR(base, '.eps', '.model.fits')
+   writefits, filename, data, header
+endif
+
 ;; residuals
 if keyword_set(psname) then loadct, 0, /silent
 multifast_dt_plotimage, -doptom.resid, XRANGE = [-velplotmax,velplotmax], YRANGE = [-phaseplotmax,phaseplotmax], $
@@ -228,7 +272,29 @@ oplot, [-vsini,-vsini],[-phaseplotmax,phaseplotmax], thick=thick, color=darkblue
 oplot, [ vsini, vsini],[-phaseplotmax,phaseplotmax], thick=thick, color=darkblue, linestyle=0
 oplot, [-velplotmax, velplotmax],[-egressphase,-egressphase], thick=thick, color=darkblue, linestyle=0
 oplot, [-velplotmax, velplotmax],[ egressphase, egressphase], thick=thick, color=darkblue, linestyle=0
-   
+
+;Xian-Yu added the following lines to save residuals to fits files
+if keyword_set(psname) then begin
+   ; write to fits file
+   header = STRARR(1)  ; Initialize with one empty element
+   header[0] = ''      ; Set the first element as an empty string
+   SXADDPAR, header, 'SIMPLE', 1, 'Standard FITS format'
+   SXADDPAR, header, 'BITPIX', -64, 'Floating point data'
+   SXADDPAR, header, 'NAXIS', 2, 'Number of data axes'
+   SXADDPAR, header, 'NAXIS1', (size(doptom.resid))[1], 'Length of axis 1'
+   SXADDPAR, header, 'NAXIS2', (size(doptom.resid))[2], 'Length of axis 2'
+   SXADDPAR, header, 'velplotmax', velplotmax
+   SXADDPAR, header, 'phaseplotmax', phaseplotmax
+   SXADDPAR, header, 'minvel', minvel
+   SXADDPAR, header, 'maxvel', maxvel
+   SXADDPAR, header, 'minphase', minphase
+   SXADDPAR, header, 'maxphase', maxphase
+   data = -doptom.resid
+   base = file_dirname(psname) + path_sep() + 'modelfiles' + path_sep() + file_basename(psname,'.model')
+   epsname = FILE_BASENAME(psname)
+   filename = REPSTR(base, '.eps', '.resid.fits')
+   writefits, filename, data, header
+endif
 ;; color bar
 dtscale = dtrange[0] + dindgen(256)/255*(dtrange[1] - dtrange[0])
 dtscale = [[dtscale],[dtscale]]
