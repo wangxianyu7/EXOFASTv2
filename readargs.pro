@@ -48,7 +48,7 @@ pro readargs, argfile, priorfile=priorfile, $
               mksummarypg=mksummarypg,$
               nocovar=nocovar,$
               plotonly=plotonly, bestonly=bestonly,$
-              logname=logname,restorebest=restorebest,optmethod=optmethod,optcriteria=optcriteria
+              logname=logname,restorebest=restorebest,optmethod=optmethod,optcriteria=optcriteria,nthreads=nthreads
 
 ;; first get the log name so we can log any errors
 line = ''
@@ -153,6 +153,8 @@ while not eof(lun) do begin
             dontstop = boolean(entries[1])
          endif else if strupcase(strtrim(entries[0],2)) eq 'NTEMPS' then begin
             ntemps = long(entries[1])
+         endif else if strupcase(strtrim(entries[0],2)) eq 'NTHREADS' then begin
+            nthreads = long(entries[1])
          endif else if strupcase(strtrim(entries[0],2)) eq 'TF' then begin
             tf = long(entries[1])
          endif else if strupcase(strtrim(entries[0],2)) eq 'KEEPHOT' then begin

@@ -1219,7 +1219,7 @@ COMMON chi2_block, ss
 if lmgr(/vm) or lmgr(/runtime) then begin
    ;; IDL_IDLBridge disabled in the virtual machine
    ;; no multi-threading without a license :(
-   nthreads = 1L 
+   if lmgr(/vm) then nthreads = 1L
 
    par = command_line_args(count=numargs)
    if numargs eq 1 then begin
@@ -1275,7 +1275,7 @@ if lmgr(/vm) or lmgr(/runtime) then begin
              mksummarypg=mksummarypg,$
              nocovar=nocovar,$
              plotonly=plotonly, bestonly=bestonly,$
-             logname=logname,restorebest=restorebest,optmethod=optmethod,optcriteria=optcriteria
+             logname=logname,restorebest=restorebest,optmethod=optmethod,optcriteria=optcriteria,nthreads=nthreads
 
 endif
 
@@ -1298,7 +1298,7 @@ chi2func = 'exofast_chi2v2'
 defsysv, '!GDL', exists=runninggdl  
 
 ;; default to NCORES threads, if we're running a full copy of IDL
-if runninggdl or lmgr(/runtime) or lmgr(/vm) then begin
+if runninggdl or lmgr(/vm) then begin
    nthreads=1
 endif else if n_elements(nthreads) ne 1 then begin
    nthreads = !cpu.hw_ncpu
@@ -1629,7 +1629,10 @@ if nthreads gt 1 then begin
       ;; compile all the codes in each thread so compilation messages don't pollute the screen
       if double(!version.release) ge 6.4d0 and ~lmgr(/vm) and ~lmgr(/runtime) and ~runninggdl then $
          thread_array[i].obridge->execute, "resolve_all, resolve_either=[chi2func,'exofast_random','ramp_func'], resolve_procedure=['exofastv2'],skip_routines=['cggreek'],/cont,/quiet"
-         
+      
+      if lmgr(/runtime) then begin
+         thread_array[i].obridge->execute, "restore, 'routines.sav'"
+      endif
       ;; create the stellar stucture within each thread
       thread_array[i].obridge->execute,$
          'ss = mkss(priorfile=priorfile, prefix=prefix,'+$

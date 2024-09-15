@@ -14,6 +14,10 @@ save, /routines, filename=path + 'mkticsed.sav'
 resolve_all, resolve_procedure='mkprior',/cont,/quiet
 save, 'getpriorline','mkprior','strsplit','tag_exist',/routines, filename=path + 'mkprior.sav'
 
+
+resolve_all, resolve_either=['exofast_chi2v2','exofast_random','ramp_func'], resolve_procedure=['exofastv2'],skip_routines=['cggreek'],/cont,/quiet
+SAVE, /ROUTINES, FILENAME='routines.sav'
+
 ;; create the main EXOFASTv2 executeable
 resolve_all, resolve_procedure='exofastv2',$ ;; the main routine
              resolve_function=['exofast_chi2v2','exofast_random','reverse'],$ ;; these are run with call_function and do not get resolved automatically

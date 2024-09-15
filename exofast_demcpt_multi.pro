@@ -407,8 +407,7 @@ tmpt0 = t00
 for i=resumendx,maxsteps-1L do begin
    if i lt laststep then continue
 ;   if i ne resumendx then printandlog, 'the ' + strtrim(i,2) + 'th step took ' + strtrim(systime(/seconds)-t00,2) + ' seconds', logname
-;   t00 = systime(/seconds)
-
+;   t00 = systime(/seconds)   
    ;; automatically thin the chain (saves memory)
    for k=0L, nthin-1L do begin
 
