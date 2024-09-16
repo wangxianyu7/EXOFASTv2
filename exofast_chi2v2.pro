@@ -1039,14 +1039,19 @@ for j=0, ss.ntel-1 do begin
                                c=ss.constants.c/ss.constants.au*ss.constants.day,q=q)
 
             ;; calculate the RV model
+            bandname = ''
             if ss.planet[i].rossiter then begin
-               ; print,ss.band[ss.telescope[j].bandndx].name
-               
-               coeffs = quadld(ss.star[ss.planet[i].starndx].logg.value,$
+               bandname = ss.band[ss.telescope[j].bandndx].name
+               u1claret = 0.2
+               u2claret = 0.3
+               if bandname ne 'rm' then begin
+                  coeffs = quadld(ss.star[ss.planet[i].starndx].logg.value,$
                           ss.star[ss.planet[i].starndx].teff.value,$
-                          ss.star[ss.planet[i].starndx].feh.value,'V')
-               u1claret = coeffs[0]
-               u2claret = coeffs[1]
+                          ss.star[ss.planet[i].starndx].feh.value,bandname)
+                  u1claret = coeffs[0]
+                  u2claret = coeffs[1]
+               endif
+
                ;; calculate the Vmac (Vzeta)
                    ; Constants
                t0 = 5777.0
@@ -1106,6 +1111,13 @@ for j=0, ss.ntel-1 do begin
                                   srv=ss.telescope[j].srv.value, qrv=ss.telescope[j].qrv.value)
             u1err = 0.05d0
             u2err = 0.05d0
+
+      
+
+            if ss.planet[i].rossiter and bandname ne 'rm' then begin
+               chi2 += ((u1 - u1claret)/u1err)^2
+               chi2 += ((u2 - u2claret)/u2err)^2
+            endif
             if ss.planet[i].rossiter and ss.telescope[j].bandndx ne -1 then begin
                chi2 += ((ss.star[ss.planet[i].starndx].vzeta.value-vmac*1000)/1)^2
                for k=0, n_elements(rv.rv)-1 do begin
@@ -1128,8 +1140,8 @@ for j=0, ss.ntel-1 do begin
                prior_value = prior.value[0]
                lowerbound = prior.lowerbound
                upperbound = prior.upperbound
-
                if this_vsinicp lt lowerbound or this_vsinicp gt upperbound then begin
+                  print, 'vsini = ' + strtrim(this_vsinicp,2) + ' is out of user-defined bounds (' + strtrim(lowerbound,2) + ',' + strtrim(upperbound,2) + ')'
                   return, !values.d_infinity
                endif
                chi2 += ((this_vsinicp - prior.value[0])/prior.gaussian_width)^2

@@ -16,7 +16,7 @@ save, 'getpriorline','mkprior','strsplit','tag_exist',/routines, filename=path +
 
 
 resolve_all, resolve_either=['exofast_chi2v2','exofast_random','ramp_func'], resolve_procedure=['exofastv2'],skip_routines=['cggreek'],/cont,/quiet
-SAVE, /ROUTINES, FILENAME='routines.sav'
+SAVE, /ROUTINES, FILENAME=path + 'routines.sav'
 
 ;; create the main EXOFASTv2 executeable
 resolve_all, resolve_procedure='exofastv2',$ ;; the main routine

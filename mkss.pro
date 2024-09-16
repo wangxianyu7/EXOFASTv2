@@ -2857,6 +2857,7 @@ for i=0, nplanets-1 do begin
 endfor
 
 for i=0, nband-1 do begin
+   print, bands[i],'sss'
    ss.band[i].name = bands[i]
 
    match = (where(bands[i] eq allowedbands))[0]
