@@ -133,7 +133,8 @@ for j=0, ss.ntel-1 do begin
    ; modelrv = (ss.telescope[j].gamma.value[ndx] + ss.star[0].slope.value[ndx]*(rv.bjd-t0) + ss.star[0].quad.value[ndx]*(rv.bjd-t0)^2)
    ; 
    rvtime = ((*(ss.telescope[j].rvptrs)).bjd)
-   t0_each_rv = (max(rvtime) + min(rvtime))/2d0
+   mintime = min(rvtime,max=maxtime)
+   t0_each_rv = (mintime+maxtime)/2d0
    modelrv = (ss.telescope[j].gamma.value[ndx] + ss.telescope[j].srv.value[ndx]*(rv.bjd-t0_each_rv) + ss.telescope[j].qrv.value[ndx]*(rv.bjd-t0_each_rv)^2)
    modelrv = modelrv + ss.star[0].slope.value[ndx]*(rv.bjd-t0) + ss.star[0].quad.value[ndx]*(rv.bjd-t0)^2
 ;   exofast_forprint, rv.bjd, modelrv, textout=base+'.rv.trend.txt', format='(f0.10,x,f0.10)'

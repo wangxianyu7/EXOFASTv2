@@ -729,12 +729,14 @@ for i=resumendx,maxsteps-1L do begin
    if (tnow-tmpt0) gt 1800 then begin
       laststep = i
       print, 'Saving at step ' + strtrim(i,2), ' after ' + strtrim(tnow-t00,2) + ' seconds'
-      save, pars,chi2,newpars,det,nswapattempt,acceptancerate,laststep,npass,nextrecalc, FILENAME = ss.prefix+'mcmctmp.idl'
+      ; save, pars,chi2,newpars,det,nswapattempt,acceptancerate,laststep,npass,nextrecalc, FILENAME = ss.prefix+'mcmctmp.idl'
+      SAVE, /VARIABLES, FILENAME = ss.prefix+'mcmctmp.idl'
       tmpt0 = tnow
 
    endif
 endfor
-save, pars,chi2,newpars,det,nswapattempt,acceptancerate,laststep,npass,nextrecalc, FILENAME = ss.prefix+'mcmctmp.idl'
+SAVE, /VARIABLES, FILENAME = ss.prefix+'mcmctmp.idl'
+; save, pars,chi2,newpars,det,nswapattempt,acceptancerate,laststep,npass,nextrecalc, FILENAME = ss.prefix+'mcmctmp.idl'
 printandlog, '', logname ;; don't overwrite the final line
 printandlog, '', logname ;; now just add a space
 

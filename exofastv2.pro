@@ -1210,7 +1210,7 @@ pro exofastv2, priorfile=priorfile, $
                nocovar=nocovar, $
                plotonly=plotonly, bestonly=bestonly, $
                badstart=badstart, $
-               restorebest=restorebest,optmethod=optmethod,optcriteria=optcriteria,stopnow=stopnow
+               restorebest=restorebest,optmethod=optmethod,optcriteria=optcriteria,stopnow=stopnow,skipop=skipop
                
 ;; this is the stellar system structure
 COMMON chi2_block, ss
@@ -1275,7 +1275,7 @@ if lmgr(/vm) or lmgr(/runtime) then begin
              mksummarypg=mksummarypg,$
              nocovar=nocovar,$
              plotonly=plotonly, bestonly=bestonly,$
-             logname=logname,restorebest=restorebest,optmethod=optmethod,optcriteria=optcriteria,nthreads=nthreads
+             logname=logname,restorebest=restorebest,optmethod=optmethod,optcriteria=optcriteria,nthreads=nthreads,stopnow=stopnow,skipop=skipop
 
 endif
 
@@ -1284,7 +1284,7 @@ if n_elements(prefix) eq 0 then prefix = 'fitresults/planet.'
 basename = file_basename(prefix)
 
 if n_elements(stopnow) eq 0 then stopnow = 0
-
+if n_elements(skipop) eq 0 then skipop = 0
 ;; output to log file and the screen
 logname = prefix + 'log'
 file_delete, logname, /allow_nonexistent
@@ -1500,46 +1500,53 @@ if ss.debug and ~lmgr(/vm) then begin
    stop
 end
 
-nmax = 1d5
-printandlog, 'It takes ' + strtrim(modeltime,2) + ' seconds to calculate a single model', logname
-printandlog, 'Beginning AMOEBA fit; this may take up to ' + string(modeltime*nmax/60d0,format='(f0.1)') + ' minutes if it takes the maximum allowed steps (' + strtrim(nmax,2) + ')', logname
+if skipop eq 0 then begin
 
-;; do the AMOEBA fit
-ss.amoeba = 1B
-ss.delay = 0
+   nmax = 1d5
+   printandlog, 'It takes ' + strtrim(modeltime,2) + ' seconds to calculate a single model', logname
+   printandlog, 'Beginning AMOEBA fit; this may take up to ' + string(modeltime*nmax/60d0,format='(f0.1)') + ' minutes if it takes the maximum allowed steps (' + strtrim(nmax,2) + ')', logname
 
-if n_elements(optmethod) eq 0 then optmethod = 'amoeba
+   ;; do the AMOEBA fit
+   ss.amoeba = 1B
+   ss.delay = 0
 
-if n_elements(restorebest) eq 0 or not FILE_TEST(prefix + 'amoeba.idl') then begin
-   if optmethod eq 'amoeba' then begin
-      if n_elements(optcriteria) eq 0 then optcriteria = 1d-5
-      best = exofast_amoeba(optcriteria,function_name=chi2func,p0=pars,scale=scale,nmax=nmax)
+   if n_elements(optmethod) eq 0 then optmethod = 'amoeba
+
+   if n_elements(restorebest) eq 0 or not FILE_TEST(prefix + 'amoeba.idl') then begin
+      if optmethod eq 'amoeba' then begin
+         if n_elements(optcriteria) eq 0 then optcriteria = 1d-5
+         best = exofast_amoeba(optcriteria,function_name=chi2func,p0=pars,scale=scale,nmax=nmax)
+      endif else begin
+         if n_elements(optcriteria) eq 0 then optcriteria = 1
+         best = exofast_de(ss.nchains,pars,scale,100000,chi2func,optcriteria)
+         best = exofast_amoeba(1d-5,function_name=chi2func,p0=best,scale=scale,nmax=nmax)
+      endelse
    endif else begin
-      if n_elements(optcriteria) eq 0 then optcriteria = 1
-      best = exofast_de(ss.nchains,pars,scale,100000,chi2func,optcriteria)
-      best = exofast_amoeba(1d-5,function_name=chi2func,p0=best,scale=scale,nmax=nmax)
+      restore, prefix + 'amoeba.idl'
+      print,'restoring best fit from ' + prefix + 'amoeba.idl'
    endelse
+
+
+   printandlog, 'AMOEBA/DE fit Results', logname
+   printandlog, 'Par #      Par Name    Par Value', logname
+   for i=0, n_elements(name)-1 do printandlog, string(i, name[i], best[i], format='(i3,x,a15,x,f14.6)'), logname
+   printandlog, '', logname
+
+
+
+
+
+   ss.delay = delay
+   if best[0] eq -1 then begin
+      printandlog, 'ERROR: Could not find best combined fit; adjust your starting values and try again. You may want to set the /DEBUG keyword.', logname
+      return
+   endif
+   printandlog, 'Finished AMOEBA fit', logname
 endif else begin
-   restore, prefix + 'amoeba.idl'
-   print,'restoring best fit from ' + prefix + 'amoeba.idl'
+   printandlog, 'Skipping AMOEBA fit', logname
+   best = pars
 endelse
 
-
-printandlog, 'AMOEBA/DE fit Results', logname
-printandlog, 'Par #      Par Name    Par Value', logname
-for i=0, n_elements(name)-1 do printandlog, string(i, name[i], best[i], format='(i3,x,a15,x,f14.6)'), logname
-printandlog, '', logname
-
-
-
-
-
-ss.delay = delay
-if best[0] eq -1 then begin
-   printandlog, 'ERROR: Could not find best combined fit; adjust your starting values and try again. You may want to set the /DEBUG keyword.', logname
-   return
-endif
-printandlog, 'Finished AMOEBA fit', logname
 save, best, filename=prefix + 'amoeba.idl'
 
 ;; update the parameter array with the chen-derived logks/rp (is this necessary?)
@@ -1558,7 +1565,7 @@ printandlog, 'The best loglike found by AMOEBA was ' + strtrim(-bestchi2/2d0,2),
 printandlog, 'It should only be compared against the loglike of the same model with different starting points', logname
 
 
-if keyword_set(bestonly) then stop
+if keyword_set(bestonly) then exit
 
 ;; initialize the threads
 if nthreads gt 1 then begin

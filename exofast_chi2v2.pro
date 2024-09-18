@@ -1141,7 +1141,7 @@ for j=0, ss.ntel-1 do begin
                lowerbound = prior.lowerbound
                upperbound = prior.upperbound
                if this_vsinicp lt lowerbound or this_vsinicp gt upperbound then begin
-                  print, 'vsini = ' + strtrim(this_vsinicp,2) + ' is out of user-defined bounds (' + strtrim(lowerbound,2) + ',' + strtrim(upperbound,2) + ')'
+                  ; print, 'vsini = ' + strtrim(this_vsinicp,2) + ' is out of user-defined bounds (' + strtrim(lowerbound,2) + ',' + strtrim(upperbound,2) + ')'
                   return, !values.d_infinity
                endif
                chi2 += ((this_vsinicp - prior.value[0])/prior.gaussian_width)^2
