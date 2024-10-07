@@ -96,6 +96,7 @@ FUNCTION exofast_rossiter, time, inc_rad, ar, TPeriastron, period, e, omega_rad,
     IF rmmodel EQ 'ohta2005' THEN ohta2005 = 1
     IF rmmodel EQ 'hirano2010' THEN hirano2010 = 1
     IF rmmodel EQ 'hirano2011' THEN hirano2011 = 1
+    IF rmmodel EQ '' THEN hirano2011 = 1
 
     vsini = vsini / 1000D0
     vbeta = vbeta / 1000D0
@@ -118,9 +119,6 @@ FUNCTION exofast_rossiter, time, inc_rad, ar, TPeriastron, period, e, omega_rad,
 
     ; Interpolate if ninterp is greater than 1
     IF ninterp GT 1 THEN BEGIN
-
-
-
         transitbjd = time # (DBLARR(ninterp) + 1D0) + $
                      ((DINDGEN(ninterp) / ninterp - (ninterp - 1D0) / (2D0 * ninterp)) / $
                      1440D0 * exptime) ## (DBLARR(npoints) + 1D0)
@@ -148,7 +146,6 @@ FUNCTION exofast_rossiter, time, inc_rad, ar, TPeriastron, period, e, omega_rad,
     ;print,true
     ;x = - r* COS(trueanom + omega_rad)
     ;y = - r* SIN(trueanom + omega_rad) * COS(inc_rad)
-
     cosi = COS(inc_rad)
     ; Calculate up, and vp values
     z = exofast_getb2(time, i=inc_rad, a=ar, tperiastron=TPeriastron, period=period, e=e,omega=omega_rad,z2=depth, x2=xp,y2=yp)
@@ -160,9 +157,10 @@ FUNCTION exofast_rossiter, time, inc_rad, ar, TPeriastron, period, e, omega_rad,
     sintheta = SIN(trueanom)
     f = 1 - tmpmodelflux
     ratios = DBLARR(npoints)
-
-
-
+    IF vsini lt 1 THEN BEGIN
+        ; PRINT, 'Error: vsini cannot be zero'
+        RETURN, f*0
+    ENDIF
     IF KEYWORD_SET(ohta2005) THEN BEGIN
         ; PRINT, 'Using ohta2005 model'
 		; Ohta+2005 (OTS)

@@ -19,7 +19,7 @@ pro readargs, argfile, priorfile=priorfile, $
               seddeblend=seddeblend,fitdilute=fitdilute, $
               nplanets=nplanets, $
               fittran=fittran, fitrv=fitrv, $
-              rossiter=rossiter, fitdt=fitdt, rmbands=rmbands, rmtrends=rmtrends, exposuretimerm=exposuretimerm, numinterprm=numinterprm, rmmodel=rmmodel, $
+              rossiter=rossiter, fitdt=fitdt, rmbands=rmbands, rmtrends=rmtrends, exposuretimerm=exposuretimerm, numinterprm=numinterprm, rmmodels=rmmodels, $
               circular=circular, tides=tides, $ 
               alloworbitcrossing=alloworbitcrossing, $
               chen=chen, i180=i180, $
@@ -48,7 +48,7 @@ pro readargs, argfile, priorfile=priorfile, $
               mksummarypg=mksummarypg,$
               nocovar=nocovar,$
               plotonly=plotonly, bestonly=bestonly,$
-              logname=logname,restorebest=restorebest,optmethod=optmethod,optcriteria=optcriteria,nthreads=nthreads
+              logname=logname,restorebest=restorebest,optmethod=optmethod,optcriteria=optcriteria,nthreads=nthreads,skipop=skipop,stopnow=stopnow
 
 ;; first get the log name so we can log any errors
 line = ''
@@ -151,6 +151,10 @@ while not eof(lun) do begin
             maxtime = long(entries[1])
          endif else if strupcase(strtrim(entries[0],2)) eq 'DONTSTOP' then begin
             dontstop = boolean(entries[1])
+         endif else if strupcase(strtrim(entries[0],2)) eq 'SKIPOP' then begin
+            skipop = boolean(entries[1])
+         endif else if strupcase(strtrim(entries[0],2)) eq 'STOPNOW' then begin
+            stopnow = boolean(entries[1])
          endif else if strupcase(strtrim(entries[0],2)) eq 'NTEMPS' then begin
             ntemps = long(entries[1])
          endif else if strupcase(strtrim(entries[0],2)) eq 'NTHREADS' then begin
@@ -185,8 +189,8 @@ while not eof(lun) do begin
             rmbands = json_parse(entries[1],/toarray)
          endif else if strupcase(strtrim(entries[0],2)) eq 'RMTRENDS' then begin
             rmtrends = json_parse(entries[1],/toarray)
-         endif else if strupcase(strtrim(entries[0],2)) eq 'RMMODEL' then begin
-            rmmodel = strtrim(entries[1],2)
+         endif else if strupcase(strtrim(entries[0],2)) eq 'RMMODELS' then begin
+            rmmodels = json_parse(entries[1],/toarray)
          endif else if strupcase(strtrim(entries[0],2)) eq 'OPTMETHOD' then begin
             optmethod = strtrim(entries[1],2)
          endif else if strupcase(strtrim(entries[0],2)) eq 'RESTOREBEST' then begin

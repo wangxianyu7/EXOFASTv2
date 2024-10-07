@@ -393,8 +393,9 @@ nthreads=n_elements(thread_array)
 laststep = 0
 ; restore all from the last run
 oldrunfile = file_search(ss.prefix + 'mcmctmp.idl', count=nsavefiles)
-if nsavefiles gt 0 then restore, ss.prefix + 'mcmctmp.idl'
 if nsavefiles gt 0 then begin
+   newpars = 0 ;; clear the newpars array
+   restore, ss.prefix + 'mcmctmp.idl'
    print, 'Restored from ' + ss.prefix + 'mcmctmp.idl'
    print, 'Resuming from step ' + strtrim(laststep,2)
 endif else print, 'No previous run to restore from'
@@ -402,7 +403,6 @@ endif else print, 'No previous run to restore from'
 
 ;; start MCMC chain
 tmpt0 = t00
-
 ; stop
 for i=resumendx,maxsteps-1L do begin
    if i lt laststep then continue
@@ -410,10 +410,8 @@ for i=resumendx,maxsteps-1L do begin
 ;   t00 = systime(/seconds)   
    ;; automatically thin the chain (saves memory)
    for k=0L, nthin-1L do begin
-
       threadndx = -1L
       for j=0L, nchains-1L do begin
-      
          for m=0L, ntemps-1L do begin
 
             ;; Parallel Tempering step (no need to recompute the chi2)
@@ -729,14 +727,18 @@ for i=resumendx,maxsteps-1L do begin
    if (tnow-tmpt0) gt 1800 then begin
       laststep = i
       print, 'Saving at step ' + strtrim(i,2), ' after ' + strtrim(tnow-t00,2) + ' seconds'
-      ; save, pars,chi2,newpars,det,nswapattempt,acceptancerate,laststep,npass,nextrecalc, FILENAME = ss.prefix+'mcmctmp.idl'
-      SAVE, /VARIABLES, FILENAME = ss.prefix+'mcmctmp.idl'
+      save, olddet, oldpars, oldchi2, nderived, nswap, naccept, temps, swapped, newchi2, fac,pars,chi2,newpars,det,nswapattempt,acceptancerate,laststep,npass,nextrecalc, FILENAME = ss.prefix+'mcmctmp.idl'
+
+      ; save, pars,chi2,newpars,oldpars,det,nswapattempt,acceptancerate,laststep,npass,nextrecalc, FILENAME = ss.prefix+'mcmctmp.idl'
+      ; SAVE, /VARIABLES, FILENAME = ss.prefix+'mcmctmp.idl'
       tmpt0 = tnow
 
    endif
 endfor
-SAVE, /VARIABLES, FILENAME = ss.prefix+'mcmctmp.idl'
-; save, pars,chi2,newpars,det,nswapattempt,acceptancerate,laststep,npass,nextrecalc, FILENAME = ss.prefix+'mcmctmp.idl'
+
+
+; SAVE, /VARIABLES, FILENAME = ss.prefix+'mcmctmp.idl'
+save, olddet, oldpars, oldchi2, nderived, nswap, naccept, temps, swapped, newchi2, fac,pars,chi2,newpars,det,nswapattempt,acceptancerate,laststep,npass,nextrecalc, FILENAME = ss.prefix+'mcmctmp.idl'
 printandlog, '', logname ;; don't overwrite the final line
 printandlog, '', logname ;; now just add a space
 

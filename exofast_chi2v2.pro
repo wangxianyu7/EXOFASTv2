@@ -1029,7 +1029,7 @@ for j=0, ss.ntel-1 do begin
                                   0d0,ss.planet[i].K.value*q,$
                                   ss.planet[i].e.value,ss.planet[i].omega.value+!dpi,$
                                   slope=0d0,exptime=ss.telescope[j].exptime, $
-                                  ninterp=ss.telescope[j].ninterp)
+                                  ninterp=ss.telescope[j].ninterp,rmmodel=ss.telescope[j].rmmodels.value)
          endif else begin
             ;; time in target barycentric frame (expensive)
             rvbjd = bjd2target(rv.bjd, inclination=ss.planet[i].i.value, $
@@ -1108,7 +1108,7 @@ for j=0, ss.ntel-1 do begin
                                   lambda=this_lambda,vbeta=ss.star[ss.planet[i].starndx].vbeta.value,$
                                   vgamma=ss.star[ss.planet[i].starndx].vgamma.value, vzeta=ss.star[ss.planet[i].starndx].vzeta.value,$
                                   u1=u1,u2=u2,deltarv=deltarv, exptime=ss.telescope[j].exptime, ninterp=ss.telescope[j].ninterp,$
-                                  srv=ss.telescope[j].srv.value, qrv=ss.telescope[j].qrv.value)
+                                  srv=ss.telescope[j].srv.value, qrv=ss.telescope[j].qrv.value,rmmodel=ss.telescope[j].rmmodels)
             u1err = 0.05d0
             u2err = 0.05d0
 

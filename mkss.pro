@@ -60,7 +60,7 @@ function mkss, priorfile=priorfile, $
                ;; planet inputs
                nplanets=nplanets, $
                fittran=fittran,fitrv=fitrv,$
-               rossiter=rossiter, fitdt=fitdt, rmbands=rmbands, rmtrends=rmtrends, exposuretimerm=exposuretimerm, numinterprm=numinterprm, rmmodel=rmmodel,  $
+               rossiter=rossiter, fitdt=fitdt, rmbands=rmbands, rmtrends=rmtrends, exposuretimerm=exposuretimerm, numinterprm=numinterprm, rmmodels=rmmodels,  $
                circular=circular, tides=tides, $
                alloworbitcrossing=alloworbitcrossing,$
                chen=chen, i180=i180,$
@@ -2366,7 +2366,8 @@ telescope = create_struct(srv.label,srv,$
                           'name','',$
                           'chi2',0L,$
                           'rootlabel','Telescope Parameters:',$
-                          'label','')
+                          'label','',$
+                          'rmmodels','')
 
 if ntel le 0 then begin
    telescope.jittervar.fit = 0
@@ -3057,6 +3058,9 @@ if ntel gt 0 then begin
    maxpoints = 0
    detrend.scale = 1d0
    for i=0, ntel-1 do begin
+      if n_elements(rmmodels) ne 0 then begin
+         ss.telescope[i].rmmodels = rmmodels[i]
+      endif
       if ~keyword_set(silent) then printandlog, string(i,rvfiles[i],format='(i2,x,a)'),logname
       *(ss.telescope[i].rvptrs) = readrv_detrend(rvfiles[i], detrendpar=detrend)
       ss.telescope[i].label = (*(ss.telescope[i].rvptrs)).label

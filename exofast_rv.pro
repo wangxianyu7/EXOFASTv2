@@ -114,7 +114,9 @@ endif
 
 
 ;; Calculate the RM effect
-if keyword_set(rossiter) and bjd[-1] - bjd[0] <0.5 then begin
+;;create deltarv array, zero
+deltarv = dblarr(n_elements(bjd))
+if keyword_set(rossiter) and rmmodel ne 'notrm' then begin
     if n_elements(i) eq 0 or n_elements(a) eq 0 or n_elements(u1) eq 0 or $
       n_elements(p) eq 0 or n_elements(vsini) eq 0 or n_elements(lambda) eq 0 $
       then message, 'ERROR: a, i, u1, p, vsini, and lambda must be ' + $
@@ -127,12 +129,9 @@ if keyword_set(rossiter) and bjd[-1] - bjd[0] <0.5 then begin
     tmp = r*sin(trueanom + omega)
     y =  -tmp*cos(i)
     z =  tmp*sin(i)
-    ; exofast_rossiter, x, y, u1, p, vsini, lambda, deltarv, z=z
-    deltarv = exofast_rossiter(bjd,i,a,TPeriastron,period,e,omega,p,u1,u2,lambda,vsini,vbeta,vgamma,vzeta,exptime=exptime,ninterp=ninterp,rmmodel='hirano2011')
+    deltarv = exofast_rossiter(bjd,i,a,TPeriastron,period,e,omega,p,u1,u2,lambda,vsini,vbeta,vgamma,vzeta,exptime=exptime,ninterp=ninterp,rmmodel=rmmodel)
     rv += deltarv
-    ; FUNCTION exofast_rossiter, time, inc_rad, ar, TPeriastron, period, e, omega_rad, p, u1, u2, lambda, vsini, $
-    ; beta, gamma, zeta, $ ; 
-    ; exptime=exptime, ninterp=ninterp,ohta2005=ohta2005,hirano2010=hirano2010,hirano2011=hirano2011
+
     
 
 endif
