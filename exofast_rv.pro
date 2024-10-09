@@ -116,7 +116,7 @@ endif
 ;; Calculate the RM effect
 ;;create deltarv array, zero
 deltarv = dblarr(n_elements(bjd))
-if keyword_set(rossiter) and rmmodel ne 'notrm' then begin
+if keyword_set(rossiter) and (rmmodel eq 'hirano2010' or rmmodel eq 'hirano2011' or rmmodel eq 'ohta2005') then begin
     if n_elements(i) eq 0 or n_elements(a) eq 0 or n_elements(u1) eq 0 or $
       n_elements(p) eq 0 or n_elements(vsini) eq 0 or n_elements(lambda) eq 0 $
       then message, 'ERROR: a, i, u1, p, vsini, and lambda must be ' + $

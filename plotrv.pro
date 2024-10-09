@@ -147,6 +147,7 @@ for j=0, ss.ntel-1 do begin
 
       ;; this clause is never executed
       if rv.planet eq i then begin
+         print, 'rv.planet eq i', rv.planet, i
 ;; this needs to be debugged
          rvbjd = bjd2target(rv.bjd, inclination=ss.planet[i].i.value[ndx], $
                             a=ss.planet[i].a.value[ndx], tp=ss.planet[i].tp.value[ndx], $
@@ -188,7 +189,6 @@ for j=0, ss.ntel-1 do begin
             this_lambda = atan(ss.planet[i].svsinisinlambda.value, ss.planet[i].svsinicoslambda.value)
          endelse
          this_vsini = ss.planet[i].svsinicoslambda.value^2 + ss.planet[i].svsinisinlambda.value^2
-
          modelrv += exofast_rv(rvbjd,ss.planet[i].tp.value[ndx],$
                                ss.planet[i].period.value[ndx],0d0,$
                                ss.planet[i].K.value[ndx],ss.planet[i].e.value[ndx],$
@@ -199,7 +199,6 @@ for j=0, ss.ntel-1 do begin
                               vgamma=ss.star[ss.planet[i].starndx].vgamma.value, vzeta=ss.star[ss.planet[i].starndx].vzeta.value,$
                               u1=u1,u2=u2,deltarv=deltarv, exptime=ss.telescope[j].exptime, ninterp=ss.telescope[j].ninterp,$
                               srv=ss.telescope[j].srv.value, qrv=ss.telescope[j].qrv.value,rmmodel=ss.telescope[j].rmmodels)
-         
       endelse
       
    endfor
@@ -355,7 +354,6 @@ for i=0, ss.nplanets-1 do begin
             ss.planet[i].period.value[ndx]+1.25d0) mod 1
       plotsym, symbols[j mod nsymbols], symsize, fill=fills[j mod nfills], color=colors[j mod ncolors]
       oploterr, time, rv.residuals+modelrv, err, 8
-
       if keyword_set(psname) then begin
          base = file_dirname(psname) + path_sep() + 'modelfiles' + path_sep() + file_basename(psname,'.model')
          exofast_forprint, time, rv.residuals,modelrv, err, format='(f0.8,x,f0.6,x,f0.6,x,f0.6)', textout=base + '.rvphase.residuals.planet_'+ string(i,format='(i02)')+'.telescope_' + string(j,format='(i02)') + '.txt', /nocomment,/silent

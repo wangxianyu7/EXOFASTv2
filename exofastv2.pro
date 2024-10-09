@@ -1498,7 +1498,6 @@ if ss.debug and ~lmgr(/vm) then begin
    printandlog, 'program halted to give you time to inspect the priors. Type ".con" to continue', logname
    stop
 end
-
 if skipop eq 0 then begin
 
    nmax = 1d5

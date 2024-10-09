@@ -1008,7 +1008,6 @@ for j=0, ss.ntel-1 do begin
 
    modelrv = dblarr(n_elements(rv.rv))
    for i=0, ss.nplanets-1 do begin
-
       if ss.planet[i].fitrv then begin      
          ;; rvbjd = rv.bjd ;; usually sufficient (See Eastman et al., 2013)
 
@@ -1041,15 +1040,21 @@ for j=0, ss.ntel-1 do begin
             ;; calculate the RV model
             bandname = ''
             if ss.planet[i].rossiter then begin
-               bandname = ss.band[ss.telescope[j].bandndx].name
-               u1claret = 0.2
-               u2claret = 0.3
-               if bandname ne 'rm' then begin
-                  coeffs = quadld(ss.star[ss.planet[i].starndx].logg.value,$
-                          ss.star[ss.planet[i].starndx].teff.value,$
-                          ss.star[ss.planet[i].starndx].feh.value,bandname)
-                  u1claret = coeffs[0]
-                  u2claret = coeffs[1]
+               u1claret = 0.2d0
+               u2claret = 0.3d0
+               if ss.telescope[j].bandndx ne -1 then begin
+                  bandname = ss.band[ss.telescope[j].bandndx].name
+                  if bandname ne 'rm' then begin
+                     coeffs = quadld(ss.star[ss.planet[i].starndx].logg.value,$
+                                     ss.star[ss.planet[i].starndx].teff.value,$
+                                     ss.star[ss.planet[i].starndx].feh.value,bandname)
+                     u1claret = coeffs[0]
+                     u2claret = coeffs[1]
+                  endif else begin
+                     u1claret = 0.2d0
+                     u2claret = 0.3d0
+                  endelse
+                  ss.telescope[j].rmmodels = 'hirano2011' ; default
                endif
 
                ;; calculate the Vmac (Vzeta)
@@ -1121,8 +1126,8 @@ for j=0, ss.ntel-1 do begin
             if ss.planet[i].rossiter and ss.telescope[j].bandndx ne -1 then begin
                chi2 += ((ss.star[ss.planet[i].starndx].vzeta.value-vmac*1000)/1)^2
                for k=0, n_elements(rv.rv)-1 do begin
-                  for i=0L, n_elements(*ss.priors)-1 do begin
-                     prior = (*ss.priors)[i]
+                  for l=0L, n_elements(*ss.priors)-1 do begin
+                     prior = (*ss.priors)[l]
                      ;; get the model value
                      if prior.map[4] ne -1 then begin
                         label = (*ss.(prior.map[0])[prior.map[1]].(prior.map[2])[prior.map[3]]).(prior.map[4])[prior.map[5]].label

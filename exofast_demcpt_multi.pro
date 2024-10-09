@@ -224,6 +224,7 @@ if n_elements(mintz) eq 0 then mintz = 1000d0
 if n_elements(maxgr) eq 0 then maxgr = 1.01d0
 if n_elements(loglun) eq 0 then loglun = -1
 if n_elements(ntemps) eq 0 then ntemps=1
+if n_elements(stopnow) eq 0 then stopnow = 0B
 lasttz = 0
 lastgr = 10
 
