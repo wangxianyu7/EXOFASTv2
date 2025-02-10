@@ -414,7 +414,6 @@ for i=resumendx,maxsteps-1L do begin
       threadndx = -1L
       for j=0L, nchains-1L do begin
          for m=0L, ntemps-1L do begin
-
             ;; Parallel Tempering step (no need to recompute the chi2)
             ;; http://www.lindonslog.com/programming/openmp/parallel-tempering-algorithm-c/
             ;; attempt swap between next hottest chain with probability 1/2
@@ -515,7 +514,6 @@ for i=resumendx,maxsteps-1L do begin
                   thread_array[threadndx].fac = fac
                   thread_array[threadndx].newpars = newpars
                   thread_array[threadndx].status = 1
-
 ;                  thread_status = thread_array[threadndx].obridge->status()
 ;                  newchi2 = thread_array[threadndx].obridge->GetVar('newchi2')
 ;                  newchi22 = call_function(chi2func,newpars,det=det,derived=dpar)
@@ -728,18 +726,16 @@ for i=resumendx,maxsteps-1L do begin
    if (tnow-tmpt0) gt 1800 then begin
       laststep = i
       print, 'Saving at step ' + strtrim(i,2), ' after ' + strtrim(tnow-t00,2) + ' seconds'
-      save, olddet, oldpars, oldchi2, nderived, nswap, naccept, temps, swapped, newchi2, fac,pars,chi2,newpars,det,nswapattempt,acceptancerate,laststep,npass,nextrecalc, FILENAME = ss.prefix+'mcmctmp.idl'
-
+      save, olddet, oldpars, oldchi2, nderived, nswap, naccept, temps, swapped, newchi2,fac,pars,chi2,newpars,det,nswapattempt,acceptancerate,laststep,npass,nextrecalc, FILENAME = ss.prefix+'mcmctmp.idl'
       ; save, pars,chi2,newpars,oldpars,det,nswapattempt,acceptancerate,laststep,npass,nextrecalc, FILENAME = ss.prefix+'mcmctmp.idl'
       ; SAVE, /VARIABLES, FILENAME = ss.prefix+'mcmctmp.idl'
       tmpt0 = tnow
-
    endif
 endfor
 
 
 ; SAVE, /VARIABLES, FILENAME = ss.prefix+'mcmctmp.idl'
-save, olddet, oldpars, oldchi2, nderived, nswap, naccept, temps, swapped, newchi2, fac,pars,chi2,newpars,det,nswapattempt,acceptancerate,laststep,npass,nextrecalc, FILENAME = ss.prefix+'mcmctmp.idl'
+save, olddet, oldpars, oldchi2, nderived, nswap, naccept, temps, swapped, newchi2,fac,pars,chi2,newpars,det,nswapattempt,acceptancerate,laststep,npass,nextrecalc, FILENAME = ss.prefix+'mcmctmp.idl'
 printandlog, '', logname ;; don't overwrite the final line
 printandlog, '', logname ;; now just add a space
 
@@ -755,7 +751,6 @@ ngood = n_elements(goodchains)
 ;; if there are bad chains, is it better without them?
 ;; (it usually is unless it's a very short run)
 if ngood ne nchains or npass ne 6 then begin
-
    ;; are all the chains mixed?
    converged = exofast_gelmanrubin(pars[0:nfit-1,burnndx:nstop,*],$
                                    gelmanrubin1,tz1,angular=gelmanangular, $

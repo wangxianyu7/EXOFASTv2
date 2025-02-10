@@ -1066,6 +1066,7 @@ for j=0, ss.ntel-1 do begin
                vmac = 0.0
                teff = ss.star[ss.planet[i].starndx].teff.value
                logg = ss.star[ss.planet[i].starndx].logg.value
+               feh = ss.star[ss.planet[i].starndx].feh.value
 
                ; Calculate vmac based on the given conditions
                ; Doyle et al. (2014), borrowed from iSpec
@@ -1078,9 +1079,69 @@ for j=0, ss.ntel-1 do begin
                         vmac = 3.21 + 2.33e-3 * (teff - t0) + 2e-6 * (teff - t0)^2 - 2 * (logg - g0)
                   ENDELSE
                ENDIF ELSE BEGIN
+                  ; GES
                   ; Out of the calibrated limits
-                  vmac = 0.0
+                  t0 = 5500.0
+                  g0 = 4.0
+              
+                  IF logg GE 3.5 THEN BEGIN
+                      IF teff GE 5000.0 THEN BEGIN
+                          ; Main sequence and subgiants (RGB)
+                          vmac = 3.0 * (1.15 + 7.0e-4 * (teff - t0) + 1.2e-6 * (teff - t0)^2 - $
+                                        0.13 * (logg - g0) + 0.13 * (logg - g0)^2 - $
+                                        0.37 * feh - 0.07 * feh^2)
+                      ENDIF ELSE BEGIN
+                          ; Main sequence
+                          vmac = 3.0 * (1.15 + 2.0e-4 * (teff - t0) + 3.95e-7 * (teff - t0)^2 - $
+                                        0.13 * (logg - g0) + 0.13 * (logg - g0)^2)
+                      ENDELSE
+                  ENDIF ELSE BEGIN
+                      ; Giants (RGB/AGB)
+                      vmac = 3.0 * (1.15 + 2.2e-5 * (teff - t0) - 0.5e-7 * (teff - t0)^2 - $
+                                    0.1 * (logg - g0) + 0.04 * (logg - g0)^2 - $
+                                    0.37 * feh - 0.07 * feh^2)
+                  ENDELSE
                ENDELSE
+
+               ;; calculate the vmic
+               ; Define constants
+               t0 = 5500.0
+               g0 = 4.0
+
+               ; Assume TEFF, LOGG, and FEH are given variables.
+
+               IF (logg GE 3.5) THEN BEGIN
+               
+                  IF (teff GE 5000) THEN BEGIN
+                     ; main sequence and subgiants (RGB)
+                     vmic = 1.05 + 2.51e-4 * (teff - t0) + 1.5e-7 * (teff - t0)^2.0 $
+                           - 0.14 * (logg - g0) - 0.05e-1 * (logg - g0)^2.0 $
+                           + 0.05 * feh + 0.01 * feh^2.0
+                  END ELSE BEGIN
+                     ; main sequence (forcing teff to 5000 in the formula)
+                     vmic = 1.05 + 2.51e-4 * (5000.0 - t0) + 1.5e-7 * (5000.0 - t0)^2.0 $
+                           - 0.14 * (logg - g0) - 0.05e-1 * (logg - g0)^2.0 $
+                           + 0.05 * feh + 0.01 * feh^2.0
+                  END
+
+               END ELSE BEGIN
+               ; giants (RGB/AGB)
+               vmic = 1.25 + 4.01e-4 * (teff - t0) + 3.1e-7 * (teff - t0)^2.0 $
+                        - 0.14 * (logg - g0) - 0.05e-1 * (logg - g0)^2.0 $
+                        + 0.05 * feh + 0.01 * feh^2.0
+               END
+
+
+
+
+
+
+
+
+
+
+
+
             endif else u1claret = 0d0
 
 
@@ -1112,19 +1173,22 @@ for j=0, ss.ntel-1 do begin
                                   p=abs(ss.planet[i].p.value),vsini=this_vsini,$
                                   lambda=this_lambda,vbeta=ss.star[ss.planet[i].starndx].vbeta.value,$
                                   vgamma=ss.star[ss.planet[i].starndx].vgamma.value, vzeta=ss.star[ss.planet[i].starndx].vzeta.value,$
+                                  vxi=ss.star[ss.planet[i].starndx].vxi.value,valpha=ss.star[ss.planet[i].starndx].valpha.value,$
                                   u1=u1,u2=u2,deltarv=deltarv, exptime=ss.telescope[j].exptime, ninterp=ss.telescope[j].ninterp,$
                                   srv=ss.telescope[j].srv.value, qrv=ss.telescope[j].qrv.value,rmmodel=ss.telescope[j].rmmodels)
-            u1err = 0.05d0
-            u2err = 0.05d0
+
 
       
 
-            if ss.planet[i].rossiter and bandname ne 'rm' then begin
+            if ss.planet[i].rossiter and bandname ne 'rm' and bandname ne '' then begin
+               u1err = 0.05d0 ; use claret table penalty
+               u2err = 0.05d0
                chi2 += ((u1 - u1claret)/u1err)^2
                chi2 += ((u2 - u2claret)/u2err)^2
             endif
             if ss.planet[i].rossiter and ss.telescope[j].bandndx ne -1 then begin
-               chi2 += ((ss.star[ss.planet[i].starndx].vzeta.value-vmac*1000)/1)^2
+               chi2 += ((ss.star[ss.planet[i].starndx].vzeta.value-vmac*1000)/1000)^2; Doyle et al. (2014) Table 4
+               chi2 += ((ss.star[ss.planet[i].starndx].vxi.value-vmic*1000)/1000)^2; GES Vmic penalty
                for k=0, n_elements(rv.rv)-1 do begin
                   for l=0L, n_elements(*ss.priors)-1 do begin
                      prior = (*ss.priors)[l]
@@ -1442,6 +1506,25 @@ for j=0L, ss.ntran-1 do begin
    modelflux += total(transit.detrendadd*(replicate(1d0,n_elements(transit.bjd))##transit.detrendaddpars.value),1) 
    modelflux *= (ss.transit[j].f0.value + $
                  total(transit.detrendmult*(replicate(1d0,n_elements(transit.bjd))##transit.detrendmultpars.value),1))
+   transitgpchi2 = 0
+   ; if ss.transit[j].transitgps ne '' then begin
+   ;    if ss.transit[j].transitgps eq 'Real' then gptype = 0
+   ;    if ss.transit[j].transitgps eq 'Complex' then gptype = 1
+   ;    if ss.transit[j].transitgps eq 'SHO' then gptype = 2
+   ;    if ss.transit[j].transitgps eq 'Matern32' then gptype = 3
+   ;    if ss.transit[j].transitgps eq 'Rotation' then gptype = 4
+   ;    ; N, x, y, diag_, kernel_type, output_type, par1, par2, par3, par4, par5,
+   ;    N = n_elements(transitbjd)
+   ;    transitgpchi2 = -computeGP(N, transitbjd, transit.flux-modelflux, transit.err^2+ss.transit[j].variance.value, gptype, 0, ss.transit[j].gppar1.value, ss.transit[j].gppar2.value, ss.transit[j].gppar3.value, ss.transit[j].gppar4.value, ss.transit[j].gppar5.value)
+   ;    gp_trend = computeGP(N, transitbjd, transit.flux, transit.err^2+ss.transit[j].variance.value, gptype, 1, ss.transit[j].gppar1.value, ss.transit[j].gppar2.value, ss.transit[j].gppar3.value, ss.transit[j].gppar4.value, ss.transit[j].gppar5.value)
+   ;    ;; if is nan
+   ;    if ~finite(transitgpchi2) then gp_trend = replicate(1d20,n_elements(transitbjd))
+   ;    if ~finite(transitgpchi2) then transitgpchi2 = 1d20
+
+   ;    modelflux += gp_trend
+
+   ; endif
+      ; N, x, y, diag_, kernel_type, output_type, par1, par2, par3, par4, par5,
 
    ;; exponential ramp (e.g., Spitzer & JWST)
    if ss.transit[j].fitramp then begin
@@ -1491,7 +1574,7 @@ for j=0L, ss.ntran-1 do begin
 
    ;; chi^2
    if ss.transit[j].sigma_r.fit then begin
-      transitchi2 = -2d0*exofast_wavelike(transit.flux - modelflux,ss.transit[j].sigma_r.value,mean(transit.err),/zeropad)
+      transitchi2 = -2d0*exofast_wavelike(transit.flux - modelflux,ss.transit[j].sigma_r.value,mean(transit.err),/zeropad) 
    endif else begin
       transitchi2 = exofast_like(transit.flux - modelflux,ss.transit[j].variance.value,transit.err,/chi2)
    endelse
@@ -1516,6 +1599,7 @@ for j=0L, ss.ntran-1 do begin
    endif
 
    chi2 += transitchi2
+   chi2 += transitgpchi2
    if ss.verbose then printandlog, ss.transit[j].label + ' transit penalty: ' + strtrim(transitchi2,2) + ' ' + strtrim(ss.transit[j].variance.value,2),ss.logname
 
 endfor

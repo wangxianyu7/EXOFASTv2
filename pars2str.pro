@@ -14,7 +14,6 @@ pro pars2str, pars, str, best=best
 
   tofit = *(str.tofit)
   npars = n_elements(tofit[0,*])
-
   ;; just a sanity check to make sure the mapping is correct
   errmsg = "ERROR: There is a serious bug in the mapping between " + $
            "the parameter steps and the data structure! Please notify " + $

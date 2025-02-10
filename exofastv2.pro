@@ -1172,7 +1172,7 @@ pro exofastv2, priorfile=priorfile, $
                ;; planet inputs
                nplanets=nplanets, $
                fittran=fittran, fitrv=fitrv, $
-               rossiter=rossiter, fitdt=fitdt, rmbands=rmbands, rmtrends=rmtrends, exposuretimerm=exposuretimerm, numinterprm=numinterprm, rmmodels=rmmodels, $
+               rossiter=rossiter, fitdt=fitdt, rmbands=rmbands, rmtrends=rmtrends, exposuretimerm=exposuretimerm, numinterprm=numinterprm, rmmodels=rmmodels,transitgps=transitgps, rvgps=rvgps,  $
                circular=circular, tides=tides, $ 
                alloworbitcrossing=alloworbitcrossing, $
                chen=chen, i180=i180, $
@@ -1374,7 +1374,7 @@ ss = mkss(priorfile=priorfile, $
           ;; planet inputs
           nplanets=nplanets, $
           fittran=fittran,fitrv=fitrv,$
-          rossiter=rossiter, fitdt=fitdt, rmbands=rmbands, rmtrends=rmtrends, exposuretimerm=exposuretimerm, numinterprm=numinterprm, rmmodels=rmmodels, $
+          rossiter=rossiter, fitdt=fitdt, rmbands=rmbands, rmtrends=rmtrends, exposuretimerm=exposuretimerm, numinterprm=numinterprm, rmmodels=rmmodels, transitgps=transitgps,$
           circular=circular, tides=tides, $
           alloworbitcrossing=alloworbitcrossing,$
           chen=chen, i180=i180,$
@@ -1659,7 +1659,7 @@ if nthreads gt 1 then begin
          'seddeblend=seddeblend, fitdilute=fitdilute,'+$
          'nplanets=nplanets,'+$
          'fittran=fittran, fitrv=fitrv,'+$
-         'rossiter=rossiter,fitdt=fitdt,rmbands=rmbands,rmtrends=rmtrends,exposuretimerm=exposuretimerm,numinterprm=numinterprm,rmmodels=rmmodels,'+$
+         'rossiter=rossiter,fitdt=fitdt,rmbands=rmbands,rmtrends=rmtrends,exposuretimerm=exposuretimerm,numinterprm=numinterprm,rmmodels=rmmodels,transitgps=transitgps, rvgps=rvgps,'+$
          'circular=circular,tides=tides,'+$
          'alloworbitcrossing=alloworbitcrossing,'+$
          'chen=chen, i180=i180,'+$

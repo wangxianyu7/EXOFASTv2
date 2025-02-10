@@ -24,7 +24,7 @@ exofastv2, nplanets=1, tranpath=path + 'n20??????.*.dat',$
            dtpath=path+'n201?????.KELT-17b.TRES.44000.fits',$
            mistsedfile=path+'kelt17.sed',rvpath=path+'KELT-17b.*.rv',$
            priorfile=path + 'kelt17.priors.2',$
-           prefix=outpath + 'KELT-17b.',$
+           prefix=outpath + 'KELT-17b.',rmbands=["notrm","V"],rmmodels=["notrm","hirano2010"],rossiter=[1],$
            debug=debug, verbose=verbose, maxsteps=maxsteps,nthin=nthin, fitdt=[1], nthread=nthread
 
 end

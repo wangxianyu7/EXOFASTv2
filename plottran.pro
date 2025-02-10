@@ -234,6 +234,25 @@ for j=0, ss.ntran-1 do begin
       prettytmpflux = reform(prettytmpflux,npretty,ninterp)
       prettyflux += prettytmpflux
       
+      ; if ss.transit[j].transitgps ne '' then begin
+      ;    if ss.transit[j].transitgps eq 'Real' then gptype = 0
+      ;    if ss.transit[j].transitgps eq 'Complex' then gptype = 1
+      ;    if ss.transit[j].transitgps eq 'SHO' then gptype = 2
+      ;    if ss.transit[j].transitgps eq 'Matern32' then gptype = 3
+      ;    if ss.transit[j].transitgps eq 'Rotation' then gptype = 4
+      ;    ; N, x, y, diag_, kernel_type, output_type, par1, par2, par3, par4, par5,
+      ;    N = n_elements(prettyflux)
+      ;    ; transitgpchi2 = -computeGP(N, prettytime, prettytime, prettytime, gptype, 0, ss.transit[j].gppar1.value, ss.transit[j].gppar2.value, ss.transit[j].gppar3.value, ss.transit[j].gppar4.value, ss.transit[j].gppar5.value)
+      ;    gp_trend = computeGP(N, prettytime, prettytime, prettytime, gptype, 1, ss.transit[j].gppar1.value, ss.transit[j].gppar2.value, ss.transit[j].gppar3.value, ss.transit[j].gppar4.value, ss.transit[j].gppar5.value)
+      ;    ; ;; if is nan
+      ;    ; if ~finite(transitgpchi2) then gp_trend = replicate(1d20,n_elements(transitbjd))
+      ;    ; if ~finite(transitgpchi2) then transitgpchi2 = 1d20
+   
+      ;    prettyflux += gp_trend
+   
+      ; endif
+
+
       ;; calculate the model for this planet for each data point
       tmpflux = (exofast_tran(transitbjd, $
                               ss.planet[i].i.value[ndx] + ss.transit[j].tiv.value[ndx], $
@@ -470,8 +489,10 @@ for jj=0L, 1 do begin
 
          if keyword_set(psname) then begin
             base_tmp = file_dirname(psname) + path_sep() + 'modelfiles' + path_sep() + file_basename(psname,'.model')
-            exofast_forprint, time, modelflux, trandata.residuals, format='(f0.8,x,f0.6,x,f0.6)', textout=base_tmp + '.transitphase.residuals.planet_'+ string(i,format='(i02)')+'.telescope_' + string(j,format='(i02)') + '.txt', /nocomment,/silent
-            exofast_forprint, prettytime, prettyflux, format='(f0.8,x,f0.6)', textout=base_tmp + '.transitphase.model.planet_'+ string(i,format='(i02)')+'.telescope_' + string(j,format='(i02)') + '.txt', /nocomment,/silent
+               if jj eq 0L then begin
+               exofast_forprint, time, modelflux, trandata.residuals, format='(f0.8,x,f0.6,x,f0.6)', textout=base_tmp + '.transitphase.residuals.planet_'+ string(i,format='(i02)')+'.telescope_' + string(j,format='(i02)') + '.txt', /nocomment,/silent
+               exofast_forprint, prettytime, prettyflux, format='(f0.8,x,f0.6)', textout=base_tmp + '.transitphase.model.planet_'+ string(i,format='(i02)')+'.telescope_' + string(j,format='(i02)') + '.txt', /nocomment,/silent
+               endif
          endif
 
       endfor

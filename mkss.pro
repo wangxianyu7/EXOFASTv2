@@ -60,7 +60,7 @@ function mkss, priorfile=priorfile, $
                ;; planet inputs
                nplanets=nplanets, $
                fittran=fittran,fitrv=fitrv,$
-               rossiter=rossiter, fitdt=fitdt, rmbands=rmbands, rmtrends=rmtrends, exposuretimerm=exposuretimerm, numinterprm=numinterprm, rmmodels=rmmodels,  $
+               rossiter=rossiter, fitdt=fitdt, rmbands=rmbands, rmtrends=rmtrends, exposuretimerm=exposuretimerm, numinterprm=numinterprm, rmmodels=rmmodels, transitgps=transitgps, rvgps=rvgps, $
                circular=circular, tides=tides, $
                alloworbitcrossing=alloworbitcrossing,$
                chen=chen, i180=i180,$
@@ -1082,6 +1082,64 @@ qrv.fit=0
 qrv.derive=0
 qrv.scale = 100d0
 
+
+
+
+
+gppar1 = parameter
+gppar1.value = 0.1d0
+gppar1.unit = ''
+gppar1.description = 'GP parameter 1'
+gppar1.latex = 'GP Par 1'
+gppar1.label = 'gppar1'
+gppar1.scale = 0.1d0
+gppar1.fit = 0
+gppar1.derive = 0
+
+gppar2 = parameter
+gppar2.value = 0.1d0
+gppar2.unit = ''
+gppar2.description = 'GP parameter 2'
+gppar2.latex = 'GP Par 2'
+gppar2.label = 'gppar2'
+gppar2.scale = 0.1d0
+gppar2.fit = 0
+gppar2.derive = 0
+
+gppar3 = parameter
+gppar3.value = 0.1d0
+gppar3.unit = ''
+gppar3.description = 'GP parameter 3'
+gppar3.latex = 'GP Par 3'
+gppar3.label = 'gppar3'
+gppar3.scale = 0.1d0
+gppar3.fit = 0
+gppar3.derive = 0
+
+gppar4 = parameter
+gppar4.value = 0.1d0
+gppar4.unit = ''
+gppar4.description = 'GP parameter 4'
+gppar4.latex = 'GP Par 4'
+gppar4.label = 'gppar4'
+gppar4.scale = 0.1d0
+gppar4.fit = 0
+gppar4.derive = 0
+
+gppar5 = parameter
+gppar5.value = 0.1d0
+gppar5.unit = ''
+gppar5.description = 'GP parameter 5'
+gppar5.latex = 'GP Par 5'
+gppar5.label = 'gppar5'
+gppar5.scale = 0.1d0
+gppar5.fit = 0
+gppar5.derive = 0
+
+
+
+
+
 rstar = parameter
 rstar.value = 1d0
 rstar.unit = '\rsun'
@@ -1701,6 +1759,25 @@ vzeta.derive = 0
 vzeta.value = 4d3
 vzeta.scale = 1d4
 
+vxi = parameter
+vxi.unit = 'm/s'
+vxi.description = 'Microturbulence dispersion'
+vxi.latex = 'V_{\rm xi}'
+vxi.label = 'vxi'
+vxi.cgs = 1000d0
+vxi.derive = 0
+vxi.value = 1d3
+vxi.scale = 1d4
+
+valpha = parameter
+valpha.unit = 'm/s'
+valpha.description = 'Valpha'
+valpha.latex = 'V_{\rm alpha}'
+valpha.label = 'valpha'
+valpha.cgs = 1000d0
+valpha.derive = 0
+valpha.value = 1d3
+valpha.scale = 1d4
 
 svsinisinlambda = parameter
 svsinisinlambda.unit = ''
@@ -2179,7 +2256,9 @@ star = create_struct(mstar.label,mstar,$
                      vline.label,vline,$
                      vbeta.label,vbeta,$
                      vgamma.label,vgamma,$
-                     vzeta.label,vzeta,$                
+                     vzeta.label,vzeta,$ 
+                     vxi.label,vxi,$
+                     valpha.label,valpha,$               
                      Av.label,Av,$
                      alpha.label,alpha,$
 ;                     Ma.label,Ma,$
@@ -2354,8 +2433,13 @@ band = create_struct(u1.label,u1,$ ;; linear limb darkening
 
 ;; for each telescope
 telescope = create_struct(srv.label,srv,$
-                           qrv.label,qrv,$
-                           gamma.label,gamma,$
+                          qrv.label,qrv,$
+                          gamma.label,gamma,$
+                          gppar1.label,gppar1,$
+                          gppar2.label,gppar2,$
+                          gppar3.label,gppar3,$
+                          gppar4.label,gppar4,$
+                          gppar5.label,gppar5,$
                           jitter.label,jitter,$
                           jittervar.label,jittervar,$
                           'rvptrs', ptr_new(),$
@@ -2367,7 +2451,8 @@ telescope = create_struct(srv.label,srv,$
                           'chi2',0L,$
                           'rootlabel','Telescope Parameters:',$
                           'label','',$
-                          'rmmodels','')
+                          'rmmodels','',$
+                          'rvgps','')
 
 if ntel le 0 then begin
    telescope.jittervar.fit = 0
@@ -2385,6 +2470,11 @@ transit = create_struct(variance.label,variance,$ ;; jitter
                         rampexp.label, rampexp, $
                         rampamp.label, rampamp, $
                         f0.label,f0,$ ;; normalization
+                        gppar1.label,gppar1,$
+                        gppar2.label,gppar2,$
+                        gppar3.label,gppar3,$
+                        gppar4.label,gppar4,$
+                        gppar5.label,gppar5,$
                         'claret', 0B,$
                         'transitptrs',ptr_new(),$ ;; Data
                         'detrend',ptr_new(/allocate_heap),$ ;; array of detrending parameters
@@ -2401,7 +2491,8 @@ transit = create_struct(variance.label,variance,$ ;; jitter
                         'fitspline',0B,$
                         'splinespace',0.75d0,$
                         'fitramp',0B,$
-                        'label','') 
+                        'label','',$
+                        'transitgps','')
 
 doptom = create_struct('dtptrs',ptr_new(),$
                        'rootlabel','Doppler Tomography Parameters:',$
@@ -2733,6 +2824,13 @@ for i=0, nplanets-1 do begin
       ss.star[ss.planet[i].starndx].vgamma.derive = 1
       ss.star[ss.planet[i].starndx].vzeta.fit = 1
       ss.star[ss.planet[i].starndx].vzeta.derive = 1
+      ss.star[ss.planet[i].starndx].vxi.fit = 1
+      ss.star[ss.planet[i].starndx].vxi.derive = 1
+      ss.star[ss.planet[i].starndx].valpha.fit = 1
+      ss.star[ss.planet[i].starndx].valpha.derive = 1
+
+
+
       ; ss.planet[i].lsinlambda.fit = 1
       ; ss.planet[i].lcoslambda.fit = 1
       ss.planet[i].vsini.fit = 0
@@ -2949,6 +3047,24 @@ if ntran gt 0 then begin
    for i=0, ntran-1 do begin
       if ~keyword_set(silent) then printandlog, string(i,tranfiles[i],format='(i2,x,a)'),logname
       *(ss.transit[i].transitptrs) = readtran(tranfiles[i], detrendpar=detrend, nplanets=nplanets,skipallowed=noclaret[i])
+      if n_elements(transitgps) gt 0 then begin
+         ss.transit[i].transitgps = transitgps[i]
+         if transitgps[i] ne '' then begin
+            ss.transit[i].gppar1.fit = 1B
+            ss.transit[i].gppar1.derive = 1B
+            ss.transit[i].gppar2.fit = 1B
+            ss.transit[i].gppar2.derive = 1B
+            ss.transit[i].gppar3.fit = 1B
+            ss.transit[i].gppar3.derive = 1B
+            ss.transit[i].gppar4.fit = 1B
+            ss.transit[i].gppar4.derive = 1B
+            ss.transit[i].gppar5.fit = 1B
+            ss.transit[i].gppar5.derive = 1B
+         endif
+
+
+
+      endif
 
 ;      ;; create an array of detrending variables 
 ;      ;; (one for each extra column in the transit file)
@@ -3058,9 +3174,9 @@ if ntel gt 0 then begin
    maxpoints = 0
    detrend.scale = 1d0
    for i=0, ntel-1 do begin
-      if n_elements(rmmodels) ne 0 then begin
-         ss.telescope[i].rmmodels = rmmodels[i]
-      endif
+      if n_elements(rmmodels) ne 0 then ss.telescope[i].rmmodels = rmmodels[i]
+      if n_elements(rvgps) ne 0 then  ss.telescope[i].rvgps = rvgps[i]
+
       if ~keyword_set(silent) then printandlog, string(i,rvfiles[i],format='(i2,x,a)'),logname
       *(ss.telescope[i].rvptrs) = readrv_detrend(rvfiles[i], detrendpar=detrend)
       ss.telescope[i].label = (*(ss.telescope[i].rvptrs)).label
@@ -3116,11 +3232,13 @@ for i=0, ss.ntel-1 do begin
             ss.telescope[i].srv.fit = 1B
             rvtime = ((*(ss.telescope[0].rvptrs)).bjd)
             rv_value = ((*(ss.telescope[0].rvptrs)).rv)- ss.telescope[i].gamma.value
+            t0 = (max(rvtime) + min(rvtime))/2.0d0
             coeffs = poly_fit(rvtime-t0, rv_value, 2, yfit=yfit)
             ss.telescope[i].srv.value = coeffs[1]
             ss.telescope[i].srv.userchanged = 1B
             ss.telescope[i].qrv.value = coeffs[2]
             ss.telescope[i].qrv.userchanged = 1B
+            print, 'quad fit', coeffs, ss.telescope[i].qrv.value, ss.telescope[i].srv.value
          endif
       endif
    endif
@@ -3135,6 +3253,13 @@ for i=0, ss.ntel-1 do begin
       endelse
    endif
 endfor
+
+
+
+
+
+
+
 
 ;; take a rough stab at gamma, slope, quad, and K
 if ss.ntel gt 0 and n_elements(rvepoch) eq 0 then ss.rvepoch = (min(alltime) + max(alltime))/2d0

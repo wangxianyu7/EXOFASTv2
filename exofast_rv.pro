@@ -1,7 +1,8 @@
 function exofast_rv, bjd, TPeriastron, period, V0, K, e0, omega0, $
                      slope=slope,t0=t0,rossiter=rossiter,i=i,a=a,u1=u1,u2=u2,p=p, $
                      vsini=vsini, lambda=lambda,vbeta=vbeta, vgamma=vgamma, $
-                     vzeta=vzeta, deltarv=deltarv,exptime=exptime,ninterp=ninterp,$
+                     vzeta=vzeta, vxi=vxi, valpha=valpha, $
+                     deltarv=deltarv,exptime=exptime,ninterp=ninterp,$
                      srv=srv,qrv=qrv,rmmodel=rmmodel
 ;+
 ; NAME:
@@ -129,7 +130,7 @@ if keyword_set(rossiter) and (rmmodel eq 'hirano2010' or rmmodel eq 'hirano2011'
     tmp = r*sin(trueanom + omega)
     y =  -tmp*cos(i)
     z =  tmp*sin(i)
-    deltarv = exofast_rossiter(bjd,i,a,TPeriastron,period,e,omega,p,u1,u2,lambda,vsini,vbeta,vgamma,vzeta,exptime=exptime,ninterp=ninterp,rmmodel=rmmodel)
+    deltarv = exofast_rossiter(bjd,i,a,TPeriastron,period,e,omega,p,u1,u2,lambda,vsini,vbeta,vgamma,vzeta,vxi,valpha,exptime=exptime,ninterp=ninterp,rmmodel=rmmodel)
     rv += deltarv
 
     
