@@ -1103,33 +1103,41 @@ for j=0, ss.ntel-1 do begin
                   ENDELSE
                ENDELSE
 
-               ;; calculate the vmic
-               ; Define constants
+               ;; Define constants
                t0 = 5500.0
                g0 = 4.0
 
-               ; Assume TEFF, LOGG, and FEH are given variables.
+               ;; Assume TEFF, LOGG, and FEH are given variables.
 
-               IF (logg GE 3.5) THEN BEGIN
-               
+               IF (logg GE 4) THEN BEGIN
+                  IF (teff GE 5000) AND (teff LE 6500) THEN BEGIN
+                     ; Main sequence and subgiants (RGB)
+                     vmic = 1.01 + 4.56e-4 * (teff - 5700.0) + 2.75e-7 * (teff - 5700.0)^2.0 
+                  END ELSE BEGIN
+                     ; Use the general main sequence/subgiant formula for other Teff values
+                     vmic = 1.05 + 2.51e-4 * (teff - t0) + 1.5e-7 * (teff - t0)^2.0 $
+                           - 0.14 * (logg - g0) - 0.05e-1 * (logg - g0)^2.0 $
+                           + 0.05 * feh + 0.01 * feh^2.0
+                  END
+               END ELSE IF (logg GE 3.5) THEN BEGIN
                   IF (teff GE 5000) THEN BEGIN
-                     ; main sequence and subgiants (RGB)
+                     ; Main sequence and subgiants (RGB)
                      vmic = 1.05 + 2.51e-4 * (teff - t0) + 1.5e-7 * (teff - t0)^2.0 $
                            - 0.14 * (logg - g0) - 0.05e-1 * (logg - g0)^2.0 $
                            + 0.05 * feh + 0.01 * feh^2.0
                   END ELSE BEGIN
-                     ; main sequence (forcing teff to 5000 in the formula)
+                     ; Main sequence (forcing teff to 5000 in the formula)
                      vmic = 1.05 + 2.51e-4 * (5000.0 - t0) + 1.5e-7 * (5000.0 - t0)^2.0 $
                            - 0.14 * (logg - g0) - 0.05e-1 * (logg - g0)^2.0 $
                            + 0.05 * feh + 0.01 * feh^2.0
                   END
-
                END ELSE BEGIN
-               ; giants (RGB/AGB)
-               vmic = 1.25 + 4.01e-4 * (teff - t0) + 3.1e-7 * (teff - t0)^2.0 $
+                  ; Giants (RGB/AGB)
+                  vmic = 1.25 + 4.01e-4 * (teff - t0) + 3.1e-7 * (teff - t0)^2.0 $
                         - 0.14 * (logg - g0) - 0.05e-1 * (logg - g0)^2.0 $
                         + 0.05 * feh + 0.01 * feh^2.0
                END
+
 
 
 
