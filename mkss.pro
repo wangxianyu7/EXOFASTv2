@@ -1736,18 +1736,18 @@ vbeta.latex = 'V_{\rm beta}'
 vbeta.label = 'vbeta'
 vbeta.cgs = 1000d0
 vbeta.derive = 0
-vbeta.value = 4d3
-vbeta.scale = 1d4
+vbeta.value = 0d0
+vbeta.scale = 0d0
 
 vgamma = parameter
 vgamma.unit = 'm/s'
-vgamma.description = 'Lorentzian dispersion'
+vgamma.description = 'Lorentzian dispersion or Differential rotation'
 vgamma.latex = 'V_{\rm gamma}'
 vgamma.label = 'vgamma'
 vgamma.cgs = 1000d0
 vgamma.derive = 0
-vgamma.value = 4d3
-vgamma.scale = 1d4
+vgamma.value = 1d3
+vgamma.scale = 0d0
 
 vzeta = parameter
 vzeta.unit = 'm/s'
@@ -1757,7 +1757,7 @@ vzeta.label = 'vzeta'
 vzeta.cgs = 1000d0
 vzeta.derive = 0
 vzeta.value = 4d3
-vzeta.scale = 1d4
+vzeta.scale = 1d3
 
 vxi = parameter
 vxi.unit = 'm/s'
@@ -1767,7 +1767,7 @@ vxi.label = 'vxi'
 vxi.cgs = 1000d0
 vxi.derive = 0
 vxi.value = 1d3
-vxi.scale = 1d4
+vxi.scale = 1d3
 
 valpha = parameter
 valpha.unit = 'm/s'
@@ -1776,8 +1776,8 @@ valpha.latex = 'V_{\rm alpha}'
 valpha.label = 'valpha'
 valpha.cgs = 1000d0
 valpha.derive = 0
-valpha.value = 1d3
-valpha.scale = 1d4
+valpha.value = 0d0
+valpha.scale = 0d0
 
 svsinisinlambda = parameter
 svsinisinlambda.unit = ''
@@ -1785,7 +1785,7 @@ svsinisinlambda.description = ''
 svsinisinlambda.latex = '\sqrt{vsini}\sin{\lambda}'
 svsinisinlambda.label = 'svsinisinlambda'
 svsinisinlambda.cgs = !values.d_nan
-svsinisinlambda.scale = 1d4
+svsinisinlambda.scale = 1d2
 svsinisinlambda.derive = 0
 
 svsinicoslambda = parameter
@@ -1794,7 +1794,7 @@ svsinicoslambda.description = ''
 svsinicoslambda.latex = '\sqrt{vsini}\cos{\lambda}'
 svsinicoslambda.label = 'svsinicoslambda'
 svsinicoslambda.cgs = !values.d_nan
-svsinicoslambda.scale = 1d4
+svsinicoslambda.scale = 1d2
 svsinicoslambda.derive = 0
 
 

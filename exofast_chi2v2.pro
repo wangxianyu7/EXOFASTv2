@@ -1133,15 +1133,6 @@ for j=0, ss.ntel-1 do begin
 
 
 
-
-
-
-
-
-
-
-
-
             endif else u1claret = 0d0
 
 
@@ -1176,7 +1167,6 @@ for j=0, ss.ntel-1 do begin
                                   vxi=ss.star[ss.planet[i].starndx].vxi.value,valpha=ss.star[ss.planet[i].starndx].valpha.value,$
                                   u1=u1,u2=u2,deltarv=deltarv, exptime=ss.telescope[j].exptime, ninterp=ss.telescope[j].ninterp,$
                                   srv=ss.telescope[j].srv.value, qrv=ss.telescope[j].qrv.value,rmmodel=ss.telescope[j].rmmodels)
-
 
       
 

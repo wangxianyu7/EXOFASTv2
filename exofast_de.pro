@@ -82,9 +82,16 @@ function exofast_de, npop, p0, scale, ngen, fitness_function, min_ptp,parnames=p
     ncols = 2
 	bounds = dblarr(2, dim)
 	for i = 0, dim - 1 do begin
-        if n_elements(parnames) gt 0 then be
+
         bounds[0, i] = p0[i] - scale[i]
 		bounds[1, i] = p0[i] + scale[i]
+        if n_elements(parnames) gt 0 then begin
+            if 'VBETA' eq parnames[i] or 'VZETA' eq parnames[i] or 'VXI' eq parnames[i] or 'VGAMMA' eq parnames[i] or 'VALPHA' eq parnames[i] then begin
+                bounds[0, i] = 0.0
+            endif
+        endif
+        
+
 	endfor
 
 	; for i = 0, dim - 1 do begin
@@ -115,11 +122,22 @@ function exofast_de, npop, p0, scale, ngen, fitness_function, min_ptp,parnames=p
         XTemp[j,0] = p0[j]
     endfor
 
-   ; Calculate initial fitness
-    fitnessVal = dblarr(npop,1)
+    ; Calculate initial fitness
+    fitnessVal = dblarr(npop, 1)
     for i = 0, npop - 1 do begin
-        fitnessVal[i, 0] = call_function(fitness_function, XTemp[*, i])
+        repeat begin
+            fitnessVal[i, 0] = call_function(fitness_function, XTemp[*, i])
+            
+            ; Check if fitness value is infinity and reinitialize if needed
+            if (fitnessVal[i, 0] eq !VALUES.D_INFINITY) then begin
+                for j = 0, dim - 1 do begin
+                    XTemp[j, i] = xMin[j] + randomu(seed) * (xMax[j] - xMin[j])
+                endfor
+            endif
+        endrep until (fitnessVal[i, 0] ne !VALUES.D_INFINITY)
+        ; print, 'Initial guess: ', XTemp[*, i], ' chi2: ', fitnessVal[i, 0]
     endfor
+  
 
     ; Evolution process
     for gen = 0, ngen do begin
