@@ -24,6 +24,6 @@ exofastv2, nplanets=1, tranpath=path + 'n20??????.*.dat',$
            mistsedfile=path+'kelt17.sed',rvpath=path+'KELT-17b.*.rv',$
            priorfile=path + 'kelt17.priors',$
            prefix=outpath + 'KELT-17b.',rmbands=["notrm","V","V"],rossiter=[1],restorebest=1, $
-           debug=debug, verbose=verbose, maxsteps=maxsteps,nthin=nthin, nthread=nthread
+           debug=debug, verbose=verbose, maxsteps=maxsteps,nthin=nthin, nthread=10
 
 end

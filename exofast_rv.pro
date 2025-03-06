@@ -1,9 +1,9 @@
 function exofast_rv, bjd, TPeriastron, period, V0, K, e0, omega0, $
                      slope=slope,t0=t0,rossiter=rossiter,i=i,a=a,u1=u1,u2=u2,p=p, $
-                     vsini=vsini, lambda=lambda,vbeta=vbeta, vgamma=vgamma, $
+                     vsini=vsini, lambda=lambda,vgamma=vgamma, $
                      vzeta=vzeta, vxi=vxi, valpha=valpha, $
                      deltarv=deltarv,exptime=exptime,ninterp=ninterp,$
-                     srv=srv,qrv=qrv,rmmodel=rmmodel
+                     srv=srv,qrv=qrv
 ;+
 ; NAME:
 ;   exofast_rv
@@ -98,30 +98,31 @@ if n_elements(slope) ne 0 then begin
 endif
 
 
-;; add a slope for rm if desired
-if n_elements(srv) ne 0 then begin
-    mintime = min(bjd,max=maxtime)
-    t0 = (maxtime+mintime)/2.d0
-    rv += (bjd - t0)*srv
-endif
-
-;; add a quadratic term for rm if desired
-if n_elements(qrv) ne 0 then begin
-    mintime = min(bjd,max=maxtime)
-    t0 = (maxtime+mintime)/2.d0
-    rv += (bjd - t0)^2*qrv + (bjd - t0)*srv
-endif
-
 
 
 ;; Calculate the RM effect
 ;;create deltarv array, zero
 deltarv = dblarr(n_elements(bjd))
-if keyword_set(rossiter) and (rmmodel eq 'hirano2010' or rmmodel eq 'hirano2011' or rmmodel eq 'ohta2005') then begin
+if keyword_set(rossiter) and u1 ne 0 then begin
     if n_elements(i) eq 0 or n_elements(a) eq 0 or n_elements(u1) eq 0 or $
       n_elements(p) eq 0 or n_elements(vsini) eq 0 or n_elements(lambda) eq 0 $
       then message, 'ERROR: a, i, u1, p, vsini, and lambda must be ' + $
       'specified in order to calculate the Rossiter McLaughlin effect'
+
+    ;; add a slope for rm if desired
+    if n_elements(srv) ne 0 then begin
+        mintime = min(bjd,max=maxtime)
+        t0 = (maxtime+mintime)/2.d0
+        rv += (bjd - t0)*srv
+        ; print, 'slope', srv, 't0', bjd[0], bjd[-1],u1
+    endif
+
+    ;; add a quadratic term for rm if desired
+    if n_elements(qrv) ne 0 then begin
+        mintime = min(bjd,max=maxtime)
+        t0 = (maxtime+mintime)/2.d0
+        rv += (bjd - t0)^2*qrv + (bjd - t0)*srv
+    endif
 
     ;; calculate the corresponding (x,y) coordinates of planet
     r = a*(1d0-e^2)/(1d0+e*cos(trueanom))
@@ -130,7 +131,7 @@ if keyword_set(rossiter) and (rmmodel eq 'hirano2010' or rmmodel eq 'hirano2011'
     tmp = r*sin(trueanom + omega)
     y =  -tmp*cos(i)
     z =  tmp*sin(i)
-    deltarv = exofast_rossiter(bjd,i,a,TPeriastron,period,e,omega,p,u1,u2,lambda,vsini,vbeta,vgamma,vzeta,vxi,valpha,exptime=exptime,ninterp=ninterp,rmmodel=rmmodel)
+    deltarv = exofast_rossiter(bjd,i,a,TPeriastron,period,e,omega,p,u1,u2,lambda,vsini,vgamma,vzeta,vxi,valpha,exptime=exptime,ninterp=ninterp)
     rv += deltarv
 
     

@@ -30,7 +30,7 @@ FUNCTION computeGP, N, x, y, diag_, kernel_type, output_type, par1, par2, par3, 
 
     ; Call the external function
     func = KEYWORD_SET(auto_glue) ? 'compute_GP_natural' : 'computeGP_wrapper'
-    _ = CALL_EXTERNAL('/N/project/spinOrbit_Angles/codes/nv5/idl90/lib/EXOFASTv2/computeGP.so', func, $
+    _ = CALL_EXTERNAL('/N/project/spinOrbit_Angles/codes/nv5/idl/lib/EXOFASTv2/celerite2IDL/computeGP.so', func, $
     N, x, y, diag_, result, kernel_type, output_type, par1, par2, par3, par4, par5, $
     VALUE=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], $
     /D_VALUE, /CDECL, AUTO_GLUE=auto_glue, VERBOSE=verbose, SHOW_ALL_OUTPUT=verbose)

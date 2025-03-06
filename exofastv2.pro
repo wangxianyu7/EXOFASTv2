@@ -1172,7 +1172,7 @@ pro exofastv2, priorfile=priorfile, $
                ;; planet inputs
                nplanets=nplanets, $
                fittran=fittran, fitrv=fitrv, $
-               rossiter=rossiter, fitdt=fitdt, rmbands=rmbands, rmtrends=rmtrends, exposuretimerm=exposuretimerm, numinterprm=numinterprm, rmmodels=rmmodels,transitgps=transitgps, rvgps=rvgps,  $
+               rossiter=rossiter, fitdt=fitdt, rmbands=rmbands, rmtrends=rmtrends, exposuretimerm=exposuretimerm, numinterprm=numinterprm,transitgps=transitgps,rmttvs=rmttvs,  rvgps=rvgps,  $
                circular=circular, tides=tides, $ 
                alloworbitcrossing=alloworbitcrossing, $
                chen=chen, i180=i180, $
@@ -1246,7 +1246,7 @@ if lmgr(/vm) or lmgr(/runtime) then begin
              seddeblend=seddeblend,fitdilute=fitdilute, $
              nplanets=nplanets, $
              fittran=fittran, fitrv=fitrv, $
-             rossiter=rossiter, fitdt=fitdt, rmbands=rmbands, rmtrends=rmtrends, exposuretimerm=exposuretimerm, numinterprm=numinterprm, rmmodels=rmmodels, $
+             rossiter=rossiter, fitdt=fitdt, rmbands=rmbands, rmtrends=rmtrends, exposuretimerm=exposuretimerm, numinterprm=numinterprm, rmttvs=rmttvs,$
              circular=circular, tides=tides, $ 
              alloworbitcrossing=alloworbitcrossing, $
              chen=chen, i180=i180, $
@@ -1303,8 +1303,14 @@ endif else if n_elements(nthreads) ne 1 then begin
    nthreads = !cpu.hw_ncpu
 endif ;; else use the user's input   
 
-if double(!version.release) ge 6.4d0 and ~lmgr(/vm) and ~lmgr(/runtime) and ~runninggdl then $
-   resolve_all, resolve_either=[chi2func,'exofast_random','ramp_func'],skip_routines=['cggreek'],/cont,/quiet
+if double(!version.release) ge 6.4d0 and ~lmgr(/vm) and ~lmgr(/runtime) and ~runninggdl then begin
+   ; cmd = ".compile '" + EXPAND_PATH('$EXOFAST_PATH/computeGP.pro') + "'"
+   ; dummy = EXECUTE(cmd)
+   
+   resolve_all, resolve_either=[chi2func,'exofast_random', 'ramp_func'], $
+                skip_routines=['cggreek'], /cont, /quiet
+endif
+
 
 ;; output to log file too
 logname = prefix + 'log'
@@ -1374,7 +1380,7 @@ ss = mkss(priorfile=priorfile, $
           ;; planet inputs
           nplanets=nplanets, $
           fittran=fittran,fitrv=fitrv,$
-          rossiter=rossiter, fitdt=fitdt, rmbands=rmbands, rmtrends=rmtrends, exposuretimerm=exposuretimerm, numinterprm=numinterprm, rmmodels=rmmodels, transitgps=transitgps,$
+          rossiter=rossiter, fitdt=fitdt, rmbands=rmbands, rmtrends=rmtrends, exposuretimerm=exposuretimerm, numinterprm=numinterprm, rmttvs=rmttvs, transitgps=transitgps,$
           circular=circular, tides=tides, $
           alloworbitcrossing=alloworbitcrossing,$
           chen=chen, i180=i180,$
@@ -1659,7 +1665,7 @@ if nthreads gt 1 then begin
          'seddeblend=seddeblend, fitdilute=fitdilute,'+$
          'nplanets=nplanets,'+$
          'fittran=fittran, fitrv=fitrv,'+$
-         'rossiter=rossiter,fitdt=fitdt,rmbands=rmbands,rmtrends=rmtrends,exposuretimerm=exposuretimerm,numinterprm=numinterprm,rmmodels=rmmodels,transitgps=transitgps, rvgps=rvgps,'+$
+         'rossiter=rossiter,fitdt=fitdt,rmbands=rmbands,rmtrends=rmtrends,exposuretimerm=exposuretimerm,numinterprm=numinterprm,rmttvs=rmttvs, transitgps=transitgps, rvgps=rvgps,'+$
          'circular=circular,tides=tides,'+$
          'alloworbitcrossing=alloworbitcrossing,'+$
          'chen=chen, i180=i180,'+$
@@ -1778,7 +1784,7 @@ mcmcss = mkss(priorfile=priorfile, $
               ;; planet inputs
               nplanets=nplanets, $
               fittran=fittran,fitrv=fitrv,$
-              rossiter=rossiter, fitdt=fitdt, rmbands=rmbands, rmtrends=rmtrends, exposuretimerm=exposuretimerm, numinterprm=numinterprm, rmmodels=rmmodels, $
+              rossiter=rossiter, fitdt=fitdt, rmbands=rmbands, rmtrends=rmtrends, exposuretimerm=exposuretimerm, rmttvs=rmttvs, numinterprm=numinterprm, $
               circular=circular, tides=tides, $
               alloworbitcrossing=alloworbitcrossing,$
               chen=chen, i180=i180,$

@@ -60,7 +60,7 @@ function mkss, priorfile=priorfile, $
                ;; planet inputs
                nplanets=nplanets, $
                fittran=fittran,fitrv=fitrv,$
-               rossiter=rossiter, fitdt=fitdt, rmbands=rmbands, rmtrends=rmtrends, exposuretimerm=exposuretimerm, numinterprm=numinterprm, rmmodels=rmmodels, transitgps=transitgps, rvgps=rvgps, $
+               rossiter=rossiter, fitdt=fitdt, rmbands=rmbands, rmtrends=rmtrends, exposuretimerm=exposuretimerm, numinterprm=numinterprm, rmmodels=rmmodels, transitgps=transitgps, rmttvs=rmttvs, rvgps=rvgps, $
                circular=circular, tides=tides, $
                alloworbitcrossing=alloworbitcrossing,$
                chen=chen, i180=i180,$
@@ -518,7 +518,7 @@ if nplanets ge 1 and ntran ge 1 then begin
    if n_elements(ttvs) eq 0 then ttvs = bytarr(ntran,nplanets) $
    else if n_elements(ttvs) eq 1 then ttvs = bytarr(ntran,nplanets)+ttvs[0] $
    else if n_elements(ttvs) ne ntran*nplanets then begin
-      printandlog, 'TTVs must be an NTRANSITSxNPLANETS (' + string(ntran,nplanets,format='(i,"x",i)') + ') array', logname
+      printandlog, 'TTVs should be an NTRANSITSxNPLANETS (' + string(ntran,nplanets,format='(i,"x",i)') + ') array.', logname
       return, -1
    endif
    if nplanets gt 1 then begin
@@ -640,6 +640,12 @@ endif else begin
       return, -1
    endif
 endelse
+if ntel eq 0 then begin
+   if n_elements(rmttvs) eq 0 then rmttvs = bytarr(1,1)
+endif else begin
+   if n_elements(rmttvs) eq 0 then rmttvs = bytarr(ntel,nplanets)
+endelse
+
 
 ;; same for DT path
 if dtpath ne '' then begin
@@ -1065,7 +1071,7 @@ quad.scale = 1d0
 srv = parameter
 srv.unit = 'm/s/day'
 srv.description = 'RM slope'
-srv.latex = '\dot{\gamma}'
+srv.latex = 'RM\dot{\gamma}'
 srv.label = 'srv'
 srv.cgs = 100d0/86400d0
 srv.fit = 0
@@ -1075,7 +1081,7 @@ srv.scale=100d0
 qrv = parameter
 qrv.unit = 'm/s/day^2'
 qrv.description = 'RM quadratic term'
-qrv.latex = '\ddot{\gamma}'
+qrv.latex = 'RM\ddot{\gamma}'
 qrv.label = 'qrv'
 qrv.cgs = 100d0/86400d0^2
 qrv.fit=0
@@ -1472,6 +1478,19 @@ ar.latex = 'a/R_*'
 ar.label = 'ar'
 if nplanets eq 0 then ar.derive=0
 
+
+arp = parameter
+arp.unit = ''
+arp.description = 'Semi-major axis in planetary radii'
+arp.latex = 'a/R_p'
+arp.label = 'arp'
+if nplanets eq 0 then arp.derive=0
+
+
+
+
+
+
 cosi = parameter
 cosi.value = 0d0
 cosi.unit = ''
@@ -1729,15 +1748,15 @@ vline.derive = 0
 vline.value = 4d3
 vline.scale = 1d4
 
-vbeta = parameter
-vbeta.unit = 'm/s'
-vbeta.description = 'Guassian dispersion'
-vbeta.latex = 'V_{\rm beta}'
-vbeta.label = 'vbeta'
-vbeta.cgs = 1000d0
-vbeta.derive = 0
-vbeta.value = 0d0
-vbeta.scale = 0d0
+; vbeta = parameter
+; vbeta.unit = 'm/s'
+; vbeta.description = 'Guassian dispersion'
+; vbeta.latex = 'V_{\rm beta}'
+; vbeta.label = 'vbeta'
+; vbeta.cgs = 1000d0
+; vbeta.derive = 0
+; vbeta.value = 0d0
+; vbeta.scale = 0d0
 
 vgamma = parameter
 vgamma.unit = 'm/s'
@@ -2029,6 +2048,32 @@ tcirc.latex = '\tau_{\rm circ}'
 tcirc.label = 'tcirc'
 if nplanets eq 0 then tcirc.derive = 0
 
+
+; tidal efficiency factor
+tefficiency = parameter
+tefficiency.unit = ''
+tefficiency.description = 'Tidal efficiency factor'
+tefficiency.latex = '\tau_{\rm tidalefficiency}'
+tefficiency.label = 'tefficiency'
+if nplanets eq 0 then tefficiency.derive = 0
+
+
+tce = parameter
+tce.unit = 'Gyr'
+tce.description = 'Convective tidal realignment timescale'
+tce.latex = '\tau_{\rm CE}'
+tce.label = 'tce'
+if nplanets eq 0 then tce.derive = 0
+
+tra = parameter
+tra.unit = 'Gyr'
+tra.description = 'radiative realignment timescale'
+tra.latex = '\tau_{\rm RA}'
+tra.label = 'tra'
+if nplanets eq 0 then tra.derive = 0
+
+
+
 safronov = parameter
 safronov.description = 'Safronov Number'
 safronov.latex = '\Theta'
@@ -2151,6 +2196,17 @@ ttv.scale = 0.02 ;; ~30 minutes
 junk = where(fittran, nfittran)
 ttv.derive=0
 
+
+rmttv = parameter
+rmttv.description = 'Transit Timing Variation for RM'
+rmttv.latex = 'TTV'
+rmttv.label = 'rmttv'
+rmttv.unit = 'days'
+rmttv.scale = 0.02 ;; ~30 minutes
+; junk = where(fittran, nfittran)
+rmttv.derive=0
+
+
 tiv = parameter
 tiv.description = 'Transit Inclination Variation'
 tiv.latex = 'TiV'
@@ -2254,7 +2310,7 @@ star = create_struct(mstar.label,mstar,$
                      appks.label,appks,$
                      vsini.label,vsini,$
                      vline.label,vline,$
-                     vbeta.label,vbeta,$
+                     ; vbeta.label,vbeta,$
                      vgamma.label,vgamma,$
                      vzeta.label,vzeta,$ 
                      vxi.label,vxi,$
@@ -2317,10 +2373,14 @@ planet = create_struct($
          lcosbigomega.label,lcosbigomega,$
          teq.label,teq,$
          tcirc.label, tcirc,$
+         tefficiency.label, tefficiency,$
+         tce.label, tce,$
+         tra.label, tra,$
          K.label,k,$              ;; RV parameters
          logK.label,logk,$              ;; RV parameters
          p.label,p,$              ;; Primary Transit parameters
          ar.label,ar,$
+         arp.label,arp,$
          delta.label,delta)
 
 ;; compute a depth for each observed band
@@ -2435,6 +2495,7 @@ band = create_struct(u1.label,u1,$ ;; linear limb darkening
 telescope = create_struct(srv.label,srv,$
                           qrv.label,qrv,$
                           gamma.label,gamma,$
+                          rmttv.label,rmttv,$           ;; Transit Timing Variation for RM
                           gppar1.label,gppar1,$
                           gppar2.label,gppar2,$
                           gppar3.label,gppar3,$
@@ -2558,6 +2619,7 @@ ss = create_struct('star',replicate(star,nstars>1),$
                    'dilutestarndx',dilutestarndx,$
                    'oned', keyword_set(oned),$
                    'ttvs', ttvs,$
+                   'rmttvs', rmttvs,$
                    'tivs', tivs,$
                    'tdeltavs', tdeltavs,$
                    'alloworbitcrossing', keyword_set(alloworbitcrossing),$
@@ -2818,8 +2880,8 @@ for i=0, nplanets-1 do begin
       ; ss.star[ss.planet[i].starndx].vsini.fit = 1
       ; ss.star[ss.planet[i].starndx].vsini.derive = 1
       
-      ss.star[ss.planet[i].starndx].vbeta.fit = 1
-      ss.star[ss.planet[i].starndx].vbeta.derive = 1
+      ; ss.star[ss.planet[i].starndx].vbeta.fit = 1
+      ; ss.star[ss.planet[i].starndx].vbeta.derive = 1
       ss.star[ss.planet[i].starndx].vgamma.fit = 1
       ss.star[ss.planet[i].starndx].vgamma.derive = 1
       ss.star[ss.planet[i].starndx].vzeta.fit = 1
@@ -3183,6 +3245,11 @@ if ntel gt 0 then begin
       if n_elements(rmbands) ne 0 then begin
          if max(rmbands ne 'xxx') then begin
             ss.telescope[i].bandndx = where(ss.band[*].name eq rmbands[i]) ; if not rm, will return -1
+            ; print, 'fitting ttv for', ss.telescope[i].label,ttvs[ntran+i,0],ntran+i,keyword_set(ttvs[ntran+i,0])
+            if keyword_set(rmttvs[i,0]) then begin ; always the first planet, let us change it when we have more complex systems
+               ss.telescope[i].rmttv.fit = 1B
+               ss.telescope[i].rmttv.derive = 1B
+            endif
          endif
       endif
       minbjd = min((*(ss.telescope[i].rvptrs)).bjd,max=maxbjd)
@@ -3226,6 +3293,7 @@ for i=0, ss.ntel-1 do begin
             coeffs = poly_fit(rvtime-t0, rv_value, 1, yfit=yfit)
             ss.telescope[i].srv.value = coeffs[1]
             ss.telescope[i].srv.userchanged = 1B
+            ss.telescope[i].srv.derive = 1B
 
          endif else if rmtrends[i] eq 'quad' then begin
             ss.telescope[i].qrv.fit = 1B
@@ -3537,7 +3605,6 @@ while not eof(lun) do begin
 
 endwhile
 if n_elements(priors) gt 0 then (*ss.priors) = priors
-
 ;; was a prior on Tc and period given? If not, use BLS (if
 ;; ntransits>1) or Lomb-Scargle (on RVs)
 ;; aspirational stub -- not implemented/tested yet

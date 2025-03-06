@@ -998,7 +998,6 @@ endfor
 
 ;; RV model (non-interacting planets)
 for j=0, ss.ntel-1 do begin
-
    rv = *(ss.telescope[j].rvptrs)
 
    if (where(rv.err^2 + ss.telescope[j].jittervar.value le 0d0))[0] ne -1 then begin
@@ -1028,7 +1027,7 @@ for j=0, ss.ntel-1 do begin
                                   0d0,ss.planet[i].K.value*q,$
                                   ss.planet[i].e.value,ss.planet[i].omega.value+!dpi,$
                                   slope=0d0,exptime=ss.telescope[j].exptime, $
-                                  ninterp=ss.telescope[j].ninterp,rmmodel=ss.telescope[j].rmmodels.value)
+                                  ninterp=ss.telescope[j].ninterp,srv=0d0,qrv=0d0)
          endif else begin
             ;; time in target barycentric frame (expensive)
             rvbjd = bjd2target(rv.bjd, inclination=ss.planet[i].i.value, $
@@ -1054,7 +1053,7 @@ for j=0, ss.ntel-1 do begin
                      u1claret = 0.2d0
                      u2claret = 0.3d0
                   endelse
-                  ss.telescope[j].rmmodels = 'hirano2011' ; default
+                  ; ss.telescope[j].rmmodels = 'hirano2011' ; default
                endif
 
                ;; calculate the Vmac (Vzeta)
@@ -1138,9 +1137,6 @@ for j=0, ss.ntel-1 do begin
                         + 0.05 * feh + 0.01 * feh^2.0
                END
 
-
-
-
             endif else u1claret = 0d0
 
 
@@ -1153,9 +1149,13 @@ for j=0, ss.ntel-1 do begin
                endif
                return, !values.d_infinity
             endif
-            band = ss.band[ss.telescope[j].bandndx]
-            u1 = band.u1.value
-            u2 = band.u2.value
+            if ss.telescope[j].bandndx eq -1 then begin
+               u1 = 0d0
+            endif else begin
+               band = ss.band[ss.telescope[j].bandndx]
+               u1 = band.u1.value
+               u2 = band.u2.value
+            endelse
             if ss.planet[i].svsinicoslambda.value eq 0d0 then begin
                this_lambda = 0d0
             endif else begin
@@ -1164,17 +1164,19 @@ for j=0, ss.ntel-1 do begin
 
             this_vsini = ss.planet[i].svsinicoslambda.value^2 + ss.planet[i].svsinisinlambda.value^2
             this_vsinicp = this_vsini 
-            modelrv += exofast_rv(rvbjd,ss.planet[i].tp.value,ss.planet[i].period.value,$
+            modelrv += exofast_rv(rvbjd,$
+                                  ss.planet[i].tp.value+ss.telescope[j].rmttv.value,$
+                                  ss.planet[i].period.value,$
                                   0d0,ss.planet[i].K.value,$
                                   ss.planet[i].e.value,ss.planet[i].omega.value,$
                                   slope=0d0, $
                                   rossiter=ss.planet[i].rossiter, i=ss.planet[i].i.value,a=ss.planet[i].ar.value,$
                                   p=abs(ss.planet[i].p.value),vsini=this_vsini,$
-                                  lambda=this_lambda,vbeta=ss.star[ss.planet[i].starndx].vbeta.value,$
+                                  lambda=this_lambda,$
                                   vgamma=ss.star[ss.planet[i].starndx].vgamma.value, vzeta=ss.star[ss.planet[i].starndx].vzeta.value,$
                                   vxi=ss.star[ss.planet[i].starndx].vxi.value,valpha=ss.star[ss.planet[i].starndx].valpha.value,$
                                   u1=u1,u2=u2,deltarv=deltarv, exptime=ss.telescope[j].exptime, ninterp=ss.telescope[j].ninterp,$
-                                  srv=ss.telescope[j].srv.value, qrv=ss.telescope[j].qrv.value,rmmodel=ss.telescope[j].rmmodels)
+                                  srv=0, qrv=0)
 
       
 
@@ -1229,6 +1231,10 @@ for j=0, ss.ntel-1 do begin
    modelrv += ss.telescope[j].gamma.value 
    if (*ss.telescope[j].rvptrs).planet eq -1 then $
       modelrv += ss.star[0].slope.value*(rv.bjd-ss.rvepoch) + ss.star[0].quad.value*(rv.bjd-ss.rvepoch)^2
+      rvtime = ((*(ss.telescope[j].rvptrs)).bjd)
+      mintime = min(rvtime,max=maxtime)
+      t0_each_rv = (mintime+maxtime)/2.d0
+      modelrv += (ss.telescope[j].srv.value*(rv.bjd-t0_each_rv) + ss.telescope[j].qrv.value*(rv.bjd-t0_each_rv)^2)
 
    ;; detrending
    modelrv += total((*ss.telescope[j].rvptrs).detrendadd*(replicate(1d0,n_elements((*ss.telescope[j].rvptrs).bjd))##(*ss.telescope[j].rvptrs).detrendaddpars.value),1)
@@ -1242,6 +1248,10 @@ for j=0, ss.ntel-1 do begin
       exofast_forprint, rv.bjd, modelrv, format='(f0.8,x,f0.6)', textout=base + '.model.telescope_' + string(j,format='(i02)') + '.txt', /nocomment,/silent
       
       trend = ss.telescope[j].gamma.value + ss.star[0].slope.value*(rv.bjd-ss.rvepoch) + ss.star[0].quad.value*(rv.bjd-ss.rvepoch)^2
+      rvtime = ((*(ss.telescope[j].rvptrs)).bjd)
+      mintime = min(rvtime,max=maxtime)
+      t0_each_rv = (mintime+maxtime)/2.d0
+      trend += ( ss.telescope[j].srv.value*(rv.bjd-t0_each_rv) + ss.telescope[j].qrv.value*(rv.bjd-t0_each_rv)^2)
       exofast_forprint, rv.bjd, trend, format='(f0.8,x,f0.6)', textout=base + '.trend.telescope_' + string(j,format='(i02)') + '.txt', /nocomment,/silent
 
    endif
@@ -1506,6 +1516,7 @@ for j=0L, ss.ntran-1 do begin
                  total(transit.detrendmult*(replicate(1d0,n_elements(transit.bjd))##transit.detrendmultpars.value),1))
    transitgpchi2 = 0
    ; if ss.transit[j].transitgps ne '' then begin
+   ; if n_elements(ss.transit[j].transitgps) ne 0 then begin
    ;    if ss.transit[j].transitgps eq 'Real' then gptype = 0
    ;    if ss.transit[j].transitgps eq 'Complex' then gptype = 1
    ;    if ss.transit[j].transitgps eq 'SHO' then gptype = 2
@@ -1515,10 +1526,10 @@ for j=0L, ss.ntran-1 do begin
    ;    N = n_elements(transitbjd)
    ;    transitgpchi2 = -computeGP(N, transitbjd, transit.flux-modelflux, transit.err^2+ss.transit[j].variance.value, gptype, 0, ss.transit[j].gppar1.value, ss.transit[j].gppar2.value, ss.transit[j].gppar3.value, ss.transit[j].gppar4.value, ss.transit[j].gppar5.value)
    ;    gp_trend = computeGP(N, transitbjd, transit.flux, transit.err^2+ss.transit[j].variance.value, gptype, 1, ss.transit[j].gppar1.value, ss.transit[j].gppar2.value, ss.transit[j].gppar3.value, ss.transit[j].gppar4.value, ss.transit[j].gppar5.value)
-   ;    ;; if is nan
+   ;    ; ;; if is nan
    ;    if ~finite(transitgpchi2) then gp_trend = replicate(1d20,n_elements(transitbjd))
    ;    if ~finite(transitgpchi2) then transitgpchi2 = 1d20
-
+   ;    ; print, transitgpchi2
    ;    modelflux += gp_trend
 
    ; endif

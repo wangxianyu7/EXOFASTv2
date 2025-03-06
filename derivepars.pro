@@ -202,6 +202,7 @@ endelse
    ;; derive a/rstar, a
    ss.planet[i].arsun.value=(G*(ss.star[ss.planet[i].starndx].mstar.value+ss.planet[i].mpsun.value)*ss.planet[i].period.value^2/(4d0*!dpi^2))^(1d0/3d0) ;; (a1 + a2)/rsun
    ss.planet[i].ar.value = ss.planet[i].arsun.value/ss.star[ss.planet[i].starndx].rstar.value                                                        ;; (a1 + a2)/rstar
+   ss.planet[i].arp.value = ss.planet[i].ar.value/ss.planet[i].p.value                                                        ;; (a1 + a2)/rstar
    ss.planet[i].a.value = ss.planet[i].arsun.value*ss.constants.rsun/ss.constants.au                                           ;; AU
 
 ;   ;; estimate GR precession (eq 2, Jordan & Bakos, 2008)
@@ -300,6 +301,23 @@ endelse
                               (1d0-ss.planet[i].e.value^2)^(13d0/2d0)/$
                               (1d0+6d0*ss.planet[i].e.value^2) ;; Adams & Laughlin, 2006, eq 2 (in Gyr)
 ;   ss.planet[i].tcirc.value = 1.6d0*ss.planet[i].mp.value*ss.star[ss.planet[i].starndx].mstar.value^(-3d0/2d0)*ss.planet[i].rp.value^(-5d0)*(ss.planet[i].a.value/0.05d0)^(13d0/2d0) ;; Adams & Laughlin, 2006, eq 3
+
+
+   mconvratio = INTERPOL([0.3508, 0.1842, 0.0991, 0.0667, 0.0437, 0.0257, 0.0107, 0.0031, 0.0003, 0.0, 0.0, 0.0,0.0, 0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],$
+                         [0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3.0], ss.star[ss.planet[i].starndx].mstar.value)
+
+
+   ; Tidal efficiency factor
+   ss.planet[i].tefficiency.value = mconvratio * (ss.planet[i].q.value)^2.0 * (ss.planet[i].ar.value)^(-6d0)
+
+   ; convective
+   ss.planet[i].tce.value = (1.0 / 10.0 * (ss.planet[i].q.value)^2.0 * (ss.planet[i].ar.value / 40.0)^(-6.0) )^(-1.0)
+
+   ; radiative
+   ss.planet[i].tra.value = (1.0 / 1.25 * (ss.planet[i].q.value)^2.0 * (1 + ss.planet[i].q.value)^(5.0/6.0) *  $
+                            (ss.planet[i].ar.value / 6.0)^(-8.5))^(-1.0)
+
+
 
    ss.planet[i].fave.value = ss.constants.sigmab*ss.star[ss.planet[i].starndx].teff.value^4/(ss.planet[i].ar.value*(1d0+ss.planet[i].e.value^2/2d0))^2/1d9    ;; 10^9 erg/s/cm^2
 

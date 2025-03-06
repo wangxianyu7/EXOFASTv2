@@ -290,6 +290,7 @@ endif
 ;qgaia3=Exofast_Queryvizier('I/350/gaiaedr3',star,dist/60.,/silent,cfa=cfa,/all)
 ;; DR3
 qgaia3=Exofast_Queryvizier('I/355/gaiadr3',star,dist/60.,/silent,cfa=cfa,/all)
+print,'gaiaid',gaiaid
 if (size(qgaia3))[2] eq 8 then begin
    match = (where(qgaia3.source eq gaiaid))[0]
    if match ne -1 then begin

@@ -19,7 +19,7 @@ pro readargs, argfile, priorfile=priorfile, $
               seddeblend=seddeblend,fitdilute=fitdilute, $
               nplanets=nplanets, $
               fittran=fittran, fitrv=fitrv, $
-              rossiter=rossiter, fitdt=fitdt, rmbands=rmbands, rmtrends=rmtrends, exposuretimerm=exposuretimerm, numinterprm=numinterprm, rmmodels=rmmodels, $
+              rossiter=rossiter, fitdt=fitdt, rmbands=rmbands, rmtrends=rmtrends, exposuretimerm=exposuretimerm, numinterprm=numinterprm,  rmttvs=rmttvs, $
               circular=circular, tides=tides, $ 
               alloworbitcrossing=alloworbitcrossing, $
               chen=chen, i180=i180, $
@@ -189,8 +189,8 @@ while not eof(lun) do begin
             rmbands = json_parse(entries[1],/toarray)
          endif else if strupcase(strtrim(entries[0],2)) eq 'RMTRENDS' then begin
             rmtrends = json_parse(entries[1],/toarray)
-         endif else if strupcase(strtrim(entries[0],2)) eq 'RMMODELS' then begin
-            rmmodels = json_parse(entries[1],/toarray)
+         ; endif else if strupcase(strtrim(entries[0],2)) eq 'RMMODELS' then begin
+            ; rmmodels = json_parse(entries[1],/toarray)
          endif else if strupcase(strtrim(entries[0],2)) eq 'OPTMETHOD' then begin
             optmethod = strtrim(entries[1],2)
          endif else if strupcase(strtrim(entries[0],2)) eq 'RESTOREBEST' then begin
@@ -241,6 +241,8 @@ while not eof(lun) do begin
             ttvs = boolean(json_parse(entries[1],/toarray))
          endif else if strupcase(strtrim(entries[0],2)) eq 'TIVS' then begin
             tivs = boolean(json_parse(entries[1],/toarray))
+         endif else if strupcase(strtrim(entries[0],2)) eq 'RMTTVS' then begin
+            rmttvs = boolean(json_parse(entries[1],/toarray))
          endif else if strupcase(strtrim(entries[0],2)) eq 'TDELTAVS' then begin
             tdeltavs = boolean(json_parse(entries[1],/toarray))
          endif else if strupcase(strtrim(entries[0],2)) eq 'EARTH' then begin
