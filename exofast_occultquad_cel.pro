@@ -70,7 +70,6 @@ nz=n_elements(z0)
 lambdad=dblarr(nz)
 etad=dblarr(nz)
 lambdae=dblarr(nz)
-
 ;; ensure double precision for equalities
 ;; don't modify inputs
 p = double(abs(p0))

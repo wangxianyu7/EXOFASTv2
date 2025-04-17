@@ -1766,7 +1766,7 @@ vgamma.label = 'vgamma'
 vgamma.cgs = 1000d0
 vgamma.derive = 0
 vgamma.value = 1d3
-vgamma.scale = 0d0
+vgamma.scale = 1d3
 
 vzeta = parameter
 vzeta.unit = 'm/s'
@@ -1796,7 +1796,7 @@ valpha.label = 'valpha'
 valpha.cgs = 1000d0
 valpha.derive = 0
 valpha.value = 0d0
-valpha.scale = 0d0
+valpha.scale = 1d3
 
 svsinisinlambda = parameter
 svsinisinlambda.unit = ''
@@ -3283,7 +3283,6 @@ for i=0, ss.ntel-1 do begin
          ss.telescope[i].exptime = exposuretimerm[i]
          ss.telescope[i].ninterp = numinterprm[i]
       endif
-
       if N_ELEMENTS(rmtrends) eq ss.ntel then begin
          if rmtrends[i] eq 'slope' then begin
             ss.telescope[i].srv.fit = 1B
@@ -3294,7 +3293,7 @@ for i=0, ss.ntel-1 do begin
             ss.telescope[i].srv.value = coeffs[1]
             ss.telescope[i].srv.userchanged = 1B
             ss.telescope[i].srv.derive = 1B
-
+            ; print, 'slope fit', coeffs, ss.telescope[i].srv.value
          endif else if rmtrends[i] eq 'quad' then begin
             ss.telescope[i].qrv.fit = 1B
             ss.telescope[i].srv.fit = 1B

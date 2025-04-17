@@ -245,7 +245,15 @@ for i=0, ss.nplanets-1 do begin
          u1 = 0d0 
          u2 = 0d0
       endelse
-
+      if ~finite(u1) then begin
+         for uu=0, n_elements(ss.band)-1 do begin
+            bandname = ss.band[uu].name
+            if bandname eq 'rm' then begin
+               u1 = ss.band[uu].u1.value
+               u2 = ss.band[uu].u2.value
+            endif
+         endfor
+      endif
       if ss.planet[i].svsinicoslambda.value eq 0d0 then begin
          this_lambda = 0d0
       endif else begin

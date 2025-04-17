@@ -353,14 +353,12 @@ endif else begin
             oldchi2[j,m] = call_function(chi2func, newpars, determinant=det, derived=dpar)
             niter += 1
          endrep until finite(oldchi2[j,m])
-
          if n_elements(dpar) ne 0 then oldderived[*,j,m] = dpar
          olddet[j,m] = det
          oldpars[*,j,m] = newpars[tofit]
       endfor
       chi2[0,j] = oldchi2[j,0] ;; populate the first element of the chi^2 array
    endfor
-
    printandlog, 'Done initializing chains', logname
    printandlog, '', logname
 

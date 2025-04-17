@@ -88,14 +88,14 @@ if n_elements(omega) eq 0 then omega = !dpi/2.d0
 ;; RV signal with no RM effect
 rv = K*(cos(trueanom+omega) + e*cos(omega)) + V0
 
-;; add a slope if desired
-if n_elements(slope) ne 0 then begin
-    if n_elements(t0) eq 0 then begin
-        mintime = min(bjd,max=maxtime)
-        t0 = (maxtime+mintime)/2.d0
-    endif
-    rv += (bjd - t0)*slope
-endif
+;; add a slope if desired; actual slope is always 0 here.
+; if n_elements(slope) ne 0 then begin
+;     if n_elements(t0) eq 0 then begin
+;         mintime = min(bjd,max=maxtime)
+;         t0 = (maxtime+mintime)/2.d0
+;     endif
+;     rv += (bjd - t0)*slope
+; endif
 
 
 
@@ -109,20 +109,20 @@ if keyword_set(rossiter) and u1 ne 0 then begin
       then message, 'ERROR: a, i, u1, p, vsini, and lambda must be ' + $
       'specified in order to calculate the Rossiter McLaughlin effect'
 
-    ;; add a slope for rm if desired
-    if n_elements(srv) ne 0 then begin
-        mintime = min(bjd,max=maxtime)
-        t0 = (maxtime+mintime)/2.d0
-        rv += (bjd - t0)*srv
-        ; print, 'slope', srv, 't0', bjd[0], bjd[-1],u1
-    endif
+    ; ;; add a slope for rm if desired
+    ; if n_elements(srv) ne 0 then begin
+    ;     mintime = min(bjd,max=maxtime)
+    ;     t0 = (maxtime+mintime)/2.d0
+    ;     rv += (bjd - t0)*srv
+    ;     ; print, 'slope', srv, 't0', bjd[0], bjd[-1],u1
+    ; endif
 
-    ;; add a quadratic term for rm if desired
-    if n_elements(qrv) ne 0 then begin
-        mintime = min(bjd,max=maxtime)
-        t0 = (maxtime+mintime)/2.d0
-        rv += (bjd - t0)^2*qrv + (bjd - t0)*srv
-    endif
+    ; ;; add a quadratic term for rm if desired
+    ; if n_elements(qrv) ne 0 then begin
+    ;     mintime = min(bjd,max=maxtime)
+    ;     t0 = (maxtime+mintime)/2.d0
+    ;     rv += (bjd - t0)^2*qrv + (bjd - t0)*srv
+    ; endif
 
     ;; calculate the corresponding (x,y) coordinates of planet
     r = a*(1d0-e^2)/(1d0+e*cos(trueanom))
@@ -133,7 +133,6 @@ if keyword_set(rossiter) and u1 ne 0 then begin
     z =  tmp*sin(i)
     deltarv = exofast_rossiter(bjd,i,a,TPeriastron,period,e,omega,p,u1,u2,lambda,vsini,vgamma,vzeta,vxi,valpha,exptime=exptime,ninterp=ninterp)
     rv += deltarv
-
     
 
 endif

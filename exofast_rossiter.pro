@@ -113,16 +113,16 @@ FUNCTION exofast_rossiter, time, inc_rad, ar, TPeriastron, period, e, omega_rad,
         
         ; Prepare the command
         run_input = [par_str, xy]
-        cmd = '$EXOFAST_PATH/new_analytic7.exe ' + STRJOIN(run_input, ' ')
-        ; Run the external program and capture the result
+        cmd = '$EXOFAST_PATH/new_analytic7.exe ' + STRJOIN(run_input, ' ') + ' 2>&1 | grep -v "Something is wrong."'
         SPAWN, cmd, result
+             
         
         ; Convert result to delta_rv and store in the appropriate indices
         delta_rv_tmp = FLOAT(result) * 1000D0
 
         ; Check if any NaN exists in the result
         IF (WHERE(FINITE(delta_rv_tmp) EQ 0, count))[0] NE -1 THEN BEGIN
-            PRINT, 'Error: NaN detected in result. Returning delta_rv = INF'
+            ; PRINT, 'Error: NaN detected in result. Returning delta_rv = INF'
             RETURN, DBLARR(npoints) + 0d0
         ENDIF
 
