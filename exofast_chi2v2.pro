@@ -1186,7 +1186,10 @@ for j=0, ss.ntel-1 do begin
                chi2 += ((u2 - u2claret)/u2err)^2
             endif
             if ss.planet[i].rossiter and ss.telescope[j].bandndx ne -1 then begin
-               chi2 += ((ss.star[ss.planet[i].starndx].vzeta.value-vmac*1000)/1000)^2; Doyle et al. (2014) Table 4
+               if ss.telescope[j].Doyle2014 then begin
+                  ; print, 'WARNING: Doyle et al. (2014) Vmac penalty is applied'
+                  chi2 += ((ss.star[ss.planet[i].starndx].vzeta.value-vmac*1000)/1000)^2; Doyle et al. (2014) Table 4
+               endif
                chi2 += ((ss.star[ss.planet[i].starndx].vxi.value-vmic*1000)/1000)^2; GES Vmic penalty
                for k=0, n_elements(rv.rv)-1 do begin
                   for l=0L, n_elements(*ss.priors)-1 do begin
@@ -1213,7 +1216,9 @@ for j=0, ss.ntel-1 do begin
                   return, !values.d_infinity
                endif
                ; print, 'this vsini=', this_vsinicp, 'prior value=', prior_value, 'gaussian width=', prior.gaussian_width
-               chi2 += ((this_vsinicp - prior.value[0])/prior.gaussian_width)^2
+               if prior.gaussian_width gt 0d0 then begin
+                  chi2 += ((this_vsinicp - prior.value[0])/prior.gaussian_width)^2
+               endif
             endif
          endelse
 

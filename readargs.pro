@@ -25,6 +25,7 @@ pro readargs, argfile, priorfile=priorfile, $
               chen=chen, i180=i180, $
               fitslope=fitslope, fitquad=fitquad, rvepoch=rvepoch, $
               noclaret=noclaret, $
+              noDoyle2014=noDoyle2014,$
               ttvs=ttvs, tivs=tivs, tdeltavs=tdeltavs, $
               longcadence=longcadence, exptime=exptime, ninterp=ninterp, $
               rejectflatmodel=rejectflatmodel,$
@@ -221,6 +222,8 @@ while not eof(lun) do begin
             mannmass = boolean(json_parse(entries[1],/toarray))
          endif else if strupcase(strtrim(entries[0],2)) eq 'NOCLARET' then begin
             noclaret = boolean(json_parse(entries[1],/toarray))
+         endif else if strupcase(strtrim(entries[0],2)) eq 'NODOYLE2014' then begin
+            noDoyle2014 = boolean(json_parse(entries[1],/toarray))
          endif else if strupcase(strtrim(entries[0],2)) eq 'TIDES' then begin
             tides = boolean(entries[1])
          endif else if strupcase(strtrim(entries[0],2)) eq 'NPLANETS' then begin

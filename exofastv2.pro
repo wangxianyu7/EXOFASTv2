@@ -1180,6 +1180,7 @@ pro exofastv2, priorfile=priorfile, $
                fitslope=fitslope, fitquad=fitquad, rvepoch=rvepoch,$
                ;; transit inputs
                noclaret=noclaret, $
+               noDoyle2014=noDoyle2014,$
                ttvs=ttvs, tivs=tivs, tdeltavs=tdeltavs,$
                longcadence=longcadence, exptime=exptime, ninterp=ninterp, $
                rejectflatmodel=rejectflatmodel,$
@@ -1252,6 +1253,7 @@ if lmgr(/vm) or lmgr(/runtime) then begin
              chen=chen, i180=i180, $
              fitslope=fitslope, fitquad=fitquad, rvepoch=rvepoch, $
              noclaret=noclaret, $
+             noDoyle2014=noDoyle2014,$
              ttvs=ttvs, tivs=tivs, tdeltavs=tdeltavs, $
              longcadence=longcadence, exptime=exptime, ninterp=ninterp, $
              rejectflatmodel=rejectflatmodel,$
@@ -1388,6 +1390,7 @@ ss = mkss(priorfile=priorfile, $
           fitslope=fitslope, fitquad=fitquad, rvepoch=rvepoch, $
           ;; transit inputs
           noclaret=noclaret,$
+          noDoyle2014=noDoyle2014,$
           ttvs=ttvs, tivs=tivs, tdeltavs=tdeltavs, $
           longcadence=longcadence, exptime=exptime, ninterp=ninterp, $
           rejectflatmodel=rejectflatmodel,$
@@ -1671,6 +1674,7 @@ if nthreads gt 1 then begin
          'chen=chen, i180=i180,'+$
          'fitslope=fitslope, fitquad=fitquad,rvepoch=rvepoch,'+$
          'noclaret=noclaret,'+$
+         'noDoyle2014=noDoyle2014,'+$
          'ttvs=ttvs, tivs=tivs, tdeltavs=tdeltavs,'+$
          'longcadence=longcadence,exptime=exptime,ninterp=ninterp,'+$ 
          'rejectflatmodel=rejectflatmodel,'+$
@@ -1792,6 +1796,7 @@ mcmcss = mkss(priorfile=priorfile, $
               fitslope=fitslope, fitquad=fitquad, rvepoch=rvepoch, $
               ;; transit inputs
               noclaret=noclaret,$
+              noDoyle2014=noDoyle2014,$
               ttvs=ttvs, tivs=tivs, tdeltavs=tdeltavs, $
               longcadence=longcadence, exptime=exptime, ninterp=ninterp, $
               rejectflatmodel=rejectflatmodel,$

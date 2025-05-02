@@ -68,6 +68,7 @@ function mkss, priorfile=priorfile, $
                fitslope=fitslope, fitquad=fitquad, rvepoch=rvepoch, $
                ;; transit inputs
                noclaret=noclaret,$
+               noDoyle2014=noDoyle2014,$
                ttvs=ttvs, tivs=tivs, tdeltavs=tdeltavs, $
                longcadence=longcadence, exptime=exptime, ninterp=ninterp, $
                rejectflatmodel=rejectflatmodel,$
@@ -335,6 +336,8 @@ if n_elements(noclaret) eq 0 then begin
    if ntran gt 0 then noclaret = bytarr(ntran>1) $
    else noclaret = [0B]
 endif
+
+
 
 if specphotpath ne '' then begin
    specfiles = file_search(specphotpath,count=nspecfiles)
@@ -640,6 +643,20 @@ endif else begin
       return, -1
    endif
 endelse
+
+
+if n_elements(noDoyle2014) eq 1 then begin
+   noDoyle2014 = bytarr(ntel>1) + keyword_set(noDoyle2014)
+   ; print,'noDoyle2014',noDoyle2014
+endif else if n_elements(noDoyle2014) ne ntel and n_elements(noDoyle2014) ne 0 and ntel gt 0 then begin
+   printandlog, 'noDoyle2014 has ' + strtrim(n_elements(noDoyle2014),2) + ' elements; must be an NTELESCOPES (' + strtrim(ntran,2) + ') element array', logname
+   return, -1
+end
+if n_elements(noDoyle2014) eq 0 then begin
+   if ntel gt 0 then noDoyle2014 = bytarr(ntel>1) $
+   else noDoyle2014 = [0B]
+endif
+
 if ntel eq 0 then begin
    if n_elements(rmttvs) eq 0 then rmttvs = bytarr(1,1)
 endif else begin
@@ -2503,6 +2520,7 @@ telescope = create_struct(srv.label,srv,$
                           gppar5.label,gppar5,$
                           jitter.label,jitter,$
                           jittervar.label,jittervar,$
+                          'Doyle2014', 0B,$
                           'rvptrs', ptr_new(),$
                           'detrend',ptr_new(/allocate_heap),$ ;; array of detrending parameters
                           'bandndx',0L,$
@@ -3255,7 +3273,7 @@ if ntel gt 0 then begin
       minbjd = min((*(ss.telescope[i].rvptrs)).bjd,max=maxbjd)
       if minbjd lt minallbjd then minallbjd = minbjd
       if maxbjd gt maxallbjd then maxallbjd = maxbjd
-
+      ss.telescope[i].Doyle2014 = ~keyword_set(noDoyle2014[i])
       ;; create an array of detrending variables 
       ;; (one for each extra column in the rv file)
       nadd = (*(ss.telescope[i].rvptrs)).nadd
